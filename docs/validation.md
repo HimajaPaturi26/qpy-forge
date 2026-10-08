@@ -10,6 +10,8 @@ A match is:
 - a runtime signal equal to `expected_signal`, or
 - for coverage cases with `expect_support: unsupported`, a refusal that emits no Python.
 
+`runtime_success_rate` counts cases that returned a value. An authored signal match is a semantic success and is not a runtime success. `value_match_rate` uses only value comparisons. `signal_match_rate` uses only signal comparisons. Construct rates use the features the translator recorded, not the tags written next to the case.
+
 Partial cases and unsupported coverage cases are not in the denominator.
 
 ## What is not measured

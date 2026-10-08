@@ -4,7 +4,7 @@ Generated Python is executable. The studio treats it as untrusted.
 
 ## Boundary
 
-- `validate_generated` parses the module and allows only a small AST: imports of `q2py.runtime` (stripped before exec), function definitions, assignments, returns, calls, names, constants, and basic expressions. Imports of other modules, attributes that escape the runtime, and dunder names are rejected.
+- `validate_generated` parses the module and allows only a small AST: imports of `q2py.runtime` (stripped before exec), function definitions, assignments, returns, calls, names, constants, and basic expressions. Imports of other modules are rejected. Attribute access is only `q.<callable>`, `env.get` / `env.set` / `env.set_global`, and `scope.get`. Nested attributes and dunder names are rejected, which blocks `fn.__globals__` from reaching host builtins. Subscripts are only `args[...]`, which the lambda lowering emits.
 - Builtins available to the program are `True`, `False`, `None`, and a `__import__` that raises.
 - `SubprocessExecutor` runs `python -I` so site and user modules are not imported. `PYTHONPATH` is set and ignored by that flag; `sandbox_main` inserts the package path itself.
 - The child environment is a new dict: `PATH`, `PYTHONPATH`, `PYTHONNOUSERSITE`, `PYTHONDONTWRITEBYTECODE`, `LANG`, `LC_ALL`, and `HOME=/tmp`. Parent secrets are not copied.

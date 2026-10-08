@@ -9,6 +9,7 @@ code because the builtins exposed to it do not include them.
 from __future__ import annotations
 
 import ast
+import inspect
 import json
 import os
 import subprocess
@@ -106,19 +107,42 @@ def validate_generated(source: str) -> list[Diagnostic]:
             names = [alias.name for alias in node.names]
             if names != ["q2py.runtime"]:
                 problems.append(error("compile", "sandbox rejected import", node.lineno, node.col_offset, "Q2PY502"))
-        if isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name) and node.value.id != "q" and node.value.id not in {"env", "scope", "args"}:
-            # Attribute access is limited to the runtime module and scope/env objects.
-            if not node.value.id.startswith("_"):
-                problems.append(
-                    error(
-                        "compile",
-                        f"sandbox rejected attribute access on {node.value.id}",
-                        node.lineno,
-                        node.col_offset,
-                        "Q2PY503",
-                    )
-                )
+        if isinstance(node, ast.Name) and node.id.startswith("_") and node.id != "_":
+            # Generated locals are `_vN` and `_lamN`. Dunder names are not.
+            if node.id.startswith("__"):
+                problems.append(error("compile", f"sandbox rejected name {node.id}", node.lineno, node.col_offset, "Q2PY504"))
+        if isinstance(node, ast.Attribute):
+            reason = _attribute_reason(node)
+            if reason:
+                problems.append(error("compile", reason, node.lineno, node.col_offset, "Q2PY503"))
+        if isinstance(node, ast.Subscript) and not (isinstance(node.value, ast.Name) and node.value.id == "args"):
+            problems.append(error("compile", "sandbox rejected subscript", node.lineno, node.col_offset, "Q2PY505"))
     return problems
+
+
+def _attribute_reason(node: ast.Attribute) -> str | None:
+    """Allow only the attribute shapes the code generator emits.
+
+    Nested attributes and dunder names are how a program reaches
+    ``function.__globals__`` and the host builtins.
+    """
+    if node.attr.startswith("_"):
+        return f"sandbox rejected attribute {node.attr}"
+    if not isinstance(node.value, ast.Name):
+        return "sandbox rejected nested attribute access"
+    base = node.value.id
+    if base == "env":
+        return None if node.attr in {"get", "set", "set_global"} else "sandbox rejected attribute access on env"
+    if base == "scope":
+        return None if node.attr == "get" else "sandbox rejected attribute access on scope"
+    if base != "q":
+        return f"sandbox rejected attribute access on {base}"
+    import q2py.runtime as runtime
+
+    value = getattr(runtime, node.attr, None)
+    if inspect.ismodule(value) or not callable(value):
+        return f"sandbox rejected runtime attribute {node.attr}"
+    return None
 
 
 class InProcessExecutor:

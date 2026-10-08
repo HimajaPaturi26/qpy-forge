@@ -119,7 +119,10 @@ def test_value(source: str, expected: dict[str, object]) -> None:
 
 def test_length_signal() -> None:
     result = validate("1 2+1 2 3", expected_signal="length")
-    assert result.matched, (result.signal, result.diagnostics, result.translation.python)
+    assert result.matched is True
+    assert result.executed is False
+    assert result.signal == "length"
+    assert result.comparison == "signal-match"
 
 
 def test_dict_and_tables() -> None:
@@ -162,3 +165,24 @@ def test_dict_and_tables() -> None:
 
 def test_date_object_roundtrip() -> None:
     assert dt.date(2020, 1, 3).isoformat() == "2020-01-03"
+
+
+def test_virtual_i_keeps_original_index() -> None:
+    result = validate("t:([] a:10 20)\nselect i from t where i=1")
+    assert result.matched is None
+    assert result.canon is not None
+    assert result.canon["rows"] == [{"i": LONG(1)}]
+
+
+def test_flip_of_column_dict() -> None:
+    result = validate("flip `a`b!(1 2;3 4)")
+    assert result.canon is not None
+    assert result.canon["rows"] == [{"a": LONG(1), "b": LONG(3)}, {"a": LONG(2), "b": LONG(4)}]
+
+
+def test_keyed_table_literal() -> None:
+    result = validate("([k:1 2] v:10 20)")
+    assert result.canon is not None
+    assert result.canon["keys"] == ["k"]
+    assert result.canon["rows"][0]["v"] == LONG(10)
+    assert result.canon["rows"][1]["k"] == LONG(2)

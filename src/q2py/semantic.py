@@ -82,6 +82,8 @@ class SemanticResult:
 def analyze(script: Script, diagnostics: list[Diagnostic] | None = None) -> SemanticResult:
     features: list[str] = []
     diags = list(diagnostics or [])
+    if len(script.stmts) > 1:
+        features.append("script")
     seq = _lower_script(script, features, diags)
     return SemanticResult(seq, _unique(features), diags)
 
@@ -101,6 +103,8 @@ def _lower(node: Node, features: list[str], diags: list[Diagnostic]) -> IR:
     if isinstance(node, Name):
         if node.name == "i":
             features.append("virtual-i")
+        if node.name in {"if", "do", "while", "peach"}:
+            diags.append(unsupported("semantic", f"{node.name} is outside the supported subset", node.line, node.col))
         return Var(node.line, node.col, node.name)
     if isinstance(node, Strand):
         features.append("strand")
@@ -115,6 +119,8 @@ def _lower(node: Node, features: list[str], diags: list[Diagnostic]) -> IR:
         _feature_op(node.op, node.adverb, features, diags, node)
         return Un(node.line, node.col, node.op, node.adverb, _lower(node.arg, features, diags))
     if isinstance(node, Binary):
+        if node.op == "find" and isinstance(node.left, Lit) and isinstance(node.right, Lit):
+            diags.append(unsupported("semantic", "roll/deal (?) on atoms is non-deterministic and unsupported", node.line, node.col))
         _feature_op(node.op, node.adverb, features, diags, node)
         if node.adverb == "over" and _is_unary_lambda(node.left):
             features.append("converge")

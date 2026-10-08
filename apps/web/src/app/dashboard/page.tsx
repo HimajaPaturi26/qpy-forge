@@ -43,7 +43,8 @@ export default function DashboardPage() {
           <h1 className="text-2xl font-semibold tracking-tight">Accuracy</h1>
           <p className="mt-1 max-w-2xl text-sm text-muted">
             Semantic accuracy is the share of holdout cases declared supported whose result matches a hand-authored
-            expectation. It is not a live kdb+ audit.
+            expectation, including an authored runtime signal. It is not a live kdb+ audit. “Runtime returned a value”
+            is lower when a case is expected to raise a signal.
           </p>
         </div>
         <Button variant="outline" onClick={load} disabled={loading}>
@@ -71,8 +72,9 @@ export default function DashboardPage() {
             <Metric label="Parse rate" value={formatRate(report.parse_rate)} />
             <Metric label="Translation rate" value={formatRate(report.translation_rate)} />
             <Metric label="Compile rate" value={formatRate(report.compile_rate)} />
-            <Metric label="Runtime success" value={formatRate(report.runtime_success_rate)} />
-            <Metric label="Value match" value={formatRate(report.value_match_rate)} />
+            <Metric label="Runtime returned a value" value={formatRate(report.runtime_success_rate)} />
+            <Metric label={`Value match (${report.value_sample_size})`} value={formatRate(report.value_match_rate)} />
+            <Metric label={`Signal match (${report.signal_sample_size})`} value={formatRate(report.signal_match_rate)} />
             <Metric label="Oracle match" value={formatRate(report.oracle_match_rate)} />
           </section>
           <section className="rounded-lg border border-line p-4 text-sm">
@@ -87,8 +89,31 @@ export default function DashboardPage() {
               dev, {report.corpus_counts.coverage} coverage.
             </p>
           </section>
+          {report.expected_signals.length ? (
+            <section>
+              <h2 className="text-lg font-medium">Authored signals</h2>
+              <p className="mt-2 text-sm text-muted">
+                These cases match when execution raises the authored signal. They count in semantic accuracy and signal
+                match. They do not count as a returned value.
+              </p>
+              <ul className="mt-2 space-y-2 text-sm">
+                {report.expected_signals.map((item) => (
+                  <li key={item.id} className="rounded-md border border-line px-3 py-2">
+                    <p className="font-medium">
+                      {item.id} · signal {item.signal ?? "—"} · {item.matched ? "matched" : "not matched"}
+                    </p>
+                    <pre className="mt-1 overflow-auto font-mono text-xs">{item.source}</pre>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
           <section>
             <h2 className="text-lg font-medium">Construct coverage</h2>
+            <p className="mt-1 text-sm text-muted">
+              Features are those the translator recorded on each supported holdout case, not the author tags in the
+              corpus file.
+            </p>
             <div className="mt-3 overflow-x-auto">
               <table className="w-full min-w-[32rem] text-left text-sm">
                 <thead className="text-muted">

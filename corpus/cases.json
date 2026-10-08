@@ -2177,14 +2177,14 @@
       "split": "dev",
       "support": "supported",
       "features": [
-        "infix-arith"
+        "sum"
       ],
-      "source": "1+2*3",
+      "source": "sum 10 20",
       "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
-      "note": "",
+      "note": "Distinct from every holdout source. 10+20 is 30.",
       "expected": {
         "t": "long",
-        "v": 7
+        "v": 30
       }
     },
     {

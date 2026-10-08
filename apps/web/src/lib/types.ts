@@ -87,6 +87,12 @@ export type MetricsReport = {
   compile_rate: number | null;
   runtime_success_rate: number | null;
   value_match_rate: number | null;
+  value_sample_size: number;
+  value_successes: number;
+  signal_match_rate: number | null;
+  signal_sample_size: number;
+  signal_successes: number;
+  expected_signals: Array<{ id: string; source: string; signal: string | null; matched: boolean }>;
   oracle_match_rate: number | null;
   oracle: OracleStatus;
   constructs: ConstructMetric[];

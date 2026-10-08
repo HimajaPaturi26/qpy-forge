@@ -83,6 +83,8 @@ def translate(source: str) -> Translation:
     parse_errors = [item for item in parsed.diagnostics if item.severity == "error" and item.stage == "parse"]
     stages["parse"] = "error" if parse_errors else "ok"
     analyzed = analyze(parsed.script, parsed.diagnostics)
+    if any(tok.kind == "COMMENT" for tok in lexed.tokens) and "comment" not in analyzed.features:
+        analyzed.features.append("comment")
     stages["semantic"] = "error" if analyzed.support == "unsupported" else ("partial" if analyzed.support == "partial" else "ok")
     stages["ir"] = stages["semantic"]
     python = ""

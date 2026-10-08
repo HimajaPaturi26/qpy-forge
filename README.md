@@ -12,18 +12,22 @@ On this tree, `PYTHONPATH=src python -m q2py.score` reported:
 
 | Metric | Value |
 | --- | --- |
-| Corpus | 1.0.0, hash `c055fa1a54e35247` |
+| Corpus | 1.0.0, hash `074d3be72b3f44ea` |
 | Holdout sample (declared support `supported`) | 95 |
-| Successes | 95 |
+| Expectation matches | 95 |
 | Semantic accuracy | 1.0 |
 | Wilson 95% interval | 0.9611 – 1.0 |
 | Target | 0.90 (met on this measurement) |
-| Parse / translation / compile / value-match | 1.0 |
-| Runtime success | 0.9895 |
+| Parse / translation / compile | 1.0 |
+| Value match | 1.0 on 94 value comparisons |
+| Signal match | 1.0 on 1 authored signal (`length-signal`, source `1 2+1 2 3`) |
+| Runtime returned a value | 0.9895 (94/95) |
 | Oracle match | null |
 | Oracle | `oracle-unavailable` (`q` binary not found) |
 
-The runtime-success rate is below 1 because one holdout case expects a q length signal. That case matches the signal and does not count as a successful run. Partial and coverage cases are outside the accuracy denominator. Corpus size is 99 cases: 95 holdout, 2 dev, 2 coverage.
+The runtime rate is 94/95 because `length-signal` is expected to raise `length`. That match is a semantic success and not a returned value. Partial and coverage cases are outside the accuracy denominator. Corpus size is 99 cases: 95 holdout, 2 dev, 2 coverage.
+
+This ratio is what `python -m q2py.score` computed. It is not a blind study and it is not a q process audit. Expected values were written in this repository. The each-right case note records that its expectation was checked against the published each-left rule after a mismatch. See `docs/limitations.md`.
 
 ## Run
 

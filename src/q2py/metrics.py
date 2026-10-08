@@ -29,6 +29,12 @@ def _rate(flag: str, rows: list[dict[str, Any]]) -> float | None:
     return sum(1 for row in rows if row[flag]) / len(rows)
 
 
+def _matched_rate(rows: list[dict[str, Any]]) -> float | None:
+    if not rows:
+        return None
+    return sum(1 for row in rows if row["matched"]) / len(rows)
+
+
 def commit_sha() -> str:
     try:
         completed = subprocess.run(
@@ -47,6 +53,8 @@ def measure(split: str = "holdout") -> dict[str, Any]:
     info = meta()
     rows = iter_scores(split)
     scoped = [row for row in rows if row["declared_support"] == "supported"]
+    value_rows = [row for row in scoped if str(row["comparison"]).startswith("value-")]
+    signal_rows = [row for row in scoped if str(row["comparison"]).startswith("signal-")]
     successes = sum(1 for row in scoped if row["matched"])
     low, high = wilson(successes, len(scoped))
     accuracy = (successes / len(scoped)) if scoped else None
@@ -89,7 +97,17 @@ def measure(split: str = "holdout") -> dict[str, Any]:
         "translation_rate": _rate("translated", scoped),
         "compile_rate": _rate("compiled", scoped),
         "runtime_success_rate": _rate("ran", scoped),
-        "value_match_rate": _rate("matched", scoped),
+        "value_match_rate": _matched_rate(value_rows),
+        "value_sample_size": len(value_rows),
+        "value_successes": sum(1 for row in value_rows if row["matched"]),
+        "signal_match_rate": _matched_rate(signal_rows),
+        "signal_sample_size": len(signal_rows),
+        "signal_successes": sum(1 for row in signal_rows if row["matched"]),
+        "expected_signals": [
+            {"id": row["id"], "source": row["source"], "signal": row["signal"], "matched": row["matched"]}
+            for row in scoped
+            if not row["ran"]
+        ],
         "oracle_match_rate": None,
         "oracle": oracle,
         "constructs": [

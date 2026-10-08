@@ -985,8 +985,11 @@ def q_select(
     width = _rows(table)
     if where is not None:
         mask = _mask(where(Scope(data, env)), width)
+        # `i` is the row index from before the filter. Rebuilding columns would renumber it.
+        kept_i = [data["i"][index] for index, flag in enumerate(mask) if flag]
         table = filter_table(table, mask)
         data = _columns(table)
+        data["i"] = kept_i
         width = _rows(table)
     if by:
         return _select_by(data, width, columns, by, env)
