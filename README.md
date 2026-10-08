@@ -23,7 +23,7 @@ On this tree, `PYTHONPATH=src python -m q2py.score` reported:
 | Value match | 1.0 on 94 value comparisons |
 | Signal match | 1.0 on 1 authored signal (`length-signal`, source `1 2+1 2 3`) |
 | Runtime returned a value | 0.9895 (94/95) |
-| Dev split | 130/130 supported dev cases matched (1.0). This is not the headline accuracy. |
+| Dev split | 133/133 supported dev cases matched (1.0). This is not the headline accuracy. |
 | Coverage split | 27 cases, 0 unmatched |
 | Oracle match | null |
 | Oracle | `oracle-unavailable` (`q` binary not found) |
