@@ -193,7 +193,7 @@ def test_expansion_keeps_the_protected_holdout() -> None:
     holdout = measure("holdout")
     dev = measure("dev")
     coverage = measure("coverage")
-    assert holdout["corpus_version"] == "1.3.0"
+    assert holdout["corpus_version"] == "1.4.0"
     assert holdout["corpus_counts"]["all"] >= 200
     assert holdout["corpus_counts"]["holdout"] == 95
     assert holdout["sample_size"] == 95

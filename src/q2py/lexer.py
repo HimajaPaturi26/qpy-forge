@@ -294,8 +294,8 @@ class _Lexer:
             while self.i < self.n and self.source[self.i].isdigit():
                 self._bump()
         suffix = ""
-        if self.i < self.n and self.source[self.i] in "hjfeb":
-            # `b` is boolean only for 0 and 1. A trailing ident letter is not a suffix.
+        if self.i < self.n and self.source[self.i] in "hijfeb":
+            # `i` is the int suffix, the same letter as in `0Ni`. A following identifier character is not part of the suffix. `b` is boolean only for 0 and 1.
             nxt = self.i + 1
             boundary = nxt >= self.n or not (self.source[nxt].isalnum() or self.source[nxt] == "_")
             if boundary:

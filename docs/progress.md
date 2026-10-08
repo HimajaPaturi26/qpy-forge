@@ -1,5 +1,18 @@
 # Progress
 
+## Short literals stay partial (corpus 1.4.0)
+
+Short literals were not promoted to supported. `1h+2h` is short `3`, `32767h+1h` wraps to short `-32768`, and `1h+1` is long `2`, but the rest of the promotion grid is still unclaimed, so `literal-short` remains partial.
+
+Digits glued to `i` are an int atom. The lexer type table already mapped suffix `i` to int, and `0Ni` was already the null int, but the suffix scanner omitted `i`, so `1i` was read as long `1` applied to virtual `i`. The scanner now accepts `i` at a token boundary. The bare name `i` is still the row index. `1 i` is not an int literal. `1i+2i` is int `3` and stays partial.
+
+`PYTHONPATH=src python -m q2py.score` after pytest (255 passed):
+
+- Corpus 1.4.0, hash `632c1021ef1c572e`, 258 cases: 95 holdout, 133 dev, 30 coverage.
+- Holdout denominator 95. Successes 95. Semantic accuracy 1.0. Wilson 0.9611–1.0.
+- Value match 94/94. Signal match 1/1. Runtime returned a value 94/95. Oracle unavailable.
+- Dev 133/133. Coverage 30/30. No holdout case was edited.
+
 ## Month arithmetic (corpus 1.3.0)
 
 Month literals were already parsed and classified partial because no arithmetic was claimed. Integer offsets now shift the month, including year rollover, and subtracting two months returns the month count as a long. A float offset raises `type`. Timestamp arithmetic is still partial.

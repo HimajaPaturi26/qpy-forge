@@ -14,6 +14,8 @@ These are the rules the runtime implements. Expectations in the corpus were writ
 
 - Longs wrap in int64. `0W` is 9223372036854775807. `-0W` is -9223372036854775808.
 - `0w` and `-0w` are float infinities. `0n` is the null float. `0N`, `0Ni`, and `0Nh` are null long, int, and short.
+- `1h+2h` is short `3`. `32767h+1h` wraps to short `-32768`. `1h+1` promotes to long `2`. Short stays partial because the rest of the promotion grid is not claimed.
+- Digits glued to `i` are an int atom, matching the `i` in `0Ni`. The bare name `i` is the row index. `1 i`, with a space, is not an int literal.
 - `%` is float division. `1%0` is positive infinity. `0%0` is a null float.
 - A boolean vector literal is a run of `0` and `1` ending in `b`, such as `101b`. `0b` and `1b` stay atoms.
 - `0N=0N` is false. `0N~0N` is true.

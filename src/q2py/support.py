@@ -7,7 +7,7 @@ Semantic accuracy is computed only on holdout cases whose declared support is
 from __future__ import annotations
 
 TARGET = 0.90
-CORPUS_VERSION = "1.3.0"
+CORPUS_VERSION = "1.4.0"
 
 # Constructs the engine claims to translate with q-equivalent results.
 SUPPORTED_FEATURES: frozenset[str] = frozenset(
@@ -161,8 +161,8 @@ DOCUMENTED_UNSUPPORTED: tuple[tuple[str, str], ...] = (
 )
 
 PARTIAL_NOTES: dict[str, str] = {
-    "literal-short": "Short literals are represented, but the full q promotion grid is not claimed.",
-    "literal-int": "Int literals are represented, but the full q promotion grid is not claimed.",
+    "literal-short": "Short literals wrap at 16 bits. Short plus long promotes to long. The rest of the promotion grid is not claimed.",
+    "literal-int": "Int literals use the i suffix, including 0Ni. The full promotion grid is not claimed.",
     "literal-byte": "Byte literals are represented as unsigned 0–255 without the full promotion grid.",
     "literal-real": "Real literals are stored as float32 then widened; real arithmetic is not claimed.",
     "literal-timestamp": "Timestamp literals are represented. Timestamp arithmetic is not claimed.",

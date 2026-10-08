@@ -1,5 +1,5 @@
 {
-  "version": "1.3.0",
+  "version": "1.4.0",
   "target": 0.9,
   "cases": [
     {
@@ -5533,6 +5533,36 @@
       "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
       "note": "The difference of two months is the number of months between them: 14.",
       "expected": {"t": "long", "v": 14}
+    },
+    {
+      "id": "cov-short-add",
+      "split": "coverage",
+      "support": "partial",
+      "features": ["literal-short"],
+      "source": "1h+2h",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Two shorts add as short. 1+2 is 3. The construct stays partial because the rest of the promotion grid is not claimed.",
+      "expected": {"t": "short", "v": 3}
+    },
+    {
+      "id": "cov-short-wrap",
+      "split": "coverage",
+      "support": "partial",
+      "features": ["literal-short"],
+      "source": "32767h+1h",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Short addition wraps at 16 bits. 32767+1 is -32768.",
+      "expected": {"t": "short", "v": -32768}
+    },
+    {
+      "id": "cov-short-promote",
+      "split": "coverage",
+      "support": "partial",
+      "features": ["literal-short"],
+      "source": "1h+1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A short plus a long promotes to long. 1+1 is 2.",
+      "expected": {"t": "long", "v": 2}
     }
   ]
 }

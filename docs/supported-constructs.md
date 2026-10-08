@@ -19,7 +19,7 @@ A program is `supported` when every feature it uses is in `SUPPORTED_FEATURES` (
 
 ## Partial
 
-- Short, int, byte, real, and timestamp literals. The full q promotion grid and timestamp arithmetic are not claimed.
+- Short, int, byte, real, and timestamp literals. `1h+2h` is short `3`. `32767h+1h` wraps to short `-32768`. `1h+1` is long `2`. A digit run ending in `i` is an int atom, the same suffix as `0Ni`. The bare name `i` is still the row index. The rest of the promotion grid, and timestamp arithmetic, are not claimed.
 - Converge: unary over returns a fixed point reached within 1000 steps. If none is reached, it raises `limit` instead of looping.
 
 ## Unsupported
