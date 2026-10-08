@@ -46,6 +46,11 @@ _KEYWORDS = {
     "div",
     "mod",
     "in",
+    "xbar",
+    "rotate",
+    "except",
+    "inter",
+    "union",
 }
 
 
@@ -299,9 +304,16 @@ class _Lexer:
         body = self.source[start : self.i]
         shown = ("-" if negative else "") + body
         if suffix == "b":
-            if body[:-1] not in {"0", "1"}:
-                self.diagnostics.append(unsupported("lex", f"invalid boolean {shown}", line, col, "Q2PY102"))
-            return Token("NUMBER", shown, line, col, "bool", body[:-1] == "1", False)
+            bits = body[:-1]
+            if bits and all(ch in "01" for ch in bits):
+                if len(bits) == 1:
+                    return Token("NUMBER", shown, line, col, "bool", bits == "1", False)
+                if negative:
+                    self.diagnostics.append(unsupported("lex", f"invalid boolean {shown}", line, col, "Q2PY102"))
+                flags = [ch == "1" for ch in bits]
+                return Token("BOOLS", shown, line, col, "bool", flags, False)
+            self.diagnostics.append(unsupported("lex", f"invalid boolean {shown}", line, col, "Q2PY102"))
+            return Token("NUMBER", shown, line, col, "bool", False, False)
         if is_float or suffix in {"f", "e"}:
             numeric = body[:-1] if suffix in {"f", "e"} else body
             number = float(numeric)

@@ -541,29 +541,40 @@ def q_desc(value: Value) -> Value:
     return _desc(value)
 
 
+def _desc_sort_key(atom: Atom) -> tuple[int, int, float, str]:
+    if atom.null:
+        return (1, 0, 0.0, "")
+    if isinstance(atom.value, (int, float)) and not isinstance(atom.value, bool):
+        return (0, 0, -float(atom.value), "")
+    if isinstance(atom.value, bool):
+        return (0, 0, -float(atom.value), "")
+    return (0, 1, 0.0, "".join(chr(255 - ord(ch)) for ch in str(atom.value)))
+
+
 def _desc(value: Vec) -> Vec:
     atoms = _atoms(value)
-
-    def key(atom: Atom) -> tuple[int, float, str]:
-        if atom.null:
-            return (1, 0.0, "")
-        if isinstance(atom.value, (int, float, bool)):
-            return (0, -float(atom.value), "")
-        return (0, 0.0, str(atom.value))
-
-    # Symbols and chars need reverse alpha while numbers need numeric reverse.
-    # Split the comparison properly.
-    def better(atom: Atom) -> tuple[int, int, float, str]:
-        if atom.null:
-            return (1, 0, 0.0, "")
-        if isinstance(atom.value, (int, float)) and not isinstance(atom.value, bool):
-            return (0, 0, -float(atom.value), "")
-        if isinstance(atom.value, bool):
-            return (0, 0, -float(atom.value), "")
-        return (0, 1, 0.0, "".join(chr(255 - ord(ch)) for ch in str(atom.value)))
-
-    ordered = sorted(atoms, key=better)
+    ordered = sorted(atoms, key=_desc_sort_key)
     return Vec(value.etype, tuple(ordered))
+
+
+def q_iasc(value: Value) -> Value:
+    if isinstance(value, Atom):
+        return long(0)
+    if not isinstance(value, Vec):
+        raise QError("type", "iasc")
+    atoms = _atoms(value)
+    order = sorted(range(len(atoms)), key=lambda index: _sort_key(atoms[index], False))
+    return vec_of([long(index) for index in order])
+
+
+def q_idesc(value: Value) -> Value:
+    if isinstance(value, Atom):
+        return long(0)
+    if not isinstance(value, Vec):
+        raise QError("type", "idesc")
+    atoms = _atoms(value)
+    order = sorted(range(len(atoms)), key=lambda index: _desc_sort_key(atoms[index]))
+    return vec_of([long(index) for index in order])
 
 
 def q_distinct(value: Value) -> Value:
@@ -828,6 +839,355 @@ def q_flip(value: Value) -> Value:
         vals = tuple(Vec(dict(value.types)[name], column) for name, column in zip(value.columns, value.cols, strict=True))
         return DictV(keys, vals)
     raise QError("type", "flip")
+
+
+def _list_atoms(value: Value, op: str) -> list[Atom]:
+    if isinstance(value, Atom):
+        return [value]
+    if isinstance(value, Vec):
+        if not value.items:
+            return []
+        return _atoms(value)
+    raise QError("type", op)
+
+
+def _identity_one(typ: str) -> Atom:
+    if typ in {"float", "real"}:
+        return float_(1.0)
+    return long(1)
+
+
+def q_prd(value: Value) -> Value:
+    if isinstance(value, Atom):
+        return value
+    if isinstance(value, DictV):
+        return q_prd(Vec("general", value.vals))
+    if not isinstance(value, Vec):
+        raise QError("type", "prd")
+    if not value.items:
+        return _identity_one(value.etype)
+    has_float = any(isinstance(item, Atom) and item.typ in {"float", "real"} for item in value.items)
+    acc: Value = float_(1.0) if has_float or value.etype in {"float", "real"} else long(1)
+    for item in value.items:
+        if isinstance(item, Atom) and item.null and item.typ in _NUMERIC:
+            continue
+        acc = mul(acc, item)
+    return acc
+
+
+def q_prds(value: Value) -> Value:
+    if isinstance(value, Atom):
+        return value
+    if not isinstance(value, Vec):
+        raise QError("type", "prds")
+    acc: Value | None = None
+    out: list[Value] = []
+    for item in value.items:
+        piece: Value = item
+        if isinstance(item, Atom) and item.null and item.typ in _NUMERIC:
+            piece = _identity_one(item.typ)
+        acc = piece if acc is None else mul(acc, piece)
+        out.append(acc)
+    return vec_of(out) if out else Vec(value.etype, ())
+
+
+def q_all(value: Value) -> Atom:
+    atoms = _list_atoms(value, "all")
+    for atom in atoms:
+        if atom.null:
+            continue
+        if atom.typ not in _NUMERIC:
+            raise QError("type", "all")
+        if _as_float(atom) == 0.0:
+            return boolean(False)
+    return boolean(True)
+
+
+def q_any(value: Value) -> Atom:
+    atoms = _list_atoms(value, "any")
+    for atom in atoms:
+        if atom.null:
+            continue
+        if atom.typ not in _NUMERIC:
+            raise QError("type", "any")
+        if _as_float(atom) != 0.0:
+            return boolean(True)
+    return boolean(False)
+
+
+def _running(value: Value, pick_max: bool) -> Value:
+    op = "maxs" if pick_max else "mins"
+    if isinstance(value, Atom):
+        return value
+    atoms = _list_atoms(value, op)
+    best: Atom | None = None
+    out: list[Value] = []
+    for atom in atoms:
+        if atom.null:
+            out.append(atom if best is None else best)
+            continue
+        if atom.typ not in _NUMERIC:
+            raise QError("type", op)
+        if best is None:
+            best = atom
+        else:
+            greater = bool(_cmp_atom("gt", atom, best).value)
+            if pick_max and greater:
+                best = atom
+            if not pick_max and not greater and not bool(_cmp_atom("eq", atom, best).value):
+                best = atom
+        out.append(best)
+    return vec_of(out) if out else Vec(value.etype if isinstance(value, Vec) else "general", ())
+
+
+def q_mins(value: Value) -> Value:
+    return _running(value, False)
+
+
+def q_maxs(value: Value) -> Value:
+    return _running(value, True)
+
+
+def _numeric_floats(value: Value, op: str) -> list[float]:
+    atoms = _list_atoms(value, op)
+    nums: list[float] = []
+    for atom in atoms:
+        if atom.typ not in _NUMERIC:
+            raise QError("type", op)
+        if not atom.null:
+            nums.append(_as_float(atom))
+    return nums
+
+
+def q_med(value: Value) -> Atom:
+    nums = sorted(_numeric_floats(value, "med"))
+    if not nums:
+        return null("float")
+    mid = len(nums) // 2
+    if len(nums) % 2 == 1:
+        return float_(nums[mid])
+    return float_((nums[mid - 1] + nums[mid]) / 2.0)
+
+
+def q_var(value: Value) -> Atom:
+    nums = _numeric_floats(value, "var")
+    if len(nums) < 2:
+        return null("float")
+    mean = sum(nums) / len(nums)
+    return float_(sum((item - mean) ** 2 for item in nums) / (len(nums) - 1))
+
+
+def q_dev(value: Value) -> Atom:
+    variance = q_var(value)
+    if variance.null:
+        return variance
+    return float_(math.sqrt(_as_float(variance)))
+
+
+def q_floor(value: Value) -> Value:
+    return _map_atoms(value, _floor_atom, "floor")
+
+
+def q_ceiling(value: Value) -> Value:
+    return _map_atoms(value, _ceiling_atom, "ceiling")
+
+
+def q_signum(value: Value) -> Value:
+    return _map_atoms(value, _signum_atom, "signum")
+
+
+def _map_atoms(value: Value, fn: Callable[[Atom], Atom], op: str) -> Value:
+    if isinstance(value, Atom):
+        return fn(value)
+    if not isinstance(value, Vec):
+        raise QError("type", op)
+    return vec_of([fn(atom) for atom in _atoms(value)])
+
+
+def _floor_atom(atom: Atom) -> Atom:
+    if atom.typ not in _NUMERIC:
+        raise QError("type", "floor")
+    if atom.null:
+        return null("long")
+    if atom.typ in _INTS:
+        return long(_as_int(atom))
+    number = _as_float(atom)
+    if math.isinf(number):
+        return long(9223372036854775807 if number > 0 else -9223372036854775808)
+    return long(math.floor(number))
+
+
+def _ceiling_atom(atom: Atom) -> Atom:
+    if atom.typ not in _NUMERIC:
+        raise QError("type", "ceiling")
+    if atom.null:
+        return null("long")
+    if atom.typ in _INTS:
+        return long(_as_int(atom))
+    number = _as_float(atom)
+    if math.isinf(number):
+        return long(9223372036854775807 if number > 0 else -9223372036854775808)
+    return long(math.ceil(number))
+
+
+def _signum_atom(atom: Atom) -> Atom:
+    if atom.typ not in _NUMERIC:
+        raise QError("type", "signum")
+    if atom.null:
+        return null("long")
+    number = _as_float(atom)
+    if number > 0:
+        return long(1)
+    if number < 0:
+        return long(-1)
+    return long(0)
+
+
+def q_prev(value: Value) -> Value:
+    if isinstance(value, Atom):
+        return null(value.typ)
+    atoms = _list_atoms(value, "prev")
+    if not atoms:
+        return value
+    return vec_of([null(atoms[0].typ), *atoms[:-1]])
+
+
+def q_next(value: Value) -> Value:
+    if isinstance(value, Atom):
+        return null(value.typ)
+    atoms = _list_atoms(value, "next")
+    if not atoms:
+        return value
+    return vec_of([*atoms[1:], null(atoms[0].typ)])
+
+
+def q_fills(value: Value) -> Value:
+    if isinstance(value, Atom):
+        return value
+    atoms = _list_atoms(value, "fills")
+    if not atoms:
+        return value
+    last: Atom | None = None
+    out: list[Atom] = []
+    for atom in atoms:
+        if atom.null and last is not None:
+            out.append(last)
+            continue
+        if not atom.null:
+            last = atom
+        out.append(atom)
+    return vec_of(out)
+
+
+def q_differ(value: Value) -> Value:
+    if isinstance(value, Atom):
+        return boolean(True)
+    atoms = _list_atoms(value, "differ")
+    if not atoms:
+        return Vec("bool", ())
+    flags = [boolean(True)]
+    for previous, current in zip(atoms, atoms[1:], strict=False):
+        flags.append(cast(Atom, ne(previous, current)))
+    return vec_of(flags)
+
+
+def q_group(value: Value) -> DictV:
+    atoms = _list_atoms(value, "group")
+    order: list[Atom] = []
+    buckets: dict[Atom, list[Atom]] = {}
+    for index, atom in enumerate(atoms):
+        if atom not in buckets:
+            buckets[atom] = []
+            order.append(atom)
+        buckets[atom].append(long(index))
+    return DictV(tuple(order), tuple(vec_of(buckets[key]) for key in order))
+
+
+def q_cols(value: Value) -> Vec:
+    if not isinstance(value, TableV):
+        raise QError("type", "cols")
+    return vec_of([symbol(name) for name in value.columns])
+
+
+def q_key(value: Value) -> Value:
+    if isinstance(value, DictV):
+        return Vec("general", value.keys) if not value.keys else vec_of(list(value.keys))
+    if isinstance(value, TableV):
+        if not value.keys:
+            return Vec("symbol", ())
+        names = list(value.keys)
+        columns = [list(value.cols[value.columns.index(name)]) for name in names]
+        return table_from_columns(names, columns)
+    raise QError("type", "key")
+
+
+def q_value(value: Value) -> Value:
+    if isinstance(value, DictV):
+        return vec_of(list(value.vals)) if value.vals else Vec("general", ())
+    raise QError("unsupported", "value is implemented for dictionaries only")
+
+
+def _as_items(value: Value, op: str) -> list[Value]:
+    if isinstance(value, Vec):
+        return list(value.items)
+    if isinstance(value, Atom):
+        return [value]
+    raise QError("type", op)
+
+
+def q_except(left: Value, right: Value) -> Vec:
+    banned = _as_items(right, "except")
+    kept = [item for item in _as_items(left, "except") if not any(_match(item, other) for other in banned)]
+    return vec_of(kept)
+
+
+def q_inter(left: Value, right: Value) -> Vec:
+    allowed = _as_items(right, "inter")
+    kept = [item for item in _as_items(left, "inter") if any(_match(item, other) for other in allowed)]
+    return vec_of(kept)
+
+
+def q_union(left: Value, right: Value) -> Vec:
+    out: list[Value] = []
+    for item in _as_items(left, "union") + _as_items(right, "union"):
+        if not any(_match(item, prev) for prev in out):
+            out.append(item)
+    return vec_of(out)
+
+
+def q_rotate(count: Value, source: Value) -> Value:
+    if isinstance(source, Atom):
+        return source
+    if not isinstance(source, Vec):
+        raise QError("type", "rotate")
+    if not isinstance(count, Atom) or count.typ not in _INTS or count.null:
+        raise QError("type", "rotate")
+    items = list(source.items)
+    if not items:
+        return source
+    shift = _as_int(count) % len(items)
+    return Vec(source.etype, tuple(items[shift:] + items[:shift]))
+
+
+def q_xbar(size: Value, source: Value) -> Value:
+    return atomic_like(_xbar_atom, size, source)
+
+
+def _xbar_atom(size: Value, source: Value) -> Atom:
+    if not isinstance(size, Atom) or not isinstance(source, Atom):
+        raise QError("type", "xbar")
+    if size.typ not in _NUMERIC or source.typ not in _NUMERIC:
+        raise QError("type", "xbar")
+    if size.null or source.null:
+        return null("float" if "float" in (size.typ, source.typ) or "real" in (size.typ, source.typ) else "long")
+    width = _as_float(size)
+    if width <= 0:
+        raise QError("domain", "xbar size must be positive")
+    floored = math.floor(_as_float(source) / width)
+    raw = width * floored
+    if size.typ in _INTS and source.typ in _INTS:
+        return long(int(raw))
+    return float_(raw)
 
 
 def make_list(items: Sequence[Value]) -> Vec:
@@ -1142,6 +1502,51 @@ def lambda_(params: Sequence[str], call: Callable[[Env, tuple[Value, ...]], Valu
     return LambdaV(tuple(params), len(params), call, label)
 
 
+def iterate(fn: Value, adverb: str) -> LambdaV:
+    """Postfix adverb on a lambda. Dyadic over/scan fold a list. Unary over converges."""
+
+    def call(env: Env, args: tuple[Value, ...]) -> Value:
+        if adverb == "each":
+            if len(args) == 1:
+                return each(fn, args[0], None, env)
+            if len(args) == 2:
+                return each(fn, args[0], args[1], env)
+        if adverb == "each-left" and len(args) == 2:
+            return each_left(fn, args[0], args[1], env)
+        if adverb == "each-right" and len(args) == 2:
+            return each_right(fn, args[0], args[1], env)
+        if adverb == "each-prior":
+            if len(args) == 1:
+                return each_prior(fn, args[0], env)
+            if len(args) == 2:
+                return each_prior(fn, args[1], env, args[0])
+        if adverb == "over":
+            if len(args) == 1 and isinstance(fn, LambdaV) and fn.arity <= 1:
+                return _converge(fn, args[0], env)
+            if len(args) == 1:
+                return over(fn, args[0], env)
+            if len(args) == 2:
+                return over(fn, args[1], env, args[0])
+        if adverb == "scan":
+            if len(args) == 1:
+                return scan(fn, args[0], env)
+            if len(args) == 2:
+                return scan(fn, args[1], env, args[0])
+        raise QError("rank", adverb)
+
+    return LambdaV(("x", "y"), 2, call, adverb, variadic=True)
+
+
+def _converge(fn: Value, seed: Value, env: Env) -> Value:
+    acc = seed
+    for _ in range(1000):
+        nxt = apply(fn, [acc], env)
+        if _match(nxt, acc):
+            return nxt
+        acc = nxt
+    return acc
+
+
 def _call_fn(fn: LambdaV | ProjV, args: Sequence[Value], env: Env) -> Value:
     if isinstance(fn, ProjV):
         return _call_proj(fn, args, env)
@@ -1343,6 +1748,11 @@ _BIN = {
     "in": q_in,
     "div-int": q_div,
     "mod": q_mod,
+    "xbar": q_xbar,
+    "rotate": q_rotate,
+    "except": q_except,
+    "inter": q_inter,
+    "union": q_union,
 }
 
 _UNARY = {
@@ -1370,6 +1780,28 @@ _UNARY = {
     "type": q_type,
     "string": q_string,
     "flip": q_flip,
+    "prd": q_prd,
+    "prds": q_prds,
+    "all": q_all,
+    "any": q_any,
+    "mins": q_mins,
+    "maxs": q_maxs,
+    "iasc": q_iasc,
+    "idesc": q_idesc,
+    "floor": q_floor,
+    "ceiling": q_ceiling,
+    "signum": q_signum,
+    "prev": q_prev,
+    "next": q_next,
+    "fills": q_fills,
+    "med": q_med,
+    "var": q_var,
+    "dev": q_dev,
+    "differ": q_differ,
+    "group": q_group,
+    "cols": q_cols,
+    "key": q_key,
+    "value": q_value,
 }
 
 

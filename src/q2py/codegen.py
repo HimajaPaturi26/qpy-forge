@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import math
 from dataclasses import dataclass, field
 
 from q2py.ir import (
@@ -12,6 +13,7 @@ from q2py.ir import (
     Const,
     Hole,
     IfCond,
+    Iter,
     Lam,
     Lst,
     Qry,
@@ -46,6 +48,11 @@ _BIN = {
     "in": "q_in",
     "div-int": "q_div",
     "mod": "q_mod",
+    "xbar": "q_xbar",
+    "rotate": "q_rotate",
+    "except": "q_except",
+    "inter": "q_inter",
+    "union": "q_union",
 }
 
 _UNARY = {
@@ -73,6 +80,28 @@ _UNARY = {
     "type": "q_type",
     "string": "q_string",
     "flip": "q_flip",
+    "prd": "q_prd",
+    "prds": "q_prds",
+    "all": "q_all",
+    "any": "q_any",
+    "mins": "q_mins",
+    "maxs": "q_maxs",
+    "iasc": "q_iasc",
+    "idesc": "q_idesc",
+    "floor": "q_floor",
+    "ceiling": "q_ceiling",
+    "signum": "q_signum",
+    "prev": "q_prev",
+    "next": "q_next",
+    "fills": "q_fills",
+    "med": "q_med",
+    "var": "q_var",
+    "dev": "q_dev",
+    "differ": "q_differ",
+    "group": "q_group",
+    "cols": "q_cols",
+    "key": "q_key",
+    "value": "q_value",
     "sub": "q_neg",
 }
 
@@ -184,6 +213,9 @@ class _Gen:
                 self.refused = node.op
                 return "q.null('long')"
             return f"q.{fn}({left}, {right})"
+        if isinstance(node, Iter):
+            fn = self.expr(node.fn, env, locals_)
+            return f"q.iterate({fn}, {node.adverb!r})"
         if isinstance(node, VerbRef):
             if node.adverb:
                 return f"q.derived({node.op!r}, {node.adverb!r})"
@@ -232,6 +264,12 @@ class _Gen:
         if node.typ == "byte" and isinstance(node.value, int):
             return f"q.byte({node.value})"
         if node.typ in {"float", "real"} and isinstance(node.value, float):
+            if math.isinf(node.value):
+                # Python's repr of infinity is the name `inf`, which is not a literal.
+                literal = "1e309" if node.value > 0 else "-1e309"
+                return f"q.float_({literal})"
+            if math.isnan(node.value):
+                return "q.null('float')"
             return f"q.float_({node.value!r})"
         if node.typ == "bool":
             return f"q.boolean({bool(node.value)})"

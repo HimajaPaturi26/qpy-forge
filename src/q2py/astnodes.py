@@ -67,6 +67,14 @@ class Verb(Node):
 
 
 @dataclass
+class Derived(Node):
+    """A lambda (or other value) with a postfix adverb, as in ``({x*y}/)``."""
+
+    fn: Node = field(default_factory=Node)
+    adverb: str = ""
+
+
+@dataclass
 class Lambda(Node):
     params: list[str] = field(default_factory=list)
     body: list[Node] = field(default_factory=list)

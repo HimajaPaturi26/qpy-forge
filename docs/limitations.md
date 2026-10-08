@@ -4,7 +4,8 @@
 - Semantic accuracy on the holdout corpus measures agreement with hand-authored JSON expectations. It does not prove equivalence to a kdb+ process.
 - Expected values and the runtime were written from the same public description of q. Shared mistakes will not show up as failures.
 - One each-right expectation follows the published each-left rule mirrored across the right argument. It was checked against that rule after an initial mismatch, and the case note records that. That case was not written blind to the translator.
-- `flip`, keyed-table literals, and virtual `i` are implemented and covered by unit tests. They are not separate holdout cases, so a holdout-only construct table can omit them.
+- The protected 95-case holdout was not edited for the 1.1.0 corpus. New constructs are measured on the dev split. A holdout-only construct table still omits features that appear only in dev cases, including `flip`, keyed tables, and virtual `i`.
+- Headline semantic accuracy did not change when the corpus grew. It is still the protected holdout ratio. The dev ratio is a separate measurement against expectations written for this expansion.
 - `if`, `do`, `while`, and `peach` are refused before code generation. Atom `?` on two literals is refused the same way. A dynamic atom `?` whose arguments are not literals still compiles to `q_find`, which raises at runtime instead of returning a value.
 - The in-process corpus executor does not apply the subprocess resource limits.
 - Source maps record q line and column for generated statements. They do not map every Python expression back to a character range.

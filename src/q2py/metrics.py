@@ -8,7 +8,7 @@ from typing import Any
 
 from q2py.corpus import iter_scores, meta
 from q2py.oracle import oracle_status
-from q2py.support import TARGET
+from q2py.support import DOCUMENTED_UNSUPPORTED, PARTIAL_FEATURES, PARTIAL_NOTES, SUPPORTED_FEATURES, TARGET
 
 
 def wilson(successes: int, total: int, z: float = 1.96) -> tuple[float, float]:
@@ -121,5 +121,12 @@ def measure(split: str = "holdout") -> dict[str, Any]:
         ],
         "failure_categories": [{"category": key, "count": value} for key, value in sorted(failures.items())],
         "top_failures": failing_cases[:10],
+        "registry": {
+            "supported": sorted(SUPPORTED_FEATURES),
+            "partial": [
+                {"feature": feature, "note": PARTIAL_NOTES.get(feature, "")} for feature in sorted(PARTIAL_FEATURES)
+            ],
+            "unsupported": [{"feature": name, "note": note} for name, note in DOCUMENTED_UNSUPPORTED],
+        },
         "rows": rows,
     }

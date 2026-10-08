@@ -13,6 +13,7 @@ from q2py.astnodes import (
     Assign,
     Binary,
     Cond,
+    Derived,
     Empty,
     Lambda,
     ListLit,
@@ -59,9 +60,28 @@ _PREFIX = {
     "key",
     "value",
     "cols",
+    "prd",
+    "prds",
+    "all",
+    "any",
+    "mins",
+    "maxs",
+    "iasc",
+    "idesc",
+    "floor",
+    "ceiling",
+    "signum",
+    "prev",
+    "next",
+    "fills",
+    "med",
+    "var",
+    "dev",
+    "differ",
+    "group",
 }
 
-_INFIX_WORDS = {"div", "mod", "in"}
+_INFIX_WORDS = {"div", "mod", "in", "xbar", "rotate", "except", "inter", "union"}
 
 _OP_KIND = {
     "PLUS": "add",
@@ -296,17 +316,21 @@ class _Parser:
             node = Apply(node.line, node.col, node, args)
         if self._check("OVER") or self._check("SCAN") or self._check("EACH") or self._check("EACH_LEFT") or self._check("EACH_RIGHT") or self._check("EACH_PRIOR"):
             tok = self._peek()
-            if not isinstance(node, Verb):
-                self.diagnostics.append(
-                    unsupported(
-                        "parse",
-                        "postfix iterator on this value is outside the supported subset; parenthesize primitive verbs such as (+/)",
-                        tok.line,
-                        tok.col,
-                    )
+            adverb = self._adverb()
+            if isinstance(node, Verb):
+                node.adverb = adverb
+                return node
+            if isinstance(node, Lambda) and adverb:
+                return Derived(node.line, node.col, node, adverb)
+            self.diagnostics.append(
+                unsupported(
+                    "parse",
+                    "postfix iterator on this value is outside the supported subset; parenthesize primitive verbs such as (+/) or a lambda such as ({x+y}/)",
+                    tok.line,
+                    tok.col,
                 )
-                self._adverb()
-                return UnsupportedNode(tok.line, tok.col, "postfix iterator")
+            )
+            return UnsupportedNode(tok.line, tok.col, "postfix iterator")
         return node
 
     def _atom(self) -> Node:
@@ -314,6 +338,14 @@ class _Parser:
         if tok.kind == "NUMBER":
             self._advance()
             return Lit(tok.line, tok.col, tok.lit_type or "long", tok.lit_value, tok.null)
+        if tok.kind == "BOOLS":
+            self._advance()
+            flags = tok.lit_value if isinstance(tok.lit_value, list) else []
+            return Strand(
+                tok.line,
+                tok.col,
+                [Lit(tok.line, tok.col, "bool", bool(item), False) for item in flags],
+            )
         if tok.kind == "BYTES":
             self._advance()
             values = tok.lit_value if isinstance(tok.lit_value, list) else []
@@ -639,6 +671,8 @@ def _names(nodes: list[Node]) -> set[str]:
 
 
 def _child_nodes(node: Node) -> list[Node]:
+    if isinstance(node, Derived):
+        return [node.fn]
     if isinstance(node, Unary):
         return [node.arg]
     if isinstance(node, Binary):

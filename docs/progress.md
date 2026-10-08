@@ -1,6 +1,23 @@
 # Progress
 
-## Audit (current tree)
+## Coverage expansion (corpus 1.1.0)
+
+The protected 95 holdout cases were not edited. New cases are dev or coverage. Expected values were written from `docs/q-semantics.md` before scoring.
+
+`PYTHONPATH=src python -m q2py.score` on this tree:
+
+- Corpus 1.1.0, hash `4de1bf18cb00cd6d`, 241 cases: 95 holdout, 123 dev, 23 coverage.
+- Holdout denominator 95. Successes 95. Semantic accuracy 1.0. Wilson 0.9611–1.0. Same ratio as corpus 1.0.0.
+- Value match 94/94. Signal match 1/1 (`length-signal`). Runtime returned a value 94/95.
+- Dev split, scored separately: 123/123 supported cases matched. Semantic accuracy 1.0. Wilson 0.9697–1.0. Parse, translation, compile, and runtime-return rates 1.0. Value match 123/123. No authored signals in that split.
+- Coverage split: 23 cases, none unmatched. Three of them are supported signal checks (`domain` for negative `div` and negative `xbar`, `unsupported` for `value` of a string, `domain` for `sqrt -1`). The rest are refusals that emit no Python.
+- Oracle remains `oracle-unavailable`. `oracle_match_rate` is null.
+
+Five dev cases were refused on the first score (`101b` boolean vectors, and postfix over/scan on a lambda). The lexer and parser were extended to those published forms. The expectations were not changed. A later score matched them. That is a translator fix, not a corpus edit.
+
+New supported verbs include `prd`, `prds`, `all`, `any`, `mins`, `maxs`, `med`, `var`, `dev`, `iasc`, `idesc`, `floor`, `ceiling`, `signum`, `prev`, `next`, `fills`, `differ`, `group`, `cols`, `key`, `value` (dictionaries), `xbar`, `rotate`, `except`, `inter`, and `union`. Infinity literals compile to a float constant (`1e309`) because Python’s `inf` repr is not a literal. The sandbox allow-list was extended only with the new runtime names.
+
+## Audit (corpus 1.0.0)
 
 The scorer was re-run with `PYTHONPATH=src python -m q2py.score` after the fixes below.
 

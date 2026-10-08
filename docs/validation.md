@@ -14,6 +14,10 @@ A match is:
 
 Partial cases and unsupported coverage cases are not in the denominator.
 
+The 95 holdout cases that existed at corpus 1.0.0 are unchanged. Corpus 1.1.0 adds dev and coverage cases around them. `python -m q2py.score` still scores the holdout. The metrics API also scores the dev split and returns it as `dev_measurement`. That number is not the headline accuracy.
+
+A dashboard accuracy figure has to show its successes, its sample size, and the corpus version. Corpus coverage, the construct registry, runtime-return rate, signal matches, and oracle availability are separate.
+
 ## What is not measured
 
 The translator does not write expected values. `q2py.corpus.load_cases` rejects provenance that starts with `generated-by-translator`.

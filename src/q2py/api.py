@@ -100,11 +100,33 @@ def examples() -> dict[str, Any]:
     return {"examples": [{"id": case["id"], "source": case["source"], "support": case["support"]} for case in cases]}
 
 
+_SUMMARY_KEYS = (
+    "split",
+    "sample_size",
+    "successes",
+    "semantic_accuracy",
+    "wilson_low",
+    "wilson_high",
+    "parse_rate",
+    "translation_rate",
+    "compile_rate",
+    "runtime_success_rate",
+    "value_match_rate",
+    "value_sample_size",
+    "value_successes",
+    "signal_match_rate",
+    "signal_sample_size",
+    "signal_successes",
+)
+
+
 @app.get("/api/v1/metrics")
 def metrics() -> dict[str, Any]:
     report = measure("holdout")
     save_snapshot(report)
     public = {key: value for key, value in report.items() if key != "rows"}
+    dev = measure("dev")
+    public["dev_measurement"] = {key: dev[key] for key in _SUMMARY_KEYS}
     public["history"] = list_snapshots()
     return public
 

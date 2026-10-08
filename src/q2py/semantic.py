@@ -9,6 +9,7 @@ from q2py.astnodes import (
     Assign,
     Binary,
     Cond,
+    Derived,
     Empty,
     Lambda,
     ListLit,
@@ -32,6 +33,7 @@ from q2py.ir import (
     Const,
     Hole,
     IfCond,
+    Iter,
     Lam,
     Lst,
     Qry,
@@ -44,7 +46,7 @@ from q2py.ir import (
     Var,
     VerbRef,
 )
-from q2py.support import PARTIAL_FEATURES, PARTIAL_NOTES
+from q2py.support import PARTIAL_FEATURES, PARTIAL_NOTES, REFUSED_NAMES
 
 _LITERAL_FEATURE = {
     "long": "literal-long",
@@ -62,6 +64,62 @@ _LITERAL_FEATURE = {
 }
 
 _PARTIAL_OPS = {"div-int": "div-int", "mod": "mod"}
+
+_SUPPORTED_VERBS = frozenset(
+    {
+        "til",
+        "count",
+        "sum",
+        "sums",
+        "avg",
+        "min",
+        "max",
+        "first",
+        "last",
+        "reverse",
+        "asc",
+        "desc",
+        "distinct",
+        "where",
+        "enlist",
+        "raze",
+        "abs",
+        "sqrt",
+        "type",
+        "string",
+        "flip",
+        "neg",
+        "not",
+        "null",
+        "prd",
+        "prds",
+        "all",
+        "any",
+        "mins",
+        "maxs",
+        "iasc",
+        "idesc",
+        "floor",
+        "ceiling",
+        "signum",
+        "prev",
+        "next",
+        "fills",
+        "med",
+        "var",
+        "dev",
+        "differ",
+        "group",
+        "cols",
+        "key",
+        "value",
+        "xbar",
+        "rotate",
+        "except",
+        "inter",
+        "union",
+    }
+)
 
 
 @dataclass
@@ -103,7 +161,7 @@ def _lower(node: Node, features: list[str], diags: list[Diagnostic]) -> IR:
     if isinstance(node, Name):
         if node.name == "i":
             features.append("virtual-i")
-        if node.name in {"if", "do", "while", "peach"}:
+        if node.name in REFUSED_NAMES:
             diags.append(unsupported("semantic", f"{node.name} is outside the supported subset", node.line, node.col))
         return Var(node.line, node.col, node.name)
     if isinstance(node, Strand):
@@ -144,6 +202,12 @@ def _lower(node: Node, features: list[str], diags: list[Diagnostic]) -> IR:
     if isinstance(node, Verb):
         _feature_op(node.op, node.adverb, features, diags, node)
         return VerbRef(node.line, node.col, node.op, node.adverb)
+    if isinstance(node, Derived):
+        features.append(node.adverb)
+        if node.adverb == "over" and _is_unary_lambda(node.fn):
+            features.append("converge")
+            _note_partial("converge", node, diags)
+        return Iter(node.line, node.col, _lower(node.fn, features, diags), node.adverb)
     if isinstance(node, Lambda):
         features.append("lambda")
         return Lam(node.line, node.col, list(node.params), [_lower(stmt, features, diags) for stmt in node.body])
@@ -203,8 +267,8 @@ def _feature_op(op: str, adverb: str | None, features: list[str], diags: list[Di
     elif op in {"or", "and", "dot", "cast"}:
         diags.append(unsupported("semantic", f"verb {op} is outside the supported subset", node.line, node.col))
     else:
-        features.append(op if op in {"til", "count", "sum", "sums", "avg", "min", "max", "first", "last", "reverse", "asc", "desc", "distinct", "where", "enlist", "raze", "abs", "sqrt", "type", "string", "flip", "neg", "not", "null"} else "prefix")
-        if op not in {"til", "count", "sum", "sums", "avg", "min", "max", "first", "last", "reverse", "asc", "desc", "distinct", "where", "enlist", "raze", "abs", "sqrt", "type", "string", "flip", "neg", "not", "null", "sub"}:
+        features.append(op if op in _SUPPORTED_VERBS else "prefix")
+        if op not in _SUPPORTED_VERBS and op != "sub":
             diags.append(unsupported("semantic", f"verb {op} is outside the supported subset", node.line, node.col))
     if adverb:
         features.append(adverb)
@@ -233,6 +297,8 @@ def _first_name(node: Node) -> str | None:
 
 
 def _children(node: Node) -> list[Node]:
+    if isinstance(node, Derived):
+        return [node.fn]
     if isinstance(node, (Unary, Return)):
         return [node.arg] if isinstance(node, Unary) else [node.expr]
     if isinstance(node, Binary):

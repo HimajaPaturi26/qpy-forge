@@ -55,6 +55,12 @@ class VerbRef(IR):
 
 
 @dataclass
+class Iter(IR):
+    fn: IR = field(default_factory=IR)
+    adverb: str = ""
+
+
+@dataclass
 class Lam(IR):
     params: list[str] = field(default_factory=list)
     body: list[IR] = field(default_factory=list)

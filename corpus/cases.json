@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "target": 0.9,
   "cases": [
     {
@@ -2248,6 +2248,3144 @@
         "t": "long",
         "v": 2
       }
+    },
+    {
+      "id": "dev-prd",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "prd"
+      ],
+      "source": "prd 2 3 4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Product 2*3*4 is 24.",
+      "expected": {
+        "t": "long",
+        "v": 24
+      }
+    },
+    {
+      "id": "dev-prd-null",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "prd",
+        "literal-null"
+      ],
+      "source": "prd 2 0N 4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "prd treats a flat null as the identity 1.",
+      "expected": {
+        "t": "long",
+        "v": 8
+      }
+    },
+    {
+      "id": "dev-prd-empty",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "prd",
+        "take"
+      ],
+      "source": "prd 0#8 9",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "The empty product is 1.",
+      "expected": {
+        "t": "long",
+        "v": 1
+      }
+    },
+    {
+      "id": "dev-prd-float",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "prd",
+        "literal-float"
+      ],
+      "source": "prd 1.5 2 4.0",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "1.5*2*4 is 12.",
+      "expected": {
+        "t": "float",
+        "v": 12.0
+      }
+    },
+    {
+      "id": "dev-prds",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "prds"
+      ],
+      "source": "prds 2 3 4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Running product.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 6
+          },
+          {
+            "t": "long",
+            "v": 24
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-prds-null",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "prds"
+      ],
+      "source": "prds 2 0N 4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A null is the identity, so the running product stays 2 then becomes 8.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 8
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-prds-lead-null",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "prds"
+      ],
+      "source": "prds 0N 2 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A leading null starts the running product at 1.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 6
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-all-zero",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "all"
+      ],
+      "source": "all 1 1 0 1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "all is 0b when any item is zero.",
+      "expected": {
+        "t": "bool",
+        "v": false
+      }
+    },
+    {
+      "id": "dev-all-nonzero",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "all"
+      ],
+      "source": "all 1 2 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "all is 1b when every item is nonzero.",
+      "expected": {
+        "t": "bool",
+        "v": true
+      }
+    },
+    {
+      "id": "dev-all-null",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "all"
+      ],
+      "source": "all 1 0N 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "all ignores nulls. No zero remains.",
+      "expected": {
+        "t": "bool",
+        "v": true
+      }
+    },
+    {
+      "id": "dev-all-empty",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "all"
+      ],
+      "source": "all 0#9",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "all of an empty list is 1b.",
+      "expected": {
+        "t": "bool",
+        "v": true
+      }
+    },
+    {
+      "id": "dev-all-bool",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "all",
+        "literal-bool"
+      ],
+      "source": "all 101b",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A false boolean makes all false.",
+      "expected": {
+        "t": "bool",
+        "v": false
+      }
+    },
+    {
+      "id": "dev-any-zero",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "any"
+      ],
+      "source": "any 0 0 0",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "any is 0b when every item is zero.",
+      "expected": {
+        "t": "bool",
+        "v": false
+      }
+    },
+    {
+      "id": "dev-any-null",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "any"
+      ],
+      "source": "any 0 0N 4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "any ignores nulls and sees the 4.",
+      "expected": {
+        "t": "bool",
+        "v": true
+      }
+    },
+    {
+      "id": "dev-any-empty",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "any"
+      ],
+      "source": "any 0#9",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "any of an empty list is 0b.",
+      "expected": {
+        "t": "bool",
+        "v": false
+      }
+    },
+    {
+      "id": "dev-any-bool",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "any"
+      ],
+      "source": "any 010b",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "One true boolean makes any true.",
+      "expected": {
+        "t": "bool",
+        "v": true
+      }
+    },
+    {
+      "id": "dev-mins",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "mins"
+      ],
+      "source": "mins 5 3 0N 4 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Running min ignores the null. 4 does not replace 3. 2 does.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 5
+          },
+          {
+            "t": "long",
+            "v": 3
+          },
+          {
+            "t": "long",
+            "v": 3
+          },
+          {
+            "t": "long",
+            "v": 3
+          },
+          {
+            "t": "long",
+            "v": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-maxs",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "maxs"
+      ],
+      "source": "maxs 5 3 0N 4 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Running max ignores the null and stays 5.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 5
+          },
+          {
+            "t": "long",
+            "v": 5
+          },
+          {
+            "t": "long",
+            "v": 5
+          },
+          {
+            "t": "long",
+            "v": 5
+          },
+          {
+            "t": "long",
+            "v": 5
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-mins-lead-null",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "mins"
+      ],
+      "source": "mins 0N 3 1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A leading null stays null until a value arrives.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "null": true
+          },
+          {
+            "t": "long",
+            "v": 3
+          },
+          {
+            "t": "long",
+            "v": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-iasc",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "iasc"
+      ],
+      "source": "iasc 3 1 4 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Indices that sort 3 1 4 2 ascending.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 3
+          },
+          {
+            "t": "long",
+            "v": 0
+          },
+          {
+            "t": "long",
+            "v": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-idesc",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "idesc"
+      ],
+      "source": "idesc 3 1 4 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Indices that sort 3 1 4 2 descending.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 0
+          },
+          {
+            "t": "long",
+            "v": 3
+          },
+          {
+            "t": "long",
+            "v": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-iasc-null",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "iasc"
+      ],
+      "source": "iasc 2 0N 1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Nulls sort first, matching asc.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-iasc-stable",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "iasc"
+      ],
+      "source": "iasc 2 1 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Equal items keep their original order.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 0
+          },
+          {
+            "t": "long",
+            "v": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-iasc-sym",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "iasc",
+        "literal-symbol"
+      ],
+      "source": "iasc `c`a`b",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Symbol grade follows alphabetical order.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-floor",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "floor"
+      ],
+      "source": "floor 4.7",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "floor rounds toward negative infinity.",
+      "expected": {
+        "t": "long",
+        "v": 4
+      }
+    },
+    {
+      "id": "dev-floor-neg",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "floor"
+      ],
+      "source": "floor -4.7",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "floor of -4.7 is -5.",
+      "expected": {
+        "t": "long",
+        "v": -5
+      }
+    },
+    {
+      "id": "dev-floor-int",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "floor"
+      ],
+      "source": "floor 2 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "floor of an integer vector is that vector as longs.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-floor-inf",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "floor"
+      ],
+      "source": "floor 0w",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "floor of positive float infinity is 0W.",
+      "expected": {
+        "t": "long",
+        "v": 9223372036854775807
+      }
+    },
+    {
+      "id": "dev-floor-ninf",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "floor"
+      ],
+      "source": "floor -0w",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "floor of negative float infinity is -0W.",
+      "expected": {
+        "t": "long",
+        "v": -9223372036854775808
+      }
+    },
+    {
+      "id": "dev-ceiling",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "ceiling"
+      ],
+      "source": "ceiling 4.2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "ceiling rounds toward positive infinity.",
+      "expected": {
+        "t": "long",
+        "v": 5
+      }
+    },
+    {
+      "id": "dev-ceiling-neg",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "ceiling"
+      ],
+      "source": "ceiling -4.2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "ceiling of -4.2 is -4.",
+      "expected": {
+        "t": "long",
+        "v": -4
+      }
+    },
+    {
+      "id": "dev-ceiling-whole",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "ceiling"
+      ],
+      "source": "ceiling 2.0",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A whole float ceilings to itself.",
+      "expected": {
+        "t": "long",
+        "v": 2
+      }
+    },
+    {
+      "id": "dev-signum",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "signum"
+      ],
+      "source": "signum -4.2 0 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "signum returns -1, 0, or 1 as longs.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": -1
+          },
+          {
+            "t": "long",
+            "v": 0
+          },
+          {
+            "t": "long",
+            "v": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-signum-null",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "signum"
+      ],
+      "source": "signum 0n",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "signum of a null float is a null long.",
+      "expected": {
+        "t": "long",
+        "null": true
+      }
+    },
+    {
+      "id": "dev-signum-inf",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "signum"
+      ],
+      "source": "signum 0w",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Positive infinity has sign 1.",
+      "expected": {
+        "t": "long",
+        "v": 1
+      }
+    },
+    {
+      "id": "dev-signum-ninf",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "signum"
+      ],
+      "source": "signum -0w",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Negative infinity has sign -1.",
+      "expected": {
+        "t": "long",
+        "v": -1
+      }
+    },
+    {
+      "id": "dev-prev",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "prev"
+      ],
+      "source": "prev 10 20 30",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "prev shifts right and fills the first item with null.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "null": true
+          },
+          {
+            "t": "long",
+            "v": 10
+          },
+          {
+            "t": "long",
+            "v": 20
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-next",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "next"
+      ],
+      "source": "next 10 20 30",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "next shifts left and fills the last item with null.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 20
+          },
+          {
+            "t": "long",
+            "v": 30
+          },
+          {
+            "t": "long",
+            "null": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-fills",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "fills"
+      ],
+      "source": "fills 1 0N 0N 4 0N",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "fills carries the last non-null forward.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 4
+          },
+          {
+            "t": "long",
+            "v": 4
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-fills-lead",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "fills"
+      ],
+      "source": "fills 0N 1 0N",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A leading null has nothing to copy.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "null": true
+          },
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-fills-float",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "fills"
+      ],
+      "source": "fills 1.5 0n 2.5",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Forward fill on floats.",
+      "expected": {
+        "t": "list",
+        "etype": "float",
+        "v": [
+          {
+            "t": "float",
+            "v": 1.5
+          },
+          {
+            "t": "float",
+            "v": 1.5
+          },
+          {
+            "t": "float",
+            "v": 2.5
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-differ",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "differ"
+      ],
+      "source": "differ 1 2 2 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "First item differs. Later items differ when they are not equal to the previous.",
+      "expected": {
+        "t": "list",
+        "etype": "bool",
+        "v": [
+          {
+            "t": "bool",
+            "v": true
+          },
+          {
+            "t": "bool",
+            "v": true
+          },
+          {
+            "t": "bool",
+            "v": false
+          },
+          {
+            "t": "bool",
+            "v": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-differ-sym",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "differ"
+      ],
+      "source": "differ `a`a`b",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "`a equals the previous `a, so that item is 0b.",
+      "expected": {
+        "t": "list",
+        "etype": "bool",
+        "v": [
+          {
+            "t": "bool",
+            "v": true
+          },
+          {
+            "t": "bool",
+            "v": false
+          },
+          {
+            "t": "bool",
+            "v": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-xbar",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "xbar"
+      ],
+      "source": "5 xbar 1 3 8 10",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Round each item down to a multiple of 5.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 0
+          },
+          {
+            "t": "long",
+            "v": 0
+          },
+          {
+            "t": "long",
+            "v": 5
+          },
+          {
+            "t": "long",
+            "v": 10
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-xbar-atom",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "xbar"
+      ],
+      "source": "5 xbar 12",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "12 rounded down to a multiple of 5 is 10.",
+      "expected": {
+        "t": "long",
+        "v": 10
+      }
+    },
+    {
+      "id": "dev-xbar-float",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "xbar"
+      ],
+      "source": "2.5 xbar 0 2.5 5 6",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "6/2.5 is 2.4, which floors to 2, times 2.5 is 5.",
+      "expected": {
+        "t": "list",
+        "etype": "float",
+        "v": [
+          {
+            "t": "float",
+            "v": 0.0
+          },
+          {
+            "t": "float",
+            "v": 2.5
+          },
+          {
+            "t": "float",
+            "v": 5.0
+          },
+          {
+            "t": "float",
+            "v": 5.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-rotate",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "rotate"
+      ],
+      "source": "2 rotate 1 2 3 4 5",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Positive rotate moves items left.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 3
+          },
+          {
+            "t": "long",
+            "v": 4
+          },
+          {
+            "t": "long",
+            "v": 5
+          },
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-rotate-neg",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "rotate"
+      ],
+      "source": "-2 rotate 1 2 3 4 5",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Negative rotate moves items right.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 4
+          },
+          {
+            "t": "long",
+            "v": 5
+          },
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-rotate-zero",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "rotate"
+      ],
+      "source": "0 rotate 8 9 10",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A zero rotate is the identity.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 8
+          },
+          {
+            "t": "long",
+            "v": 9
+          },
+          {
+            "t": "long",
+            "v": 10
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-except",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "except"
+      ],
+      "source": "1 2 2 3 except 2 9",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Drop every item of the left that occurs on the right.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-inter",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "inter"
+      ],
+      "source": "1 2 2 3 inter 2 4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Keep left items that occur on the right, including duplicates.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-union",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "union"
+      ],
+      "source": "1 1 2 union 2 3 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Distinct left items, then new right items.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-union-sym",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "union"
+      ],
+      "source": "`a`b union `b`c",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Symbol union keeps first-seen order.",
+      "expected": {
+        "t": "list",
+        "etype": "symbol",
+        "v": [
+          {
+            "t": "symbol",
+            "v": "a"
+          },
+          {
+            "t": "symbol",
+            "v": "b"
+          },
+          {
+            "t": "symbol",
+            "v": "c"
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-med-odd",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "med"
+      ],
+      "source": "med 1 2 100",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Median of an odd count is the middle value as a float.",
+      "expected": {
+        "t": "float",
+        "v": 2.0
+      }
+    },
+    {
+      "id": "dev-med-even",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "med"
+      ],
+      "source": "med 1 2 3 4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Median of an even count is the mean of the two middle values.",
+      "expected": {
+        "t": "float",
+        "v": 2.5
+      }
+    },
+    {
+      "id": "dev-med-null",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "med"
+      ],
+      "source": "med 0N",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A null has no median.",
+      "expected": {
+        "t": "float",
+        "null": true
+      }
+    },
+    {
+      "id": "dev-var",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "var"
+      ],
+      "source": "var 2 3 4 5",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Sample variance: sum of squared deviations from 3.5, divided by 3.",
+      "expected": {
+        "t": "float",
+        "v": 1.6666666666666667
+      }
+    },
+    {
+      "id": "dev-dev",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "dev"
+      ],
+      "source": "dev 2 3 4 5",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "dev is the square root of the sample variance.",
+      "expected": {
+        "t": "float",
+        "v": 1.2909944487358056
+      }
+    },
+    {
+      "id": "dev-var-short",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "var"
+      ],
+      "source": "var 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Sample variance needs at least two numbers.",
+      "expected": {
+        "t": "float",
+        "null": true
+      }
+    },
+    {
+      "id": "dev-0w",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "literal-long"
+      ],
+      "source": "0W",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "0W is the maximum signed long.",
+      "expected": {
+        "t": "long",
+        "v": 9223372036854775807
+      }
+    },
+    {
+      "id": "dev-neg-0w",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "literal-long"
+      ],
+      "source": "-0W",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "-0W is the minimum signed long.",
+      "expected": {
+        "t": "long",
+        "v": -9223372036854775808
+      }
+    },
+    {
+      "id": "dev-add-inf",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "infix-arith",
+        "literal-float"
+      ],
+      "source": "3+0w",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A long plus positive float infinity is positive infinity.",
+      "expected": {
+        "t": "float",
+        "v": "inf"
+      }
+    },
+    {
+      "id": "dev-add-null-float",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "infix-arith",
+        "literal-null"
+      ],
+      "source": "0n+4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A null float absorbs addition.",
+      "expected": {
+        "t": "float",
+        "null": true
+      }
+    },
+    {
+      "id": "dev-null-int",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "null",
+        "literal-null"
+      ],
+      "source": "null 0Ni",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "0Ni is the null int.",
+      "expected": {
+        "t": "bool",
+        "v": true
+      }
+    },
+    {
+      "id": "dev-type-int-null",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "type"
+      ],
+      "source": "type 0Ni",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "An int atom has type -6h.",
+      "expected": {
+        "t": "short",
+        "v": -6
+      }
+    },
+    {
+      "id": "dev-type-short-null",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "type"
+      ],
+      "source": "type 0Nh",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A short atom has type -5h.",
+      "expected": {
+        "t": "short",
+        "v": -5
+      }
+    },
+    {
+      "id": "dev-type-float",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "type"
+      ],
+      "source": "type 1.5",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A float atom has type -9h.",
+      "expected": {
+        "t": "short",
+        "v": -9
+      }
+    },
+    {
+      "id": "dev-group",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "group"
+      ],
+      "source": "group 1 2 1 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "group maps each distinct item to the indices where it occurs, in first-seen order.",
+      "expected": {
+        "t": "dict",
+        "keys": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 3
+          }
+        ],
+        "vals": [
+          {
+            "t": "list",
+            "etype": "long",
+            "v": [
+              {
+                "t": "long",
+                "v": 0
+              },
+              {
+                "t": "long",
+                "v": 2
+              }
+            ]
+          },
+          {
+            "t": "list",
+            "etype": "long",
+            "v": [
+              {
+                "t": "long",
+                "v": 1
+              }
+            ]
+          },
+          {
+            "t": "list",
+            "etype": "long",
+            "v": [
+              {
+                "t": "long",
+                "v": 3
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-group-sym",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "group"
+      ],
+      "source": "group `a`b`a",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Symbol group keeps first-seen keys.",
+      "expected": {
+        "t": "dict",
+        "keys": [
+          {
+            "t": "symbol",
+            "v": "a"
+          },
+          {
+            "t": "symbol",
+            "v": "b"
+          }
+        ],
+        "vals": [
+          {
+            "t": "list",
+            "etype": "long",
+            "v": [
+              {
+                "t": "long",
+                "v": 0
+              },
+              {
+                "t": "long",
+                "v": 2
+              }
+            ]
+          },
+          {
+            "t": "list",
+            "etype": "long",
+            "v": [
+              {
+                "t": "long",
+                "v": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-cols",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "cols",
+        "table"
+      ],
+      "source": "t:([] a:1 2; b:3 4)\ncols t",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "cols returns the column names as symbols.",
+      "expected": {
+        "t": "list",
+        "etype": "symbol",
+        "v": [
+          {
+            "t": "symbol",
+            "v": "a"
+          },
+          {
+            "t": "symbol",
+            "v": "b"
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-key-dict",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "key",
+        "dict"
+      ],
+      "source": "key `a`b!1 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "key of a dictionary is its key list.",
+      "expected": {
+        "t": "list",
+        "etype": "symbol",
+        "v": [
+          {
+            "t": "symbol",
+            "v": "a"
+          },
+          {
+            "t": "symbol",
+            "v": "b"
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-value-dict",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "value",
+        "dict"
+      ],
+      "source": "value `c`d!10 20",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "value of a dictionary is its value list.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 10
+          },
+          {
+            "t": "long",
+            "v": 20
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-key-keyed",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "key",
+        "keyed-table"
+      ],
+      "source": "key ([k:1 2] v:10 20)",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "key of a keyed table is the table of key columns.",
+      "expected": {
+        "t": "table",
+        "keys": [],
+        "cols": [
+          "k"
+        ],
+        "types": {
+          "k": "long"
+        },
+        "rows": [
+          {
+            "k": {
+              "t": "long",
+              "v": 1
+            }
+          },
+          {
+            "k": {
+              "t": "long",
+              "v": 2
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-key-unkeyed",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "key",
+        "table"
+      ],
+      "source": "key ([] a:7 8)",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "An unkeyed table has an empty symbol vector of keys.",
+      "expected": {
+        "t": "list",
+        "etype": "symbol",
+        "v": []
+      }
+    },
+    {
+      "id": "dev-flip",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "flip",
+        "dict"
+      ],
+      "source": "flip `a`b!(1 2;3 4)",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "flip of a column dictionary builds one row per index.",
+      "expected": {
+        "t": "table",
+        "keys": [],
+        "cols": [
+          "a",
+          "b"
+        ],
+        "types": {
+          "a": "long",
+          "b": "long"
+        },
+        "rows": [
+          {
+            "a": {
+              "t": "long",
+              "v": 1
+            },
+            "b": {
+              "t": "long",
+              "v": 3
+            }
+          },
+          {
+            "a": {
+              "t": "long",
+              "v": 2
+            },
+            "b": {
+              "t": "long",
+              "v": 4
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-keyed",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "keyed-table"
+      ],
+      "source": "([k:1 2] v:10 20)",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A keyed table literal keeps the names inside the brackets as keys.",
+      "expected": {
+        "t": "keyed",
+        "keys": [
+          "k"
+        ],
+        "cols": [
+          "k",
+          "v"
+        ],
+        "types": {
+          "k": "long",
+          "v": "long"
+        },
+        "rows": [
+          {
+            "k": {
+              "t": "long",
+              "v": 1
+            },
+            "v": {
+              "t": "long",
+              "v": 10
+            }
+          },
+          {
+            "k": {
+              "t": "long",
+              "v": 2
+            },
+            "v": {
+              "t": "long",
+              "v": 20
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-virtual-i",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "virtual-i",
+        "select"
+      ],
+      "source": "t:([] a:10 20)\nselect i from t where i=1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "where does not renumber i. The surviving row keeps index 1.",
+      "expected": {
+        "t": "table",
+        "keys": [],
+        "cols": [
+          "i"
+        ],
+        "types": {
+          "i": "long"
+        },
+        "rows": [
+          {
+            "i": {
+              "t": "long",
+              "v": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-select-avg",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "select",
+        "avg"
+      ],
+      "source": "t:([] a:1 2 3)\nselect avg a from t",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "avg of 1 2 3 is 2.",
+      "expected": {
+        "t": "table",
+        "keys": [],
+        "cols": [
+          "a"
+        ],
+        "types": {
+          "a": "float"
+        },
+        "rows": [
+          {
+            "a": {
+              "t": "float",
+              "v": 2.0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-select-min",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "select",
+        "min"
+      ],
+      "source": "t:([] a:2 4 6)\nselect min a from t",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "min of 2 4 6 is 2.",
+      "expected": {
+        "t": "table",
+        "keys": [],
+        "cols": [
+          "a"
+        ],
+        "types": {
+          "a": "long"
+        },
+        "rows": [
+          {
+            "a": {
+              "t": "long",
+              "v": 2
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-select-max",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "select",
+        "max"
+      ],
+      "source": "t:([] a:2 4 6)\nselect max a from t",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "max of 2 4 6 is 6.",
+      "expected": {
+        "t": "table",
+        "keys": [],
+        "cols": [
+          "a"
+        ],
+        "types": {
+          "a": "long"
+        },
+        "rows": [
+          {
+            "a": {
+              "t": "long",
+              "v": 6
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-select-prd",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "select",
+        "prd"
+      ],
+      "source": "t:([] a:2 4 6)\nselect prd a from t",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "prd of 2 4 6 is 48.",
+      "expected": {
+        "t": "table",
+        "keys": [],
+        "cols": [
+          "a"
+        ],
+        "types": {
+          "a": "long"
+        },
+        "rows": [
+          {
+            "a": {
+              "t": "long",
+              "v": 48
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-select-count-by",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "select",
+        "by",
+        "count"
+      ],
+      "source": "t:([] b:`x`y`x; a:1 2 3)\nselect count a by b from t",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "count by preserves first-seen group order. x occurs twice.",
+      "expected": {
+        "t": "keyed",
+        "keys": [
+          "b"
+        ],
+        "cols": [
+          "b",
+          "a"
+        ],
+        "types": {
+          "b": "symbol",
+          "a": "long"
+        },
+        "rows": [
+          {
+            "b": {
+              "t": "symbol",
+              "v": "x"
+            },
+            "a": {
+              "t": "long",
+              "v": 2
+            }
+          },
+          {
+            "b": {
+              "t": "symbol",
+              "v": "y"
+            },
+            "a": {
+              "t": "long",
+              "v": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-select-floor",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "select",
+        "floor"
+      ],
+      "source": "t:([] a:1.2 2.8)\nselect floor a from t",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "floor is applied to the column vector.",
+      "expected": {
+        "t": "table",
+        "keys": [],
+        "cols": [
+          "a"
+        ],
+        "types": {
+          "a": "long"
+        },
+        "rows": [
+          {
+            "a": {
+              "t": "long",
+              "v": 1
+            }
+          },
+          {
+            "a": {
+              "t": "long",
+              "v": 2
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-delete-col",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "delete"
+      ],
+      "source": "t:([] a:1 2; b:3 4)\ndelete b from t",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "delete of a column name drops that column.",
+      "expected": {
+        "t": "table",
+        "keys": [],
+        "cols": [
+          "a"
+        ],
+        "types": {
+          "a": "long"
+        },
+        "rows": [
+          {
+            "a": {
+              "t": "long",
+              "v": 1
+            }
+          },
+          {
+            "a": {
+              "t": "long",
+              "v": 2
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-update-where",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "update"
+      ],
+      "source": "t:([] a:1 2 3)\nupdate a:a*10 from t where a>1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "update where changes only the rows that pass the filter.",
+      "expected": {
+        "t": "table",
+        "keys": [],
+        "cols": [
+          "a"
+        ],
+        "types": {
+          "a": "long"
+        },
+        "rows": [
+          {
+            "a": {
+              "t": "long",
+              "v": 1
+            }
+          },
+          {
+            "a": {
+              "t": "long",
+              "v": 20
+            }
+          },
+          {
+            "a": {
+              "t": "long",
+              "v": 30
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-exec-one",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "exec"
+      ],
+      "source": "t:([] a:4 5)\nexec a from t",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "exec of one column returns that vector.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 4
+          },
+          {
+            "t": "long",
+            "v": 5
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-each-floor",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "each",
+        "floor"
+      ],
+      "source": "floor each 1.2 3.8",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "each applies floor to every item.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-over-mul",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "over",
+        "lambda"
+      ],
+      "source": "({x*y}/)1 2 3 4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Over multiplies 1*2*3*4.",
+      "expected": {
+        "t": "long",
+        "v": 24
+      }
+    },
+    {
+      "id": "dev-lambda-prd",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "lambda",
+        "prd"
+      ],
+      "source": "f:{prd x}\nf 2 5",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A named function can call prd.",
+      "expected": {
+        "t": "long",
+        "v": 10
+      }
+    },
+    {
+      "id": "dev-proj-hole",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "projection",
+        "lambda"
+      ],
+      "source": "{x+y}[;10] 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "The elided first argument is filled by the later call.",
+      "expected": {
+        "t": "long",
+        "v": 13
+      }
+    },
+    {
+      "id": "dev-bool-add",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "infix-arith",
+        "literal-bool"
+      ],
+      "source": "1b+1b",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Boolean addition promotes to int.",
+      "expected": {
+        "t": "int",
+        "v": 2
+      }
+    },
+    {
+      "id": "dev-float-lt",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "infix-compare"
+      ],
+      "source": "1.5<2.5",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Float less-than.",
+      "expected": {
+        "t": "bool",
+        "v": true
+      }
+    },
+    {
+      "id": "dev-date-roll",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "infix-arith",
+        "literal-date"
+      ],
+      "source": "2020.12.31+1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Adding 1 to a date moves one day.",
+      "expected": {
+        "t": "date",
+        "v": "2021-01-01"
+      }
+    },
+    {
+      "id": "dev-sym-in",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "in",
+        "literal-symbol"
+      ],
+      "source": "`b in `a`b`c",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A symbol is in a symbol vector when one item matches.",
+      "expected": {
+        "t": "bool",
+        "v": true
+      }
+    },
+    {
+      "id": "dev-count-dict",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "count",
+        "dict"
+      ],
+      "source": "count `a`b!1 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A dictionary's count is its number of entries.",
+      "expected": {
+        "t": "long",
+        "v": 2
+      }
+    },
+    {
+      "id": "dev-reverse-sym",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "reverse"
+      ],
+      "source": "reverse `a`b`c",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "reverse keeps the symbol type.",
+      "expected": {
+        "t": "list",
+        "etype": "symbol",
+        "v": [
+          {
+            "t": "symbol",
+            "v": "c"
+          },
+          {
+            "t": "symbol",
+            "v": "b"
+          },
+          {
+            "t": "symbol",
+            "v": "a"
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-string-long",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "string"
+      ],
+      "source": "string 42",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "string of a long is its decimal digits.",
+      "expected": {
+        "t": "list",
+        "etype": "char",
+        "v": [
+          {
+            "t": "char",
+            "v": "4"
+          },
+          {
+            "t": "char",
+            "v": "2"
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-sqrt-zero",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "sqrt"
+      ],
+      "source": "sqrt 0",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "sqrt of zero is zero.",
+      "expected": {
+        "t": "float",
+        "v": 0.0
+      }
+    },
+    {
+      "id": "dev-abs-float",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "abs"
+      ],
+      "source": "abs -1.5",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "abs of a negative float is the positive float.",
+      "expected": {
+        "t": "float",
+        "v": 1.5
+      }
+    },
+    {
+      "id": "dev-mixed-list",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "list"
+      ],
+      "source": "(1;2.0;`a)",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A semicolon list keeps mixed types.",
+      "expected": {
+        "t": "list",
+        "etype": "general",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "float",
+            "v": 2.0
+          },
+          {
+            "t": "symbol",
+            "v": "a"
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-nested-count",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "count",
+        "list"
+      ],
+      "source": "count (1 2;3 4)",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "count of a nested list is the number of items, not the flattened length.",
+      "expected": {
+        "t": "long",
+        "v": 2
+      }
+    },
+    {
+      "id": "dev-index-nested",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "list",
+        "apply"
+      ],
+      "source": "(1 2;3 4)[1]",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Indexing a nested list returns that item.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 3
+          },
+          {
+            "t": "long",
+            "v": 4
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-prev-sym",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "prev"
+      ],
+      "source": "prev `a`b",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "prev of symbols uses the null symbol.",
+      "expected": {
+        "t": "list",
+        "etype": "symbol",
+        "v": [
+          {
+            "t": "symbol",
+            "null": true
+          },
+          {
+            "t": "symbol",
+            "v": "a"
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-comment-block",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "comment",
+        "infix-arith"
+      ],
+      "source": "/\n1+1\n\\\n2+2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A block comment from a lone slash to a lone backslash is skipped.",
+      "expected": {
+        "t": "long",
+        "v": 4
+      }
+    },
+    {
+      "id": "dev-script-assign",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "script",
+        "assign"
+      ],
+      "source": "a:10\nb:a+5\nb*2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Later statements see earlier assignments. 15*2 is 30.",
+      "expected": {
+        "t": "long",
+        "v": 30
+      }
+    },
+    {
+      "id": "dev-not-zero",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "not"
+      ],
+      "source": "not 0 5",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "not is 1b only for zero.",
+      "expected": {
+        "t": "list",
+        "etype": "bool",
+        "v": [
+          {
+            "t": "bool",
+            "v": true
+          },
+          {
+            "t": "bool",
+            "v": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-null-vector",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "null"
+      ],
+      "source": "null 1 0N 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "null is item-wise.",
+      "expected": {
+        "t": "list",
+        "etype": "bool",
+        "v": [
+          {
+            "t": "bool",
+            "v": false
+          },
+          {
+            "t": "bool",
+            "v": true
+          },
+          {
+            "t": "bool",
+            "v": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-where-empty",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "where"
+      ],
+      "source": "where 000b",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "where of no true items is an empty index list.",
+      "expected": {
+        "t": "list",
+        "etype": "general",
+        "v": []
+      }
+    },
+    {
+      "id": "dev-take-neg-atom",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "take"
+      ],
+      "source": "-1#10 20 30",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Negative take keeps the tail.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 30
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-drop-tail",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "drop"
+      ],
+      "source": "-1_10 20 30",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Negative drop removes the tail.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 10
+          },
+          {
+            "t": "long",
+            "v": 20
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-join-atom",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "join"
+      ],
+      "source": "1,2 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Join enlists an atom on the left.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-find-first",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "find"
+      ],
+      "source": "1 2 2 3?2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "find returns the first index.",
+      "expected": {
+        "t": "long",
+        "v": 1
+      }
+    },
+    {
+      "id": "dev-match-list-no",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "match"
+      ],
+      "source": "1 2~1 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Lists match only when every item matches.",
+      "expected": {
+        "t": "bool",
+        "v": false
+      }
+    },
+    {
+      "id": "dev-fill-atom",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "fill"
+      ],
+      "source": "7^0N",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Fill replaces a null atom.",
+      "expected": {
+        "t": "long",
+        "v": 7
+      }
+    },
+    {
+      "id": "dev-cond-mid",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "cond"
+      ],
+      "source": "$[0b;1;1b;2;3]",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "The first true test selects its branch.",
+      "expected": {
+        "t": "long",
+        "v": 2
+      }
+    },
+    {
+      "id": "dev-lambda-xyz",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "lambda"
+      ],
+      "source": "{x+y+z}[1;2;3]",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "An implicit three-argument lambda uses x, y, and z.",
+      "expected": {
+        "t": "long",
+        "v": 6
+      }
+    },
+    {
+      "id": "dev-each-left-sub",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "each-left"
+      ],
+      "source": "10 20-\\:1 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Each left item is subtracted by the whole right list.",
+      "expected": {
+        "t": "list",
+        "etype": "general",
+        "v": [
+          {
+            "t": "list",
+            "etype": "long",
+            "v": [
+              {
+                "t": "long",
+                "v": 9
+              },
+              {
+                "t": "long",
+                "v": 8
+              }
+            ]
+          },
+          {
+            "t": "list",
+            "etype": "long",
+            "v": [
+              {
+                "t": "long",
+                "v": 19
+              },
+              {
+                "t": "long",
+                "v": 18
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-scan-mul",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "scan",
+        "lambda"
+      ],
+      "source": "({x*y}\\)1 2 3 4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Scan keeps each running product.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 6
+          },
+          {
+            "t": "long",
+            "v": 24
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-enlist-sym",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "enlist"
+      ],
+      "source": "enlist `a",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "enlist of a symbol is a one-item symbol vector.",
+      "expected": {
+        "t": "list",
+        "etype": "symbol",
+        "v": [
+          {
+            "t": "symbol",
+            "v": "a"
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-distinct-sym",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "distinct"
+      ],
+      "source": "distinct `a`b`a",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "distinct keeps the first of each symbol.",
+      "expected": {
+        "t": "list",
+        "etype": "symbol",
+        "v": [
+          {
+            "t": "symbol",
+            "v": "a"
+          },
+          {
+            "t": "symbol",
+            "v": "b"
+          }
+        ]
+      }
+    },
+    {
+      "id": "dev-desc-sym",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "desc"
+      ],
+      "source": "desc `a`c`b",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "desc sorts symbols reverse alphabetically.",
+      "expected": {
+        "t": "list",
+        "etype": "symbol",
+        "v": [
+          {
+            "t": "symbol",
+            "v": "c"
+          },
+          {
+            "t": "symbol",
+            "v": "b"
+          },
+          {
+            "t": "symbol",
+            "v": "a"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cov-and",
+      "split": "coverage",
+      "support": "unsupported",
+      "features": [
+        "and"
+      ],
+      "source": "2&3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "The & verb is refused.",
+      "expect_support": "unsupported"
+    },
+    {
+      "id": "cov-cast",
+      "split": "coverage",
+      "support": "unsupported",
+      "features": [
+        "cast"
+      ],
+      "source": "\"i\"$10",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Cast with $ is refused.",
+      "expect_support": "unsupported"
+    },
+    {
+      "id": "cov-dot",
+      "split": "coverage",
+      "support": "unsupported",
+      "features": [
+        "dot"
+      ],
+      "source": "1 2 3 . 0",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Dot apply is refused.",
+      "expect_support": "unsupported"
+    },
+    {
+      "id": "cov-peach",
+      "split": "coverage",
+      "support": "unsupported",
+      "features": [
+        "peach"
+      ],
+      "source": "peach 1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "peach is refused.",
+      "expect_support": "unsupported"
+    },
+    {
+      "id": "cov-if",
+      "split": "coverage",
+      "support": "unsupported",
+      "features": [
+        "if"
+      ],
+      "source": "if 1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "if is refused.",
+      "expect_support": "unsupported"
+    },
+    {
+      "id": "cov-do",
+      "split": "coverage",
+      "support": "unsupported",
+      "features": [
+        "do"
+      ],
+      "source": "do 1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "do is refused.",
+      "expect_support": "unsupported"
+    },
+    {
+      "id": "cov-while",
+      "split": "coverage",
+      "support": "unsupported",
+      "features": [
+        "while"
+      ],
+      "source": "while 1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "while is refused.",
+      "expect_support": "unsupported"
+    },
+    {
+      "id": "cov-roll",
+      "split": "coverage",
+      "support": "unsupported",
+      "features": [
+        "find"
+      ],
+      "source": "1?2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Atom roll is refused.",
+      "expect_support": "unsupported"
+    },
+    {
+      "id": "cov-system",
+      "split": "coverage",
+      "support": "unsupported",
+      "features": [
+        "system"
+      ],
+      "source": "system \"ls\"",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "system is refused.",
+      "expect_support": "unsupported"
+    },
+    {
+      "id": "cov-read0",
+      "split": "coverage",
+      "support": "unsupported",
+      "features": [
+        "read0"
+      ],
+      "source": "read0 `data",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "read0 is refused.",
+      "expect_support": "unsupported"
+    },
+    {
+      "id": "cov-hopen",
+      "split": "coverage",
+      "support": "unsupported",
+      "features": [
+        "hopen"
+      ],
+      "source": "hopen `host",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "hopen is refused.",
+      "expect_support": "unsupported"
+    },
+    {
+      "id": "cov-eval",
+      "split": "coverage",
+      "support": "unsupported",
+      "features": [
+        "eval"
+      ],
+      "source": "eval 1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "eval is refused.",
+      "expect_support": "unsupported"
+    },
+    {
+      "id": "cov-load",
+      "split": "coverage",
+      "support": "unsupported",
+      "features": [
+        "load"
+      ],
+      "source": "load `data",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "load is refused.",
+      "expect_support": "unsupported"
+    },
+    {
+      "id": "cov-save",
+      "split": "coverage",
+      "support": "unsupported",
+      "features": [
+        "save"
+      ],
+      "source": "save `data",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "save is refused.",
+      "expect_support": "unsupported"
+    },
+    {
+      "id": "cov-reval",
+      "split": "coverage",
+      "support": "unsupported",
+      "features": [
+        "reval"
+      ],
+      "source": "reval 1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "reval is refused.",
+      "expect_support": "unsupported"
+    },
+    {
+      "id": "cov-mod",
+      "split": "coverage",
+      "support": "partial",
+      "features": [
+        "mod"
+      ],
+      "source": "7 mod 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "7 divided by 3 leaves remainder 1. mod stays partial because negatives are domain errors.",
+      "expected": {
+        "t": "long",
+        "v": 1
+      }
+    },
+    {
+      "id": "cov-div-seven",
+      "split": "coverage",
+      "support": "partial",
+      "features": [
+        "div-int"
+      ],
+      "source": "7 div 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Integer division of 7 by 3 is 2.",
+      "expected": {
+        "t": "long",
+        "v": 2
+      }
+    },
+    {
+      "id": "cov-div-neg",
+      "split": "coverage",
+      "support": "partial",
+      "features": [
+        "div-int"
+      ],
+      "source": "-5 div 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Negative div is a domain error in this subset.",
+      "expected_signal": "domain"
+    },
+    {
+      "id": "cov-xbar-neg",
+      "split": "coverage",
+      "support": "supported",
+      "features": [
+        "xbar"
+      ],
+      "source": "-5 xbar 10",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A nonpositive xbar size is a domain error.",
+      "expected_signal": "domain"
+    },
+    {
+      "id": "cov-value-string",
+      "split": "coverage",
+      "support": "supported",
+      "features": [
+        "value"
+      ],
+      "source": "value \"1+1\"",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "value is implemented for dictionaries. A character vector is refused at runtime.",
+      "expected_signal": "unsupported"
+    },
+    {
+      "id": "cov-sqrt-neg",
+      "split": "coverage",
+      "support": "supported",
+      "features": [
+        "sqrt"
+      ],
+      "source": "sqrt -1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "sqrt of a negative number is a domain error.",
+      "expected_signal": "domain"
     }
   ]
 }

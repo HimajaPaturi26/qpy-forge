@@ -1,11 +1,11 @@
 const sections = [
   {
     title: "What is translated",
-    body: "Long and float arithmetic, booleans, chars, symbols, dates, lists, dictionaries, simple tables, assignment, lambdas without nested closures, projections, conditionals, the each family, over and scan, and a small select/exec/update/delete subset. The full list is in docs/supported-constructs.md.",
+    body: "Long and float arithmetic, booleans including 01b vectors, chars, symbols, dates, nulls and infinities, lists, dictionaries, simple tables, assignment, lambdas without nested closures, projections, conditionals, the each family, over and scan (including a parenthesized lambda), reductions such as prd, med, and var, and a small select/exec/update/delete subset. The full list is in docs/supported-constructs.md.",
   },
   {
     title: "What is refused",
-    body: "Or and and, cast, peach, if/do/while, atom roll and deal, and any syntax the parser does not recognize. A refusal leaves the Python field empty.",
+    body: "Or and and, cast, dot amend, peach, if/do/while, system, read0, hopen, eval, load, save, atom roll and deal, and any syntax the parser does not recognize. A refusal leaves the Python field empty.",
   },
   {
     title: "Partial",

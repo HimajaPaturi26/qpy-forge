@@ -7,7 +7,7 @@ Semantic accuracy is computed only on holdout cases whose declared support is
 from __future__ import annotations
 
 TARGET = 0.90
-CORPUS_VERSION = "1.0.0"
+CORPUS_VERSION = "1.1.0"
 
 # Constructs the engine claims to translate with q-equivalent results.
 SUPPORTED_FEATURES: frozenset[str] = frozenset(
@@ -65,6 +65,33 @@ SUPPORTED_FEATURES: frozenset[str] = frozenset(
         "type",
         "string",
         "flip",
+        "prd",
+        "prds",
+        "all",
+        "any",
+        "mins",
+        "maxs",
+        "iasc",
+        "idesc",
+        "floor",
+        "ceiling",
+        "signum",
+        "prev",
+        "next",
+        "fills",
+        "med",
+        "var",
+        "dev",
+        "differ",
+        "group",
+        "cols",
+        "key",
+        "value",
+        "xbar",
+        "rotate",
+        "except",
+        "inter",
+        "union",
         "each",
         "each-left",
         "each-right",
@@ -94,6 +121,43 @@ PARTIAL_FEATURES: frozenset[str] = frozenset(
         "mod",
         "converge",
     }
+)
+
+# Names that parse as variables and are refused before code generation.
+REFUSED_NAMES: frozenset[str] = frozenset(
+    {
+        "if",
+        "do",
+        "while",
+        "peach",
+        "system",
+        "read0",
+        "hopen",
+        "hclose",
+        "eval",
+        "load",
+        "save",
+        "reval",
+    }
+)
+
+# Constructs the engine refuses on purpose. This is a registry, not a score.
+DOCUMENTED_UNSUPPORTED: tuple[tuple[str, str], ...] = (
+    ("or", "The | verb is refused. No Python is emitted."),
+    ("and", "The & verb is refused. No Python is emitted."),
+    ("dot", "Amend and general dot-apply are refused."),
+    ("cast", "$ cast is refused. $[cond;then;else] remains supported."),
+    ("peach", "Parallel each is refused."),
+    ("if", "if is refused. $[...] is the supported conditional."),
+    ("do", "do is refused."),
+    ("while", "while is refused."),
+    ("roll-deal", "Atom ? is non-deterministic and refused."),
+    ("system", "system is refused."),
+    ("read0", "read0 is refused."),
+    ("hopen", "hopen and hclose are refused."),
+    ("eval", "eval is refused."),
+    ("load-save", "load and save are refused."),
+    ("composition", "Function composition is not in this subset."),
 )
 
 PARTIAL_NOTES: dict[str, str] = {

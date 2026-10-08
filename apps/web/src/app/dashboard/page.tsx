@@ -6,11 +6,12 @@ import { formatRate } from "@/lib/format";
 import { api } from "@/lib/api";
 import type { MetricsReport } from "@/lib/types";
 
-function Metric({ label, value }: { label: string; value: string }) {
+function Metric({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
     <article className="rounded-lg border border-line p-4">
       <p className="text-xs uppercase tracking-wide text-muted">{label}</p>
       <p className="mt-2 text-2xl font-semibold tabular-nums">{value}</p>
+      {hint ? <p className="mt-1 text-xs text-muted">{hint}</p> : null}
     </article>
   );
 }
@@ -63,7 +64,11 @@ export default function DashboardPage() {
       {report ? (
         <>
           <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <Metric label="Semantic accuracy" value={formatRate(report.semantic_accuracy)} />
+            <Metric
+              label="Semantic accuracy"
+              value={formatRate(report.semantic_accuracy)}
+              hint={`${report.successes}/${report.sample_size} supported holdout · corpus ${report.corpus_version}`}
+            />
             <Metric label="Wilson 95% interval" value={`${formatRate(report.wilson_low)} – ${formatRate(report.wilson_high)}`} />
             <Metric label="Target" value={formatRate(report.target)} />
             <Metric label="Target met" value={report.target_met ? "Yes" : "No"} />
@@ -109,7 +114,78 @@ export default function DashboardPage() {
             </section>
           ) : null}
           <section>
-            <h2 className="text-lg font-medium">Construct coverage</h2>
+            <h2 className="text-lg font-medium">Corpus coverage</h2>
+            <p className="mt-1 text-sm text-muted">
+              Counts are cases in corpus {report.corpus_version} ({report.corpus_hash}). The accuracy figure above uses
+              only the supported holdout. Dev cases exercise newer constructs and are not part of that denominator.
+            </p>
+            <dl className="mt-3 grid gap-3 sm:grid-cols-4">
+              <div className="rounded-lg border border-line p-3">
+                <dt className="text-xs uppercase tracking-wide text-muted">Total</dt>
+                <dd className="mt-1 text-xl tabular-nums">{report.corpus_counts.all}</dd>
+              </div>
+              <div className="rounded-lg border border-line p-3">
+                <dt className="text-xs uppercase tracking-wide text-muted">Holdout</dt>
+                <dd className="mt-1 text-xl tabular-nums">{report.corpus_counts.holdout}</dd>
+              </div>
+              <div className="rounded-lg border border-line p-3">
+                <dt className="text-xs uppercase tracking-wide text-muted">Dev</dt>
+                <dd className="mt-1 text-xl tabular-nums">{report.corpus_counts.dev}</dd>
+              </div>
+              <div className="rounded-lg border border-line p-3">
+                <dt className="text-xs uppercase tracking-wide text-muted">Coverage</dt>
+                <dd className="mt-1 text-xl tabular-nums">{report.corpus_counts.coverage}</dd>
+              </div>
+            </dl>
+            <p className="mt-3 text-sm text-muted">
+              Dev semantic accuracy {formatRate(report.dev_measurement.semantic_accuracy)} on{" "}
+              {report.dev_measurement.successes}/{report.dev_measurement.sample_size} supported dev cases. Wilson{" "}
+              {formatRate(report.dev_measurement.wilson_low)}–{formatRate(report.dev_measurement.wilson_high)}. Runtime
+              returned a value {formatRate(report.dev_measurement.runtime_success_rate)}. Value match{" "}
+              {formatRate(report.dev_measurement.value_match_rate)} ({report.dev_measurement.value_sample_size}). Signal
+              match {formatRate(report.dev_measurement.signal_match_rate)} ({report.dev_measurement.signal_sample_size}).
+            </p>
+          </section>
+          <section>
+            <h2 className="text-lg font-medium">Construct registry</h2>
+            <p className="mt-1 text-sm text-muted">
+              Supported, partial, and unsupported are the documented registry. They are not the holdout accuracy.
+            </p>
+            <div className="mt-3 grid gap-4 lg:grid-cols-3">
+              <div>
+                <h3 className="text-sm font-medium">Supported ({report.registry.supported.length})</h3>
+                <ul className="mt-2 max-h-64 space-y-1 overflow-auto text-sm">
+                  {report.registry.supported.map((feature) => (
+                    <li key={feature}>{feature}</li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-sm font-medium">Partial ({report.registry.partial.length})</h3>
+                <ul className="mt-2 max-h-64 space-y-2 overflow-auto text-sm">
+                  {report.registry.partial.map((item) => (
+                    <li key={item.feature}>
+                      <span className="font-medium">{item.feature}</span>
+                      <span className="block text-muted">{item.note}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-sm font-medium">Unsupported ({report.registry.unsupported.length})</h3>
+                <ul className="mt-2 max-h-64 space-y-2 overflow-auto text-sm">
+                  {report.registry.unsupported.map((item) => (
+                    <li key={item.feature}>
+                      <span className="font-medium">{item.feature}</span>
+                      <span className="block text-muted">{item.note}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h2 className="text-lg font-medium">Holdout construct coverage</h2>
             <p className="mt-1 text-sm text-muted">
               Features are those the translator recorded on each supported holdout case, not the author tags in the
               corpus file.

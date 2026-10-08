@@ -69,6 +69,30 @@ export type ConstructMetric = {
   rate: number | null;
 };
 
+export type RegistryEntry = {
+  feature: string;
+  note: string;
+};
+
+export type SplitMeasurement = {
+  split: string;
+  sample_size: number;
+  successes: number;
+  semantic_accuracy: number | null;
+  wilson_low: number;
+  wilson_high: number;
+  parse_rate: number | null;
+  translation_rate: number | null;
+  compile_rate: number | null;
+  runtime_success_rate: number | null;
+  value_match_rate: number | null;
+  value_sample_size: number;
+  value_successes: number;
+  signal_match_rate: number | null;
+  signal_sample_size: number;
+  signal_successes: number;
+};
+
 export type MetricsReport = {
   corpus_version: string;
   corpus_hash: string;
@@ -96,6 +120,12 @@ export type MetricsReport = {
   oracle_match_rate: number | null;
   oracle: OracleStatus;
   constructs: ConstructMetric[];
+  registry: {
+    supported: string[];
+    partial: RegistryEntry[];
+    unsupported: RegistryEntry[];
+  };
+  dev_measurement: SplitMeasurement;
   failure_categories: Array<{ category: string; count: number }>;
   top_failures: Array<{
     id: string;
