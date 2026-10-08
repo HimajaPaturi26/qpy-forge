@@ -43,6 +43,7 @@ SAFE_RUNTIME_NAMES: frozenset[str] = frozenset(
         "q_all",
         "q_any",
         "q_avg",
+        "q_cast",
         "q_ceiling",
         "q_cols",
         "q_cond",

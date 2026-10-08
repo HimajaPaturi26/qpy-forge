@@ -7,7 +7,7 @@ Semantic accuracy is computed only on holdout cases whose declared support is
 from __future__ import annotations
 
 TARGET = 0.90
-CORPUS_VERSION = "1.5.0"
+CORPUS_VERSION = "1.6.0"
 
 # Constructs the engine claims to translate with q-equivalent results.
 SUPPORTED_FEATURES: frozenset[str] = frozenset(
@@ -97,6 +97,7 @@ SUPPORTED_FEATURES: frozenset[str] = frozenset(
         "mod",
         "or",
         "and",
+        "cast",
         "each",
         "each-left",
         "each-right",
@@ -146,7 +147,6 @@ REFUSED_NAMES: frozenset[str] = frozenset(
 # Constructs the engine refuses on purpose. This is a registry, not a score.
 DOCUMENTED_UNSUPPORTED: tuple[tuple[str, str], ...] = (
     ("dot", "Amend and general dot-apply are refused."),
-    ("cast", "$ cast is refused. $[cond;then;else] remains supported."),
     ("peach", "Parallel each is refused."),
     ("if", "if is refused. $[...] is the supported conditional."),
     ("do", "do is refused."),

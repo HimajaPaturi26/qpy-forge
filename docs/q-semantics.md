@@ -28,6 +28,15 @@ These are the rules the runtime implements. Expectations in the corpus were writ
 - Item-wise lists must have the same length. `1 2|3 4 5` signals `length`.
 - Symbols, chars, dates, months, and timestamps are outside this verb. A long compared with a symbol signals `type`.
 
+## Cast
+
+- `$[cond;then;else]` is still the conditional. A `$` between two nouns is cast.
+- A one-character type string, or an integer type code, selects the target. `b` or `1` is boolean, `x` or `4` is byte, `h` or `5` is short, `i` or `6` is int, `j` or `7` is long, `e` or `8` is real, and `f` or `9` is float.
+- A finite number truncates toward zero, then wraps in the target width. `"j"$1.9` is `1`. `"j"$-1.9` is `-1`. `"h"$32768` is `-32768h`. `"x"$256` is `0x00`.
+- A null numeric casts to a null of the target type, except boolean. There is no null boolean: zero and null cast to `0b`, and any other number casts to `1b`.
+- Positive float infinity casts to the maximum signed value of a short, int, or long. Negative infinity casts to the minimum. Infinity cast to byte is `domain`.
+- Real cast rounds to float32. Symbols, chars, dates, months, and timestamps signal `type`. Parsing a character vector as a number is not this cast.
+
 ## Aggregates and running verbs
 
 - `sum` and `sums` treat a flat numeric null as zero. An empty sum is 0.
@@ -72,4 +81,4 @@ These are the rules the runtime implements. Expectations in the corpus were writ
 
 ## Refusals
 
-`.` amend, `$` cast, `peach`, `if`, `do`, `while`, atom `?`, `system`, `read0`, `hopen`, `eval`, `load`, and `save` produce a diagnostic and no Python.
+`.` amend, `peach`, `if`, `do`, `while`, atom `?`, `system`, `read0`, `hopen`, `eval`, `load`, and `save` produce a diagnostic and no Python.

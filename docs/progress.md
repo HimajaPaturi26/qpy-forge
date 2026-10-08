@@ -1,5 +1,18 @@
 # Progress
 
+## Numeric cast (corpus 1.6.0)
+
+`$` between two nouns was refused. It now casts numbers. A one-character type string or an integer type code selects boolean, byte, short, int, long, real, or float. Finite values truncate toward zero and wrap in the target width. A null casts to a null of the target type, except boolean: there is no null boolean, so null and zero become `0b`. Positive float infinity becomes the maximum signed short, int, or long; negative infinity becomes the minimum. Infinity cast to byte is `domain`. `$[cond;then;else]` is unchanged. `.` amend stays refused.
+
+Coverage case `cov-cast` (`"i"$10`) previously expected a refusal. It is not holdout. Its expectation is now int `10`. The protected 95 holdout cases were not edited.
+
+`PYTHONPATH=src python -m q2py.score` after pytest (260 passed):
+
+- Corpus 1.6.0, hash `83d22ce91c0f6452`, 277 cases: 95 holdout, 145 dev, 37 coverage.
+- Holdout denominator 95. Successes 95. Semantic accuracy 1.0. Wilson 0.9611–1.0.
+- Value match 94/94. Signal match 1/1. Runtime returned a value 94/95. Oracle unavailable.
+- Dev 145/145. Coverage 37/37. No holdout case was edited.
+
 ## Greater and lesser (corpus 1.5.0)
 
 `|` and `&` were refused before code generation. They are now greater and lesser for numeric atoms and conforming lists. Nulls sort below non-nulls, matching the order already used by `iasc`. Two booleans stay boolean. A float widens the result. Symbols, chars, dates, months, and timestamps signal `type`. `.` amend and `$` cast stay refused.

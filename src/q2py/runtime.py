@@ -7,6 +7,7 @@ results for constructs the semantic pass refused.
 from __future__ import annotations
 
 import math
+import struct
 from collections.abc import Callable, Sequence
 from typing import cast
 
@@ -273,6 +274,63 @@ def q_or(left: Value, right: Value) -> Value:
 
 def q_and(left: Value, right: Value) -> Value:
     return _extreme("and", left, right)
+
+
+_CAST_CHAR = {"b": "bool", "x": "byte", "h": "short", "i": "int", "j": "long", "e": "real", "f": "float"}
+_CAST_CODE = {1: "bool", 4: "byte", 5: "short", 6: "int", 7: "long", 8: "real", 9: "float"}
+
+
+def _cast_target(left: Value) -> str:
+    if isinstance(left, Vec) and len(left.items) == 1 and isinstance(left.items[0], Atom):
+        left = left.items[0]
+    if isinstance(left, Atom) and left.typ == "char" and not left.null and left.value in _CAST_CHAR:
+        return _CAST_CHAR[str(left.value)]
+    if isinstance(left, Atom) and left.typ in _INTS and not left.null and _as_int(left) in _CAST_CODE:
+        return _CAST_CODE[_as_int(left)]
+    raise QError("type", "cast")
+
+
+def _real(number: float) -> Atom:
+    packed = struct.unpack("f", struct.pack("f", number))[0]
+    if math.isnan(packed):
+        return null("real")
+    return Atom("real", value=packed)
+
+
+def _cast_atom(typ: str, atom: Atom) -> Atom:
+    if atom.typ not in _NUMERIC:
+        raise QError("type", "cast")
+    if atom.null:
+        return boolean(False) if typ == "bool" else null(typ)
+    if typ == "bool":
+        magnitude = _as_float(atom) if atom.typ in {"float", "real"} else float(_as_int(atom))
+        return boolean(magnitude != 0.0)
+    if typ == "float":
+        return float_(_as_float(atom))
+    if typ == "real":
+        return _real(_as_float(atom))
+    if atom.typ in {"float", "real"}:
+        number = _as_float(atom)
+        if math.isinf(number):
+            if typ == "byte":
+                raise QError("domain", "cast")
+            bits = {"short": 16, "int": 32, "long": 64}[typ]
+            extreme = (1 << (bits - 1)) - 1 if number > 0 else -(1 << (bits - 1))
+            return Atom(typ, value=wrap_int(typ, extreme))
+        return Atom(typ, value=wrap_int(typ, int(number)))
+    return Atom(typ, value=wrap_int(typ, _as_int(atom)))
+
+
+def _cast_value(typ: str, value: Value) -> Value:
+    if isinstance(value, Atom):
+        return _cast_atom(typ, value)
+    if isinstance(value, Vec):
+        return vec_of([_cast_value(typ, item) for item in value.items])
+    raise QError("type", "cast")
+
+
+def q_cast(left: Value, right: Value) -> Value:
+    return _cast_value(_cast_target(left), right)
 
 
 def _cmp_atom(op: str, left: Atom, right: Atom) -> Atom:
@@ -1837,6 +1895,7 @@ _BIN = {
     "mod": q_mod,
     "or": q_or,
     "and": q_and,
+    "cast": q_cast,
     "xbar": q_xbar,
     "rotate": q_rotate,
     "except": q_except,

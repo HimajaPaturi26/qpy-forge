@@ -1,5 +1,5 @@
 {
-  "version": "1.5.0",
+  "version": "1.6.0",
   "target": 0.9,
   "cases": [
     {
@@ -5150,14 +5150,17 @@
     {
       "id": "cov-cast",
       "split": "coverage",
-      "support": "unsupported",
+      "support": "supported",
       "features": [
         "cast"
       ],
       "source": "\"i\"$10",
       "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
-      "note": "Cast with $ is refused.",
-      "expect_support": "unsupported"
+      "note": "The i type character casts to int. 10 stays 10. This case previously expected a refusal.",
+      "expected": {
+        "t": "int",
+        "v": 10
+      }
     },
     {
       "id": "cov-dot",
@@ -5659,6 +5662,106 @@
       "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
       "note": "Lesser of 0b and 1b is 0b.",
       "expected": {"t": "bool", "v": false}
+    },
+    {
+      "id": "dev-cast-trunc",
+      "split": "dev",
+      "support": "supported",
+      "features": ["cast"],
+      "source": "\"j\"$1.9",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Cast to long truncates toward zero. 1.9 becomes 1.",
+      "expected": {"t": "long", "v": 1}
+    },
+    {
+      "id": "dev-cast-neg",
+      "split": "dev",
+      "support": "supported",
+      "features": ["cast"],
+      "source": "\"j\"$-1.9",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Cast to long truncates toward zero. -1.9 becomes -1.",
+      "expected": {"t": "long", "v": -1}
+    },
+    {
+      "id": "dev-cast-bool",
+      "split": "dev",
+      "support": "supported",
+      "features": ["cast"],
+      "source": "\"b\"$2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A nonzero number casts to 1b. There is no null boolean.",
+      "expected": {"t": "bool", "v": true}
+    },
+    {
+      "id": "dev-cast-float",
+      "split": "dev",
+      "support": "supported",
+      "features": ["cast"],
+      "source": "\"f\"$2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "The f type character widens a long to float. 2 becomes 2.0.",
+      "expected": {"t": "float", "v": 2.0}
+    },
+    {
+      "id": "dev-cast-vec",
+      "split": "dev",
+      "support": "supported",
+      "features": ["cast"],
+      "source": "\"j\"$1.2 2.8",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Cast applies item-wise. 1.2 and 2.8 truncate to 1 and 2.",
+      "expected": {"t": "list", "etype": "long", "v": [{"t": "long", "v": 1}, {"t": "long", "v": 2}]}
+    },
+    {
+      "id": "dev-cast-code",
+      "split": "dev",
+      "support": "supported",
+      "features": ["cast"],
+      "source": "7$1.9",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Type code 7 is long. 1.9 truncates to 1.",
+      "expected": {"t": "long", "v": 1}
+    },
+    {
+      "id": "cov-cast-wrap",
+      "split": "coverage",
+      "support": "supported",
+      "features": ["cast"],
+      "source": "\"h\"$32768",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Cast to short wraps at 16 bits. 32768 becomes -32768.",
+      "expected": {"t": "short", "v": -32768}
+    },
+    {
+      "id": "cov-cast-null",
+      "split": "coverage",
+      "support": "supported",
+      "features": ["cast"],
+      "source": "\"f\"$0N",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A null long casts to a null float.",
+      "expected": {"t": "float", "null": true}
+    },
+    {
+      "id": "cov-cast-type",
+      "split": "coverage",
+      "support": "supported",
+      "features": ["cast"],
+      "source": "\"j\"$`a",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A symbol is not a numeric cast source.",
+      "expected_signal": "type"
+    },
+    {
+      "id": "cov-cast-byte-inf",
+      "split": "coverage",
+      "support": "supported",
+      "features": ["cast"],
+      "source": "\"x\"$0w",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Byte has no infinity. Casting float infinity to byte is domain.",
+      "expected_signal": "domain"
     }
   ]
 }

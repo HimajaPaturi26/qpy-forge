@@ -53,7 +53,7 @@ def test_signals_and_support() -> None:
     lesser = translate("2&3")
     assert lesser.support == "supported"
     assert "q.q_and" in lesser.python
-    for source in ("\"i\"$10", ". 1"):
+    for source in (". 1",):
         refused = translate(source)
         assert refused.support == "unsupported", source
         assert refused.python == ""

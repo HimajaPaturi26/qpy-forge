@@ -265,7 +265,7 @@ class _Parser:
         left = self._noun()
         if self._at_infix():
             verb = self._verb()
-            if verb.op in {"dot", "cast"}:
+            if verb.op == "dot":
                 self.diagnostics.append(
                     unsupported(
                         "parse",

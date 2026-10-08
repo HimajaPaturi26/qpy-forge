@@ -50,6 +50,7 @@ _BIN = {
     "mod": "q_mod",
     "or": "q_or",
     "and": "q_and",
+    "cast": "q_cast",
     "xbar": "q_xbar",
     "rotate": "q_rotate",
     "except": "q_except",
