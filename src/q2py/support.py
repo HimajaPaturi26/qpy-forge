@@ -7,7 +7,7 @@ Semantic accuracy is computed only on holdout cases whose declared support is
 from __future__ import annotations
 
 TARGET = 0.90
-CORPUS_VERSION = "1.1.0"
+CORPUS_VERSION = "1.2.0"
 
 # Constructs the engine claims to translate with q-equivalent results.
 SUPPORTED_FEATURES: frozenset[str] = frozenset(
@@ -92,6 +92,8 @@ SUPPORTED_FEATURES: frozenset[str] = frozenset(
         "except",
         "inter",
         "union",
+        "div-int",
+        "mod",
         "each",
         "each-left",
         "each-right",
@@ -117,8 +119,6 @@ PARTIAL_FEATURES: frozenset[str] = frozenset(
         "literal-real",
         "literal-month",
         "literal-timestamp",
-        "div-int",
-        "mod",
         "converge",
     }
 )
@@ -167,7 +167,5 @@ PARTIAL_NOTES: dict[str, str] = {
     "literal-real": "Real literals are stored as float32 then widened; real arithmetic is not claimed.",
     "literal-month": "Month literals are represented. Month arithmetic is not claimed.",
     "literal-timestamp": "Timestamp literals are represented. Timestamp arithmetic is not claimed.",
-    "div-int": "div/mod on negative integers are refused at runtime (domain). Only nonnegative behavior is tested.",
-    "mod": "div/mod on negative integers are refused at runtime (domain). Only nonnegative behavior is tested.",
-    "converge": "Unary over without an explicit do-count stops at 1000 iterations instead of looping forever.",
+    "converge": "Unary over returns the fixed point when one is reached within 1000 steps. Otherwise it raises limit. q can loop forever.",
 }

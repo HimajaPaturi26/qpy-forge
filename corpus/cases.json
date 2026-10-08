@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "target": 0.9,
   "cases": [
     {
@@ -2243,7 +2243,7 @@
       ],
       "source": "5 div 2",
       "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
-      "note": "Nonnegative div is implemented. The construct is partial because negative div/mod are refused.",
+      "note": "5 div 2 is 2. div is floor division.",
       "expected": {
         "t": "long",
         "v": 2
@@ -5342,14 +5342,17 @@
     {
       "id": "cov-div-neg",
       "split": "coverage",
-      "support": "partial",
+      "support": "supported",
       "features": [
         "div-int"
       ],
       "source": "-5 div 2",
       "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
-      "note": "Negative div is a domain error in this subset.",
-      "expected_signal": "domain"
+      "note": "Floor division: -5 = -3*2 + 1, so -5 div 2 is -3. Replaces the earlier domain-refusal note for this coverage case. Not a holdout case.",
+      "expected": {
+        "t": "long",
+        "v": -3
+      }
     },
     {
       "id": "cov-xbar-neg",
@@ -5386,6 +5389,120 @@
       "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
       "note": "sqrt of a negative number is a domain error.",
       "expected_signal": "domain"
+    },
+    {
+      "id": "dev-div-neg",
+      "split": "dev",
+      "support": "supported",
+      "features": ["div-int"],
+      "source": "-7 div 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Floor division. -7 = -3*3 + 2.",
+      "expected": {"t": "long", "v": -3}
+    },
+    {
+      "id": "dev-div-pos-neg",
+      "split": "dev",
+      "support": "supported",
+      "features": ["div-int"],
+      "source": "7 div -3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Floor division. 7 = -3*-3 + -2.",
+      "expected": {"t": "long", "v": -3}
+    },
+    {
+      "id": "dev-div-both-neg",
+      "split": "dev",
+      "support": "supported",
+      "features": ["div-int"],
+      "source": "-7 div -3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Floor division. -7 = 2*-3 + -1.",
+      "expected": {"t": "long", "v": 2}
+    },
+    {
+      "id": "dev-div-vec",
+      "split": "dev",
+      "support": "supported",
+      "features": ["div-int"],
+      "source": "-5 -4 div 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "-5 div 2 is -3. -4 div 2 is -2.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [{"t": "long", "v": -3}, {"t": "long", "v": -2}]
+      }
+    },
+    {
+      "id": "dev-mod-neg",
+      "split": "dev",
+      "support": "supported",
+      "features": ["mod"],
+      "source": "-7 mod 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Remainder takes the sign of the divisor. -3*3 + 2 = -7.",
+      "expected": {"t": "long", "v": 2}
+    },
+    {
+      "id": "dev-mod-pos-neg",
+      "split": "dev",
+      "support": "supported",
+      "features": ["mod"],
+      "source": "7 mod -3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "-3*-3 + -2 = 7.",
+      "expected": {"t": "long", "v": -2}
+    },
+    {
+      "id": "dev-mod-both-neg",
+      "split": "dev",
+      "support": "supported",
+      "features": ["mod"],
+      "source": "-7 mod -3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "2*-3 + -1 = -7.",
+      "expected": {"t": "long", "v": -1}
+    },
+    {
+      "id": "cov-div-zero",
+      "split": "coverage",
+      "support": "supported",
+      "features": ["div-int"],
+      "source": "1 div 0",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Division by zero is a domain error.",
+      "expected_signal": "domain"
+    },
+    {
+      "id": "cov-mod-zero",
+      "split": "coverage",
+      "support": "supported",
+      "features": ["mod"],
+      "source": "1 mod 0",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Modulo by zero is a domain error.",
+      "expected_signal": "domain"
+    },
+    {
+      "id": "cov-converge",
+      "split": "coverage",
+      "support": "partial",
+      "features": ["converge"],
+      "source": "{x}/4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "The identity is already a fixed point, so converge returns 4. The construct stays partial because a non-fixed iteration raises limit after 1000 steps.",
+      "expected": {"t": "long", "v": 4}
+    },
+    {
+      "id": "cov-converge-limit",
+      "split": "coverage",
+      "support": "partial",
+      "features": ["converge"],
+      "source": "{neg x}/1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "neg oscillates between 1 and -1 and has no fixed point. This subset raises limit instead of looping.",
+      "expected_signal": "limit"
     }
   ]
 }

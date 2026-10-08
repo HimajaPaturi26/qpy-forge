@@ -49,7 +49,8 @@ These are the rules the runtime implements. Expectations in the corpus were writ
 - A lambda’s implicit arguments are `x`, or `x,y`, or `x,y,z`, from the highest of those names used.
 - Nested lambdas do not close over locals. A free name is the global.
 - A hole in a call builds a projection.
-- `({x*y}/)` folds the list from the left. `({x*y}\)` keeps the scan. A unary lambda with over is the partial converge, which stops after 1000 steps.
+- `div` and `mod` are floor division. `x = (x div y)*y + (x mod y)` for `y` not zero. The remainder has the sign of `y`. `1 div 0` and `1 mod 0` are domain errors.
+- `({x*y}/)` folds the list from the left. `({x*y}\)` keeps the scan. Unary over returns a fixed point reached within 1000 steps, such as `{x}/4` which is 4. If there is no fixed point, as with `{neg x}/1`, the result is the signal `limit`.
 - each, each-left, each-right, and each-prior follow the same item-wise rules as the primitive adverbs.
 
 ## Tables

@@ -63,7 +63,7 @@ _LITERAL_FEATURE = {
     "timestamp": "literal-timestamp",
 }
 
-_PARTIAL_OPS = {"div-int": "div-int", "mod": "mod"}
+_PARTIAL_OPS: dict[str, str] = {}
 
 _SUPPORTED_VERBS = frozenset(
     {
@@ -118,6 +118,8 @@ _SUPPORTED_VERBS = frozenset(
         "except",
         "inter",
         "union",
+        "div-int",
+        "mod",
     }
 )
 

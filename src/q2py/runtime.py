@@ -792,10 +792,9 @@ def _intdiv(left: Value, right: Value, *, mod: bool) -> Value:
         raise QError("type", "div")
     lv = _as_int(left)
     rv = _as_int(right)
-    if lv < 0 or rv < 0:
-        raise QError("domain", "negative div/mod is outside the supported subset")
     if rv == 0:
         raise QError("domain", "div zero")
+    # Floor division, matching q: the remainder takes the sign of the divisor.
     if mod:
         return long(lv % rv)
     return long(lv // rv)
@@ -1544,7 +1543,7 @@ def _converge(fn: Value, seed: Value, env: Env) -> Value:
         if _match(nxt, acc):
             return nxt
         acc = nxt
-    return acc
+    raise QError("limit", "converge stopped after 1000 iterations")
 
 
 def _call_fn(fn: LambdaV | ProjV, args: Sequence[Value], env: Env) -> Value:

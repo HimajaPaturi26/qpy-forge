@@ -13,15 +13,14 @@ A program is `supported` when every feature it uses is in `SUPPORTED_FEATURES` (
 - Infix arithmetic and comparison with right-to-left evaluation and no precedence. `%` is float division.
 - `~` match, `^` fill, `,` join, `#` take, `_` drop, `?` find on lists, `in`.
 - Prefix functions in the runtime: `til`, `count`, `sum`, `sums`, `prd`, `prds`, `avg`, `med`, `var`, `dev`, `min`, `max`, `mins`, `maxs`, `all`, `any`, `first`, `last`, `reverse`, `asc`, `desc`, `iasc`, `idesc`, `distinct`, `where`, `enlist`, `raze`, `abs`, `sqrt`, `floor`, `ceiling`, `signum`, `prev`, `next`, `fills`, `differ`, `group`, `type`, `string`, `flip`, `not`, `null`, `cols`, `key`, `value` (dictionaries).
-- Infix: `xbar`, `rotate`, `except`, `inter`, `union`, plus the arithmetic and comparison verbs above. `div` and `mod` stay partial.
+- Infix: `xbar`, `rotate`, `except`, `inter`, `union`, `div`, and `mod`. `div` and `mod` are floor division: `x = (x div y) * y + (x mod y)`, and the remainder takes the sign of the divisor. Division by zero is a domain error.
 - Adverbs: each, each-left, each-right, each-prior, over, scan. A parenthesized lambda may take a postfix adverb, as in `({x*y}/)`.
 - `select`, `exec`, `update`, `delete` with `where` and simple `by` on the implemented table subset. `i` is the original row index.
 
 ## Partial
 
 - Short, int, byte, real, month, and timestamp literals. The full q promotion and calendar arithmetic grids are not claimed.
-- `div` and `mod`. Nonnegative cases are tested. Negatives raise a domain error at runtime.
-- Converge: unary over without a do-count stops after 1000 iterations.
+- Converge: unary over returns a fixed point reached within 1000 steps. If none is reached, it raises `limit` instead of looping.
 
 ## Unsupported
 

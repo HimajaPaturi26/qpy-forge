@@ -12,8 +12,8 @@ On this tree, `PYTHONPATH=src python -m q2py.score` reported:
 
 | Metric | Value |
 | --- | --- |
-| Corpus | 1.1.0, hash `4de1bf18cb00cd6d` |
-| Cases | 241 total: 95 holdout, 123 dev, 23 coverage |
+| Corpus | 1.2.0, hash `2e576da190e9c4cc` |
+| Cases | 252 total: 95 holdout, 130 dev, 27 coverage |
 | Holdout sample (declared support `supported`) | 95 |
 | Holdout expectation matches | 95 |
 | Semantic accuracy | 1.0 on 95/95 supported holdout |
@@ -23,8 +23,8 @@ On this tree, `PYTHONPATH=src python -m q2py.score` reported:
 | Value match | 1.0 on 94 value comparisons |
 | Signal match | 1.0 on 1 authored signal (`length-signal`, source `1 2+1 2 3`) |
 | Runtime returned a value | 0.9895 (94/95) |
-| Dev split | 123/123 supported dev cases matched (1.0, Wilson 0.9697–1.0). This is not the headline accuracy. |
-| Coverage split | 23 cases, 0 unmatched, including refusals and 3 authored signals |
+| Dev split | 130/130 supported dev cases matched (1.0). This is not the headline accuracy. |
+| Coverage split | 27 cases, 0 unmatched |
 | Oracle match | null |
 | Oracle | `oracle-unavailable` (`q` binary not found) |
 

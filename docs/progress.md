@@ -1,5 +1,20 @@
 # Progress
 
+## Floor div, floor mod, and converge limit (corpus 1.2.0)
+
+Three constructs that were already partial:
+
+- `div` and `mod` now use floor division for negative integers. `x = (x div y)*y + (x mod y)`. Zero is still a domain error. Both moved from partial to supported. The protected holdout was not edited. Coverage case `cov-div-neg` previously expected the old domain refusal for `-5 div 2`; that case is not holdout, and its expectation is now long `-3`.
+- Unary over still cannot loop forever. It returns a fixed point reached within 1000 steps. Otherwise it raises `limit` (`{neg x}/1`). It stays partial.
+
+Measured with `PYTHONPATH=src python -m q2py.score` and `measure("dev")` / `measure("coverage")` after the tests passed:
+
+- Corpus 1.2.0, hash `2e576da190e9c4cc`, 252 cases: 95 holdout, 130 dev, 27 coverage.
+- Holdout denominator 95. Successes 95. Semantic accuracy 1.0. Wilson 0.9611–1.0. Unchanged from 1.1.0.
+- Value match 94/94. Signal match 1/1. Runtime returned a value 94/95. Oracle unavailable. `oracle_match_rate` null.
+- Dev: 130/130 supported cases matched.
+- Coverage: 27/27 matched, including the new zero-division and converge-limit signals.
+
 ## Coverage expansion (corpus 1.1.0)
 
 The protected 95 holdout cases were not edited. New cases are dev or coverage. Expected values were written from `docs/q-semantics.md` before scoring.
