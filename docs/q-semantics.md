@@ -21,6 +21,12 @@ These are the rules the runtime implements. Expectations in the corpus were writ
 - `0N=0N` is false. `0N~0N` is true.
 - Adding a long to a date moves that many days.
 - `2000.12m+1` is `2001.01m`. `2000.01m-1` is `1999.12m`. `2001.03m-2000.01m` is `14`. An integer may be added on either side. A float offset is a type error.
+- `|` is greater and `&` is lesser. `1|2` is `2`. `2&3` is `2`. `1|2&0` is `1|(2&0)`.
+- Nulls sort below non-nulls, the same order `iasc` uses. `0N|5` is `5`. `0N&5` is `0N`. `0N|0N` is `0N`. A float widens a null: `0N|1.5` is `1.5` and `0N&1.5` is `0n`.
+- Two booleans stay boolean: `0b|1b` is `1b` and `0b&1b` is `0b`. A boolean mixed with a long becomes long: `1b|2` is `2`.
+- `0w|5` is `0w`. `-0w|5` is `5.0`.
+- Item-wise lists must have the same length. `1 2|3 4 5` signals `length`.
+- Symbols, chars, dates, months, and timestamps are outside this verb. A long compared with a symbol signals `type`.
 
 ## Aggregates and running verbs
 
@@ -66,4 +72,4 @@ These are the rules the runtime implements. Expectations in the corpus were writ
 
 ## Refusals
 
-`|`, `&`, `.` amend, `$` cast, `peach`, `if`, `do`, `while`, atom `?`, `system`, `read0`, `hopen`, `eval`, `load`, and `save` produce a diagnostic and no Python.
+`.` amend, `$` cast, `peach`, `if`, `do`, `while`, atom `?`, `system`, `read0`, `hopen`, `eval`, `load`, and `save` produce a diagnostic and no Python.

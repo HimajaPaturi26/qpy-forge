@@ -219,6 +219,62 @@ def div(left: Value, right: Value) -> Value:
     return atomic_bin("div", left, right)
 
 
+def _wider_numeric(left: str, right: str) -> str:
+    if left in {"float", "real"} or right in {"float", "real"}:
+        return "float"
+    if left == "bool" and right == "bool":
+        return "bool"
+    rank = {"bool": 0, "byte": 1, "short": 2, "int": 3, "long": 4}
+    names = {0: "bool", 1: "byte", 2: "short", 3: "int", 4: "long"}
+    return names[max(rank[left], rank[right])]
+
+
+def _extreme_atom(op: str, left: Atom, right: Atom) -> Atom:
+    """Greater (|) or lesser (&). Nulls are below every non-null value."""
+    if left.typ not in _NUMERIC or right.typ not in _NUMERIC:
+        raise QError("type", op)
+    typ = _wider_numeric(left.typ, right.typ)
+    widened_left = null(typ) if left.null else _num(left, typ)
+    widened_right = null(typ) if right.null else _num(right, typ)
+    if widened_left.null and widened_right.null:
+        return null(typ)
+    if widened_left.null:
+        return null(typ) if op == "and" else widened_right
+    if widened_right.null:
+        return null(typ) if op == "and" else widened_left
+    if typ == "float":
+        left_num = _as_float(widened_left)
+        right_num = _as_float(widened_right)
+        choose_left = left_num >= right_num if op == "or" else left_num <= right_num
+    else:
+        left_int = _as_int(widened_left)
+        right_int = _as_int(widened_right)
+        choose_left = left_int >= right_int if op == "or" else left_int <= right_int
+    return widened_left if choose_left else widened_right
+
+
+def _extreme(op: str, left: Value, right: Value) -> Value:
+    if isinstance(left, Atom) and isinstance(right, Atom):
+        return _extreme_atom(op, left, right)
+    if isinstance(left, Vec) and isinstance(right, Atom):
+        return vec_of([_extreme(op, item, right) for item in left.items])
+    if isinstance(left, Atom) and isinstance(right, Vec):
+        return vec_of([_extreme(op, left, item) for item in right.items])
+    if isinstance(left, Vec) and isinstance(right, Vec):
+        if len(left.items) != len(right.items):
+            raise QError("length", op)
+        return vec_of([_extreme(op, a, b) for a, b in zip(left.items, right.items, strict=True)])
+    raise QError("type", op)
+
+
+def q_or(left: Value, right: Value) -> Value:
+    return _extreme("or", left, right)
+
+
+def q_and(left: Value, right: Value) -> Value:
+    return _extreme("and", left, right)
+
+
 def _cmp_atom(op: str, left: Atom, right: Atom) -> Atom:
     if left.null or right.null:
         return boolean(False)
@@ -1779,6 +1835,8 @@ _BIN = {
     "in": q_in,
     "div-int": q_div,
     "mod": q_mod,
+    "or": q_or,
+    "and": q_and,
     "xbar": q_xbar,
     "rotate": q_rotate,
     "except": q_except,

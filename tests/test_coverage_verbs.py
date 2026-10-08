@@ -153,7 +153,7 @@ def test_select_avg_and_count_by() -> None:
 
 @pytest.mark.parametrize(
     "source",
-    ["2&3", "system \"ls\"", "read0 `:data", "hopen `:host:1", "eval 1", "peach 1", "if 1", "do 1", "while 1", "1?2"],
+    ["system \"ls\"", "read0 `:data", "hopen `:host:1", "eval 1", "peach 1", "if 1", "do 1", "while 1", "1?2"],
 )
 def test_refusals_emit_no_python(source: str) -> None:
     result = translate(source)
@@ -193,7 +193,7 @@ def test_expansion_keeps_the_protected_holdout() -> None:
     holdout = measure("holdout")
     dev = measure("dev")
     coverage = measure("coverage")
-    assert holdout["corpus_version"] == "1.4.0"
+    assert holdout["corpus_version"] == "1.5.0"
     assert holdout["corpus_counts"]["all"] >= 200
     assert holdout["corpus_counts"]["holdout"] == 95
     assert holdout["sample_size"] == 95
@@ -201,7 +201,7 @@ def test_expansion_keeps_the_protected_holdout() -> None:
     assert holdout["semantic_accuracy"] == 1.0
     assert holdout["oracle_match_rate"] is None
     assert dev["sample_size"] == dev["successes"]
-    assert dev["sample_size"] == 133
+    assert dev["sample_size"] == 139
     assert coverage["rows"]
     assert all(row["matched"] for row in coverage["rows"])
 

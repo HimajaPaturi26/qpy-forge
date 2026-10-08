@@ -13,7 +13,7 @@ A program is `supported` when every feature it uses is in `SUPPORTED_FEATURES` (
 - Infix arithmetic and comparison with right-to-left evaluation and no precedence. `%` is float division.
 - `~` match, `^` fill, `,` join, `#` take, `_` drop, `?` find on lists, `in`.
 - Prefix functions in the runtime: `til`, `count`, `sum`, `sums`, `prd`, `prds`, `avg`, `med`, `var`, `dev`, `min`, `max`, `mins`, `maxs`, `all`, `any`, `first`, `last`, `reverse`, `asc`, `desc`, `iasc`, `idesc`, `distinct`, `where`, `enlist`, `raze`, `abs`, `sqrt`, `floor`, `ceiling`, `signum`, `prev`, `next`, `fills`, `differ`, `group`, `type`, `string`, `flip`, `not`, `null`, `cols`, `key`, `value` (dictionaries).
-- Infix: `xbar`, `rotate`, `except`, `inter`, `union`, `div`, and `mod`. `div` and `mod` are floor division: `x = (x div y) * y + (x mod y)`, and the remainder takes the sign of the divisor. Division by zero is a domain error.
+- Infix: `xbar`, `rotate`, `except`, `inter`, `union`, `div`, `mod`, greater `|`, and lesser `&`. `div` and `mod` are floor division: `x = (x div y) * y + (x mod y)`, and the remainder takes the sign of the divisor. Division by zero is a domain error. `|` returns the greater numeric value and `&` the lesser. Nulls sort below non-nulls. Two booleans stay boolean. A float or real widens the result to float. Symbols, chars, dates, months, and timestamps signal `type`.
 - Adverbs: each, each-left, each-right, each-prior, over, scan. A parenthesized lambda may take a postfix adverb, as in `({x*y}/)`.
 - `select`, `exec`, `update`, `delete` with `where` and simple `by` on the implemented table subset. `i` is the original row index.
 
@@ -24,7 +24,7 @@ A program is `supported` when every feature it uses is in `SUPPORTED_FEATURES` (
 
 ## Unsupported
 
-- `|` and `&` as verbs, `.` amend/apply forms that are not indexing, and `$` cast.
+- `.` amend/apply forms that are not indexing, and `$` cast.
 - `peach`, `if`, `do`, `while`.
 - `system`, `read0`, `hopen`, `hclose`, `eval`, `load`, `save`, `reval`.
 - Atom `?` (roll and deal), because it is non-deterministic.

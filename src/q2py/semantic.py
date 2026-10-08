@@ -266,7 +266,9 @@ def _feature_op(op: str, adverb: str | None, features: list[str], diags: list[Di
     elif op in _PARTIAL_OPS:
         features.append(_PARTIAL_OPS[op])
         _note_partial(_PARTIAL_OPS[op], node, diags)
-    elif op in {"or", "and", "dot", "cast"}:
+    elif op in {"or", "and"}:
+        features.append(op)
+    elif op in {"dot", "cast"}:
         diags.append(unsupported("semantic", f"verb {op} is outside the supported subset", node.line, node.col))
     else:
         features.append(op if op in _SUPPORTED_VERBS else "prefix")

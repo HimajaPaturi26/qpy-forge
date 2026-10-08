@@ -59,8 +59,8 @@ def test_nonconverging_unary_over_signals_limit() -> None:
     assert ran.signal == "limit"
 
 
-def test_or_and_still_refused() -> None:
-    for source in ("1|2", "2&3"):
+def test_dot_and_cast_still_refused() -> None:
+    for source in (". 1", '"i"$10'):
         result = translate(source)
-        assert result.support == "unsupported"
+        assert result.support == "unsupported", source
         assert result.python == ""

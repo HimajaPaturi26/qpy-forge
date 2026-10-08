@@ -36,7 +36,7 @@ def test_translate_and_history(client: TestClient) -> None:
 
 
 def test_refusal(client: TestClient) -> None:
-    response = client.post("/api/v1/translate", json={"source": "1|2"})
+    response = client.post("/api/v1/translate", json={"source": "if[1b;2]"})
     assert response.status_code == 200
     body = response.json()
     assert body["support"] == "unsupported"

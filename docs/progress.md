@@ -1,5 +1,18 @@
 # Progress
 
+## Greater and lesser (corpus 1.5.0)
+
+`|` and `&` were refused before code generation. They are now greater and lesser for numeric atoms and conforming lists. Nulls sort below non-nulls, matching the order already used by `iasc`. Two booleans stay boolean. A float widens the result. Symbols, chars, dates, months, and timestamps signal `type`. `.` amend and `$` cast stay refused.
+
+Coverage cases `cov-or` (`1|2`) and `cov-and` (`2&3`) previously expected a refusal. They are not holdout. Their expectations are now long `2` and long `2`. The protected 95 holdout cases were not edited.
+
+`PYTHONPATH=src python -m q2py.score` after pytest (257 passed):
+
+- Corpus 1.5.0, hash `1f26dccd008ffa16`, 267 cases: 95 holdout, 139 dev, 33 coverage.
+- Holdout denominator 95. Successes 95. Semantic accuracy 1.0. Wilson 0.9611–1.0.
+- Value match 94/94. Signal match 1/1. Runtime returned a value 94/95. Oracle unavailable.
+- Dev 139/139. Coverage 33/33. No holdout case was edited.
+
 ## Short literals stay partial (corpus 1.4.0)
 
 Short literals were not promoted to supported. `1h+2h` is short `3`, `32767h+1h` wraps to short `-32768`, and `1h+1` is long `2`, but the rest of the promotion grid is still unclaimed, so `literal-short` remains partial.

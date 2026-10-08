@@ -9,13 +9,13 @@ def test_right_to_left_slice() -> None:
     assert result.matched, (result.display, result.canon, result.signal, result.diagnostics, result.translation.python)
 
 
-def test_unsupported_or_does_not_emit_python() -> None:
+def test_greater_emits_python() -> None:
     result = translate("1|2")
-    assert result.support == "unsupported"
-    assert result.python == ""
+    assert result.support == "supported"
+    assert "q.q_or" in result.python
 
 
-@pytest.mark.parametrize("source", ["peach 1 2 3", "if[1b;2]", "do[2;1]", "while[1b;1]", "1?2", "2&3"])
+@pytest.mark.parametrize("source", ["peach 1 2 3", "if[1b;2]", "do[2;1]", "while[1b;1]", "1?2"])
 def test_refused_constructs_emit_no_python(source: str) -> None:
     result = translate(source)
     assert result.support == "unsupported", (source, result.support, result.python)

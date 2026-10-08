@@ -1,5 +1,5 @@
 {
-  "version": "1.4.0",
+  "version": "1.5.0",
   "target": 0.9,
   "cases": [
     {
@@ -2225,14 +2225,17 @@
     {
       "id": "cov-or",
       "split": "coverage",
-      "support": "unsupported",
+      "support": "supported",
       "features": [
         "or"
       ],
       "source": "1|2",
       "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
-      "note": "or/and are refused rather than guessed.",
-      "expect_support": "unsupported"
+      "note": "Greater returns 2. This case previously expected a refusal.",
+      "expected": {
+        "t": "long",
+        "v": 2
+      }
     },
     {
       "id": "cov-div",
@@ -5132,14 +5135,17 @@
     {
       "id": "cov-and",
       "split": "coverage",
-      "support": "unsupported",
+      "support": "supported",
       "features": [
         "and"
       ],
       "source": "2&3",
       "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
-      "note": "The & verb is refused.",
-      "expect_support": "unsupported"
+      "note": "Lesser returns 2. This case previously expected a refusal.",
+      "expected": {
+        "t": "long",
+        "v": 2
+      }
     },
     {
       "id": "cov-cast",
@@ -5563,6 +5569,96 @@
       "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
       "note": "A short plus a long promotes to long. 1+1 is 2.",
       "expected": {"t": "long", "v": 2}
+    },
+    {
+      "id": "dev-or-vec",
+      "split": "dev",
+      "support": "supported",
+      "features": ["or"],
+      "source": "1 4|2 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Item-wise greater: max(1,2) is 2 and max(4,3) is 4.",
+      "expected": {"t": "list", "etype": "long", "v": [{"t": "long", "v": 2}, {"t": "long", "v": 4}]}
+    },
+    {
+      "id": "dev-or-null",
+      "split": "dev",
+      "support": "supported",
+      "features": ["or", "literal-null"],
+      "source": "0N|5",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A null sorts below a non-null, so the greater is 5.",
+      "expected": {"t": "long", "v": 5}
+    },
+    {
+      "id": "dev-and-null",
+      "split": "dev",
+      "support": "supported",
+      "features": ["and", "literal-null"],
+      "source": "0N&5",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A null sorts below a non-null, so the lesser is null.",
+      "expected": {"t": "long", "null": true}
+    },
+    {
+      "id": "dev-or-bool",
+      "split": "dev",
+      "support": "supported",
+      "features": ["or"],
+      "source": "0b|1b",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "0b is less than 1b, so greater stays boolean 1b.",
+      "expected": {"t": "bool", "v": true}
+    },
+    {
+      "id": "dev-and-float",
+      "split": "dev",
+      "support": "supported",
+      "features": ["and"],
+      "source": "1&2.5",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A float argument widens the result. The lesser of 1 and 2.5 is 1.0.",
+      "expected": {"t": "float", "v": 1.0}
+    },
+    {
+      "id": "dev-or-rtl",
+      "split": "dev",
+      "support": "supported",
+      "features": ["or", "and"],
+      "source": "1|2&0",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "No precedence. 1|2&0 is 1|(2&0), which is 1|0.",
+      "expected": {"t": "long", "v": 1}
+    },
+    {
+      "id": "cov-or-type",
+      "split": "coverage",
+      "support": "supported",
+      "features": ["or"],
+      "source": "1|`a",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Symbols are not in the claimed greater/lesser domain. The runtime signals type.",
+      "expected_signal": "type"
+    },
+    {
+      "id": "cov-or-length",
+      "split": "coverage",
+      "support": "supported",
+      "features": ["or"],
+      "source": "1 2|3 4 5",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Lists of different lengths do not conform.",
+      "expected_signal": "length"
+    },
+    {
+      "id": "cov-and-bool",
+      "split": "coverage",
+      "support": "supported",
+      "features": ["and"],
+      "source": "0b&1b",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Lesser of 0b and 1b is 0b.",
+      "expected": {"t": "bool", "v": false}
     }
   ]
 }

@@ -8,6 +8,7 @@
 - The protected 95-case holdout was not edited for the 1.1.0 corpus. New constructs are measured on the dev split. A holdout-only construct table still omits features that appear only in dev cases, including `flip`, keyed tables, and virtual `i`.
 - Headline semantic accuracy did not change when the corpus grew. It is still the protected holdout ratio. The dev ratio is a separate measurement against expectations written for this expansion.
 - `if`, `do`, `while`, and `peach` are refused before code generation. Atom `?` on two literals is refused the same way. A dynamic atom `?` whose arguments are not literals still compiles to `q_find`, which raises at runtime instead of returning a value.
+- Greater and lesser accept numeric atoms and conforming lists. Symbols, chars, dates, months, and timestamps signal `type` rather than being ordered.
 - The in-process corpus executor does not apply the subprocess resource limits.
 - Source maps record q line and column for generated statements. They do not map every Python expression back to a character range.
 - Polars is used for table filter and projection. Nested table cells and many temporal types are outside that path.
