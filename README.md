@@ -12,8 +12,8 @@ On this tree, `PYTHONPATH=src python -m q2py.score` reported:
 
 | Metric | Value |
 | --- | --- |
-| Corpus | 1.2.0, hash `2e576da190e9c4cc` |
-| Cases | 252 total: 95 holdout, 130 dev, 27 coverage |
+| Corpus | 1.3.0, hash `5bc6eb245934e3b4` |
+| Cases | 255 total: 95 holdout, 133 dev, 27 coverage |
 | Holdout sample (declared support `supported`) | 95 |
 | Holdout expectation matches | 95 |
 | Semantic accuracy | 1.0 on 95/95 supported holdout |

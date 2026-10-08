@@ -7,7 +7,7 @@ Semantic accuracy is computed only on holdout cases whose declared support is
 from __future__ import annotations
 
 TARGET = 0.90
-CORPUS_VERSION = "1.2.0"
+CORPUS_VERSION = "1.3.0"
 
 # Constructs the engine claims to translate with q-equivalent results.
 SUPPORTED_FEATURES: frozenset[str] = frozenset(
@@ -18,6 +18,7 @@ SUPPORTED_FEATURES: frozenset[str] = frozenset(
         "literal-char",
         "literal-symbol",
         "literal-date",
+        "literal-month",
         "literal-null",
         "strand",
         "list",
@@ -117,7 +118,6 @@ PARTIAL_FEATURES: frozenset[str] = frozenset(
         "literal-int",
         "literal-byte",
         "literal-real",
-        "literal-month",
         "literal-timestamp",
         "converge",
     }
@@ -165,7 +165,6 @@ PARTIAL_NOTES: dict[str, str] = {
     "literal-int": "Int literals are represented, but the full q promotion grid is not claimed.",
     "literal-byte": "Byte literals are represented as unsigned 0–255 without the full promotion grid.",
     "literal-real": "Real literals are stored as float32 then widened; real arithmetic is not claimed.",
-    "literal-month": "Month literals are represented. Month arithmetic is not claimed.",
     "literal-timestamp": "Timestamp literals are represented. Timestamp arithmetic is not claimed.",
     "converge": "Unary over returns the fixed point when one is reached within 1000 steps. Otherwise it raises limit. q can loop forever.",
 }

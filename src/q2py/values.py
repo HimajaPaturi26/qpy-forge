@@ -287,6 +287,9 @@ def _encode_atom(atom: Atom) -> object:
         return atom.value.isoformat()
     if isinstance(atom.value, dt.date):
         return atom.value.isoformat()
+    if atom.typ == "month" and isinstance(atom.value, tuple):
+        year, month_number = atom.value
+        return f"{int(year):04d}-{int(month_number):02d}"
     if isinstance(atom.value, bool):
         return bool(atom.value)
     return atom.value
@@ -349,6 +352,7 @@ def _repr_atom(atom: Atom) -> str:
             "char": '" "',
             "symbol": "`",
             "date": "0Nd",
+            "month": "0Nm",
             "timestamp": "0Np",
         }.get(atom.typ, "0N")
     if atom.typ == "bool":
@@ -369,6 +373,9 @@ def _repr_atom(atom: Atom) -> str:
         return str(atom.value) + "i"
     if atom.typ == "byte":
         return str(atom.value) + "x"
+    if atom.typ == "month" and isinstance(atom.value, tuple):
+        year, month_number = atom.value
+        return f"{int(year):04d}.{int(month_number):02d}m"
     return str(atom.value)
 
 

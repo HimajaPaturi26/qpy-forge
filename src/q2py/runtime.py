@@ -104,6 +104,8 @@ def _finish(typ: str, raw: float | int, *, float_op: bool) -> Atom:
 def _apply_atom(op: str, left: Atom, right: Atom) -> Atom:
     if op in {"add", "sub"} and (left.typ == "date" or right.typ == "date"):
         return _date_arith(op, left, right)
+    if op in {"add", "sub"} and (left.typ == "month" or right.typ == "month"):
+        return _month_arith(op, left, right)
     if left.typ not in _NUMERIC or right.typ not in _NUMERIC:
         raise QError("type", op)
     if left.null or right.null:
@@ -151,6 +153,36 @@ def _date_arith(op: str, left: Atom, right: Atom) -> Atom:
         assert isinstance(left.value, dt.date)
         return Atom("date", value=left.value - dt.timedelta(days=_as_int(right)))
     raise QError("type", "date sub")
+
+
+def _shift_month(year: int, month_number: int, delta: int) -> tuple[int, int]:
+    index = year * 12 + (month_number - 1) + delta
+    shifted, zero_based = divmod(index, 12)
+    return shifted, zero_based + 1
+
+
+def _month_arith(op: str, left: Atom, right: Atom) -> Atom:
+    if left.null or right.null:
+        if op == "sub" and left.typ == "month" and right.typ == "month":
+            return null("long")
+        return null("month")
+    if op == "add":
+        base, offset = (left, right) if left.typ == "month" else (right, left)
+        if base.typ != "month" or offset.typ not in _INTS:
+            raise QError("type", "month add")
+        assert isinstance(base.value, tuple)
+        year, month_number = base.value
+        return Atom("month", value=_shift_month(int(year), int(month_number), _as_int(offset)))
+    if left.typ == "month" and right.typ == "month":
+        assert isinstance(left.value, tuple) and isinstance(right.value, tuple)
+        left_index = int(left.value[0]) * 12 + int(left.value[1]) - 1
+        right_index = int(right.value[0]) * 12 + int(right.value[1]) - 1
+        return long(left_index - right_index)
+    if left.typ == "month" and right.typ in _INTS:
+        assert isinstance(left.value, tuple)
+        year, month_number = left.value
+        return Atom("month", value=_shift_month(int(year), int(month_number), -_as_int(right)))
+    raise QError("type", "month sub")
 
 
 def atomic_bin(op: str, left: Value, right: Value) -> Value:

@@ -4,7 +4,7 @@ A program is `supported` when every feature it uses is in `SUPPORTED_FEATURES` (
 
 ## Supported
 
-- Literals: long, float, boolean (atoms and `01b` vectors), char, symbol, date, nulls (`0N`, `0Ni`, `0Nh`, `0n`), and infinities (`0w`, `-0w`, `0W`, `-0W`).
+- Literals: long, float, boolean (atoms and `01b` vectors), char, symbol, date, month (`2000.01m`), nulls (`0N`, `0Ni`, `0Nh`, `0n`), and infinities (`0w`, `-0w`, `0W`, `-0W`). A month plus or minus an integer shifts by that many months. Subtracting two months returns a long. A float offset is a type error.
 - Lists, strands, dictionaries, tables, and keyed tables built with `([] )` / `([ ] )` column syntax in the implemented form.
 - Assignment, scripts, comments (`/` to end of line, and the block-comment form the lexer accepts).
 - Lambdas with implicit `x`, `y`, `z`. Free names resolve to globals. Nested closures are not created.
@@ -19,7 +19,7 @@ A program is `supported` when every feature it uses is in `SUPPORTED_FEATURES` (
 
 ## Partial
 
-- Short, int, byte, real, month, and timestamp literals. The full q promotion and calendar arithmetic grids are not claimed.
+- Short, int, byte, real, and timestamp literals. The full q promotion grid and timestamp arithmetic are not claimed.
 - Converge: unary over returns a fixed point reached within 1000 steps. If none is reached, it raises `limit` instead of looping.
 
 ## Unsupported

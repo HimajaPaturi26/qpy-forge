@@ -18,6 +18,7 @@ These are the rules the runtime implements. Expectations in the corpus were writ
 - A boolean vector literal is a run of `0` and `1` ending in `b`, such as `101b`. `0b` and `1b` stay atoms.
 - `0N=0N` is false. `0N~0N` is true.
 - Adding a long to a date moves that many days.
+- `2000.12m+1` is `2001.01m`. `2000.01m-1` is `1999.12m`. `2001.03m-2000.01m` is `14`. An integer may be added on either side. A float offset is a type error.
 
 ## Aggregates and running verbs
 

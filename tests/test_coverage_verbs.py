@@ -193,7 +193,7 @@ def test_expansion_keeps_the_protected_holdout() -> None:
     holdout = measure("holdout")
     dev = measure("dev")
     coverage = measure("coverage")
-    assert holdout["corpus_version"] == "1.2.0"
+    assert holdout["corpus_version"] == "1.3.0"
     assert holdout["corpus_counts"]["all"] >= 200
     assert holdout["corpus_counts"]["holdout"] == 95
     assert holdout["sample_size"] == 95
@@ -201,7 +201,7 @@ def test_expansion_keeps_the_protected_holdout() -> None:
     assert holdout["semantic_accuracy"] == 1.0
     assert holdout["oracle_match_rate"] is None
     assert dev["sample_size"] == dev["successes"]
-    assert dev["sample_size"] == 130
+    assert dev["sample_size"] == 133
     assert coverage["rows"]
     assert all(row["matched"] for row in coverage["rows"])
 

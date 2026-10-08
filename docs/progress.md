@@ -1,5 +1,16 @@
 # Progress
 
+## Month arithmetic (corpus 1.3.0)
+
+Month literals were already parsed and classified partial because no arithmetic was claimed. Integer offsets now shift the month, including year rollover, and subtracting two months returns the month count as a long. A float offset raises `type`. Timestamp arithmetic is still partial.
+
+`PYTHONPATH=src python -m q2py.score` after the tests:
+
+- Corpus 1.3.0, hash `5bc6eb245934e3b4`, 255 cases: 95 holdout, 133 dev, 27 coverage.
+- Holdout denominator 95. Successes 95. Semantic accuracy 1.0. Wilson 0.9611–1.0.
+- Value match 94/94. Signal match 1/1. Runtime returned a value 94/95. Oracle unavailable.
+- Dev: 133/133 supported cases matched.
+
 ## Floor div, floor mod, and converge limit (corpus 1.2.0)
 
 Three constructs that were already partial:
