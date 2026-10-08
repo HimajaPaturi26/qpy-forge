@@ -1,0 +1,2253 @@
+{
+  "version": "1.0.0",
+  "target": 0.9,
+  "cases": [
+    {
+      "id": "arith-rtl-mul-add",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "infix-arith",
+        "right-to-left"
+      ],
+      "source": "2*3+4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 14
+      }
+    },
+    {
+      "id": "arith-rtl-add-mul",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "infix-arith"
+      ],
+      "source": "1+2*3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 7
+      }
+    },
+    {
+      "id": "arith-paren",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "infix-arith"
+      ],
+      "source": "(2*3)+4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 10
+      }
+    },
+    {
+      "id": "arith-neg",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "prefix",
+        "infix-arith"
+      ],
+      "source": "neg 2+3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": -5
+      }
+    },
+    {
+      "id": "vec-add-atom",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "strand",
+        "infix-arith"
+      ],
+      "source": "1 2 3+10",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 11
+          },
+          {
+            "t": "long",
+            "v": 12
+          },
+          {
+            "t": "long",
+            "v": 13
+          }
+        ]
+      }
+    },
+    {
+      "id": "vec-add-vec",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "strand",
+        "infix-arith"
+      ],
+      "source": "1 2 3+10 20 30",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 11
+          },
+          {
+            "t": "long",
+            "v": 22
+          },
+          {
+            "t": "long",
+            "v": 33
+          }
+        ]
+      }
+    },
+    {
+      "id": "vec-sub-rtl",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "strand",
+        "infix-arith"
+      ],
+      "source": "2 3*4 5-6 7",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Published example from the q syntax guide: left of * is 2 3 and the right is 4 5-6 7.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": -4
+          },
+          {
+            "t": "long",
+            "v": -6
+          }
+        ]
+      }
+    },
+    {
+      "id": "count-vec",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "count"
+      ],
+      "source": "count 1 2 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 3
+      }
+    },
+    {
+      "id": "count-atom",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "count"
+      ],
+      "source": "count 42",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 1
+      }
+    },
+    {
+      "id": "count-string",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "count",
+        "literal-char"
+      ],
+      "source": "count \"abc\"",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 3
+      }
+    },
+    {
+      "id": "til",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "til"
+      ],
+      "source": "til 4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 0
+          },
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "sum",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "sum"
+      ],
+      "source": "sum 1 2 3 4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 10
+      }
+    },
+    {
+      "id": "sum-null",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "sum",
+        "literal-null"
+      ],
+      "source": "sum 1 0N 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "KX documents that sum treats nulls as zeros in a flat vector.",
+      "expected": {
+        "t": "long",
+        "v": 3
+      }
+    },
+    {
+      "id": "sum-atom",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "sum"
+      ],
+      "source": "sum 7",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 7
+      }
+    },
+    {
+      "id": "avg",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "avg"
+      ],
+      "source": "avg 1 2 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "float",
+        "v": 2.0
+      }
+    },
+    {
+      "id": "avg-null",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "avg",
+        "literal-null"
+      ],
+      "source": "avg 1 0N 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "KX documents that avg ignores null items of a vector.",
+      "expected": {
+        "t": "float",
+        "v": 2.0
+      }
+    },
+    {
+      "id": "where-bool",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "where"
+      ],
+      "source": "where 1 0 1 1 0b",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 0
+          },
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "where-int",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "where"
+      ],
+      "source": "where 2 0 1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 0
+          },
+          {
+            "t": "long",
+            "v": 0
+          },
+          {
+            "t": "long",
+            "v": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "asc",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "asc"
+      ],
+      "source": "asc 3 1 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "desc",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "desc"
+      ],
+      "source": "desc 1 3 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 3
+          },
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "distinct",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "distinct"
+      ],
+      "source": "distinct 1 2 1 3 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "reverse",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "reverse"
+      ],
+      "source": "reverse 1 2 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 3
+          },
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "index",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "apply"
+      ],
+      "source": "(1 2 3)[1]",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 2
+      }
+    },
+    {
+      "id": "index-oob",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "apply",
+        "literal-null"
+      ],
+      "source": "(1 2 3)[5]",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "null": true
+      }
+    },
+    {
+      "id": "index-many",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "apply"
+      ],
+      "source": "(1 2 3)[0 2]",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "take",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "take"
+      ],
+      "source": "2#1 2 3 4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "take-cycle",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "take"
+      ],
+      "source": "5#1 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "take-neg",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "take"
+      ],
+      "source": "-2#1 2 3 4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 3
+          },
+          {
+            "t": "long",
+            "v": 4
+          }
+        ]
+      }
+    },
+    {
+      "id": "drop",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "drop"
+      ],
+      "source": "1_1 2 3 4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 3
+          },
+          {
+            "t": "long",
+            "v": 4
+          }
+        ]
+      }
+    },
+    {
+      "id": "join",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "join"
+      ],
+      "source": "1 2,3 4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 3
+          },
+          {
+            "t": "long",
+            "v": 4
+          }
+        ]
+      }
+    },
+    {
+      "id": "find",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "find"
+      ],
+      "source": "1 2 3?2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 1
+      }
+    },
+    {
+      "id": "find-miss",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "find"
+      ],
+      "source": "1 2 3?9",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 3
+      }
+    },
+    {
+      "id": "eq-null",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "infix-compare",
+        "literal-null"
+      ],
+      "source": "0N=0N",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "bool",
+        "v": false
+      }
+    },
+    {
+      "id": "match-null",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "match",
+        "literal-null"
+      ],
+      "source": "0N~0N",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "bool",
+        "v": true
+      }
+    },
+    {
+      "id": "null-yes",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "null"
+      ],
+      "source": "null 0N",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "bool",
+        "v": true
+      }
+    },
+    {
+      "id": "null-no",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "null"
+      ],
+      "source": "null 1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "bool",
+        "v": false
+      }
+    },
+    {
+      "id": "not-list",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "not"
+      ],
+      "source": "not 0 1 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "bool",
+        "v": [
+          {
+            "t": "bool",
+            "v": true
+          },
+          {
+            "t": "bool",
+            "v": false
+          },
+          {
+            "t": "bool",
+            "v": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "cond-t",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "cond"
+      ],
+      "source": "$[1b;10;20]",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 10
+      }
+    },
+    {
+      "id": "cond-f",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "cond"
+      ],
+      "source": "$[0b;10;20]",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 20
+      }
+    },
+    {
+      "id": "cond-chain",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "cond"
+      ],
+      "source": "$[0b;10;1b;20;30]",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 20
+      }
+    },
+    {
+      "id": "lambda-xy",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "lambda"
+      ],
+      "source": "{x+y}[2;3]",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 5
+      }
+    },
+    {
+      "id": "lambda-sig",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "lambda"
+      ],
+      "source": "{[a;b] a*b}[4;5]",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 20
+      }
+    },
+    {
+      "id": "lambda-prefix",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "lambda"
+      ],
+      "source": "{x*x} 7",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 49
+      }
+    },
+    {
+      "id": "lambda-return",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "lambda"
+      ],
+      "source": "{[x] :x+1; x+9}[3]",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 4
+      }
+    },
+    {
+      "id": "each",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "each"
+      ],
+      "source": "1 2 3+'10 20 30",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 11
+          },
+          {
+            "t": "long",
+            "v": 22
+          },
+          {
+            "t": "long",
+            "v": 33
+          }
+        ]
+      }
+    },
+    {
+      "id": "each-word",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "each"
+      ],
+      "source": "1 2 3 + each 10 20 30",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 11
+          },
+          {
+            "t": "long",
+            "v": 22
+          },
+          {
+            "t": "long",
+            "v": 33
+          }
+        ]
+      }
+    },
+    {
+      "id": "each-left",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "each-left"
+      ],
+      "source": "1 2+\\:10 20 30",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Matches the published each-left example shape: each left item against the whole right list.",
+      "expected": {
+        "t": "list",
+        "etype": "general",
+        "v": [
+          {
+            "t": "list",
+            "etype": "long",
+            "v": [
+              {
+                "t": "long",
+                "v": 11
+              },
+              {
+                "t": "long",
+                "v": 21
+              },
+              {
+                "t": "long",
+                "v": 31
+              }
+            ]
+          },
+          {
+            "t": "list",
+            "etype": "long",
+            "v": [
+              {
+                "t": "long",
+                "v": 12
+              },
+              {
+                "t": "long",
+                "v": 22
+              },
+              {
+                "t": "long",
+                "v": 32
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "each-right",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "each-right"
+      ],
+      "source": "1 2 3+/:10 20",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Mirror of each-left: the whole left list against each right item.",
+      "expected": {
+        "t": "list",
+        "etype": "general",
+        "v": [
+          {
+            "t": "list",
+            "etype": "long",
+            "v": [
+              {
+                "t": "long",
+                "v": 11
+              },
+              {
+                "t": "long",
+                "v": 12
+              },
+              {
+                "t": "long",
+                "v": 13
+              }
+            ]
+          },
+          {
+            "t": "list",
+            "etype": "long",
+            "v": [
+              {
+                "t": "long",
+                "v": 21
+              },
+              {
+                "t": "long",
+                "v": 22
+              },
+              {
+                "t": "long",
+                "v": 23
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "over",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "over"
+      ],
+      "source": "(+/)1 2 3 4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 10
+      }
+    },
+    {
+      "id": "scan",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "scan"
+      ],
+      "source": "(+\\)1 2 3 4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 3
+          },
+          {
+            "t": "long",
+            "v": 6
+          },
+          {
+            "t": "long",
+            "v": 10
+          }
+        ]
+      }
+    },
+    {
+      "id": "prior",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "each-prior"
+      ],
+      "source": "(-':)1 4 9",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 3
+          },
+          {
+            "t": "long",
+            "v": 5
+          }
+        ]
+      }
+    },
+    {
+      "id": "type-long",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "type"
+      ],
+      "source": "type 42",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "short",
+        "v": -7
+      }
+    },
+    {
+      "id": "div-float",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "infix-arith"
+      ],
+      "source": "1%2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "float",
+        "v": 0.5
+      }
+    },
+    {
+      "id": "div-inf",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "infix-arith"
+      ],
+      "source": "1%0",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "float",
+        "v": "inf"
+      }
+    },
+    {
+      "id": "div-null",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "infix-arith",
+        "literal-null"
+      ],
+      "source": "0%0",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "float",
+        "null": true
+      }
+    },
+    {
+      "id": "min-null",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "min",
+        "literal-null"
+      ],
+      "source": "min 3 0N 1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 1
+      }
+    },
+    {
+      "id": "max-null",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "max",
+        "literal-null"
+      ],
+      "source": "max 3 0N 1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 3
+      }
+    },
+    {
+      "id": "enlist",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "enlist"
+      ],
+      "source": "enlist 1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "raze",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "raze",
+        "list"
+      ],
+      "source": "raze (1 2;3 4)",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 3
+          },
+          {
+            "t": "long",
+            "v": 4
+          }
+        ]
+      }
+    },
+    {
+      "id": "first",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "first"
+      ],
+      "source": "first 1 2 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 1
+      }
+    },
+    {
+      "id": "last",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "last"
+      ],
+      "source": "last 1 2 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 3
+      }
+    },
+    {
+      "id": "fill",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "fill",
+        "literal-null"
+      ],
+      "source": "0^0N 1 0N",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 0
+          },
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "eq-vec",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "infix-compare"
+      ],
+      "source": "1 2 3=1 2 4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "bool",
+        "v": [
+          {
+            "t": "bool",
+            "v": true
+          },
+          {
+            "t": "bool",
+            "v": true
+          },
+          {
+            "t": "bool",
+            "v": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "ne",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "infix-compare"
+      ],
+      "source": "2<>2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "bool",
+        "v": false
+      }
+    },
+    {
+      "id": "le",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "infix-compare"
+      ],
+      "source": "2<=2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "bool",
+        "v": true
+      }
+    },
+    {
+      "id": "sqrt",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "sqrt"
+      ],
+      "source": "sqrt 9",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "float",
+        "v": 3.0
+      }
+    },
+    {
+      "id": "abs",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "abs"
+      ],
+      "source": "abs -5",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 5
+      }
+    },
+    {
+      "id": "char-index",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "literal-char",
+        "apply"
+      ],
+      "source": "\"abc\"[1]",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "char",
+        "v": "b"
+      }
+    },
+    {
+      "id": "sym-eq",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "literal-symbol",
+        "infix-compare"
+      ],
+      "source": "`abc=`abc",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "bool",
+        "v": true
+      }
+    },
+    {
+      "id": "sym-ne",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "literal-symbol"
+      ],
+      "source": "`abc=`def",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "bool",
+        "v": false
+      }
+    },
+    {
+      "id": "in",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "in"
+      ],
+      "source": "2 2 3 in 1 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "bool",
+        "v": [
+          {
+            "t": "bool",
+            "v": true
+          },
+          {
+            "t": "bool",
+            "v": true
+          },
+          {
+            "t": "bool",
+            "v": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "match-type",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "match"
+      ],
+      "source": "1~1f",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "bool",
+        "v": false
+      }
+    },
+    {
+      "id": "match-list",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "match"
+      ],
+      "source": "1 2~1 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "bool",
+        "v": true
+      }
+    },
+    {
+      "id": "sums",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "sums"
+      ],
+      "source": "sums 1 2 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 1
+          },
+          {
+            "t": "long",
+            "v": 3
+          },
+          {
+            "t": "long",
+            "v": 6
+          }
+        ]
+      }
+    },
+    {
+      "id": "sums-null",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "sums",
+        "literal-null"
+      ],
+      "source": "sums 2 0N 4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Nulls count as zero, consistent with the published sums rule.",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 2
+          },
+          {
+            "t": "long",
+            "v": 6
+          }
+        ]
+      }
+    },
+    {
+      "id": "date-add",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "literal-date",
+        "infix-arith"
+      ],
+      "source": "2020.01.01+2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "date",
+        "v": "2020-01-03"
+      }
+    },
+    {
+      "id": "first-empty",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "first",
+        "take"
+      ],
+      "source": "first 0#1 2 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "null": true
+      }
+    },
+    {
+      "id": "take-zero",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "take"
+      ],
+      "source": "0#1 2 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": []
+      }
+    },
+    {
+      "id": "wrap",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "infix-arith"
+      ],
+      "source": "9223372036854775807+1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Two's-complement wrap of a signed 64-bit long.",
+      "expected": {
+        "t": "long",
+        "v": -9223372036854775808
+      }
+    },
+    {
+      "id": "comment",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "comment",
+        "infix-arith"
+      ],
+      "source": "/ comment\n1+2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 3
+      }
+    },
+    {
+      "id": "script",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "assign",
+        "script"
+      ],
+      "source": "a:1 2 3\nb:10\na+b",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 11
+          },
+          {
+            "t": "long",
+            "v": 12
+          },
+          {
+            "t": "long",
+            "v": 13
+          }
+        ]
+      }
+    },
+    {
+      "id": "projection",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "projection",
+        "lambda"
+      ],
+      "source": "f:{x+y}\ng:f[10]\ng 5",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 15
+      }
+    },
+    {
+      "id": "no-closure",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "lambda"
+      ],
+      "source": "a:100\nf:{[a] {a+x}}\nf[3] 10",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Inner lambda does not close over the outer local; a is the global 100.",
+      "expected": {
+        "t": "long",
+        "v": 110
+      }
+    },
+    {
+      "id": "string-sym",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "string",
+        "literal-symbol"
+      ],
+      "source": "string `abc",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "char",
+        "v": [
+          {
+            "t": "char",
+            "v": "a"
+          },
+          {
+            "t": "char",
+            "v": "b"
+          },
+          {
+            "t": "char",
+            "v": "c"
+          }
+        ]
+      }
+    },
+    {
+      "id": "length-signal",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "infix-arith"
+      ],
+      "source": "1 2+1 2 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected_signal": "length"
+    },
+    {
+      "id": "dict-add",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "dict",
+        "infix-arith"
+      ],
+      "source": "(`a`b!1 2)+10",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "dict",
+        "keys": [
+          {
+            "t": "symbol",
+            "v": "a"
+          },
+          {
+            "t": "symbol",
+            "v": "b"
+          }
+        ],
+        "vals": [
+          {
+            "t": "long",
+            "v": 11
+          },
+          {
+            "t": "long",
+            "v": 12
+          }
+        ]
+      }
+    },
+    {
+      "id": "select-where",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "table",
+        "select"
+      ],
+      "source": "t:([] a:1 2 3; b:10 20 30)\nselect a from t where a>1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "table",
+        "keys": [],
+        "cols": [
+          "a"
+        ],
+        "types": {
+          "a": "long"
+        },
+        "rows": [
+          {
+            "a": {
+              "t": "long",
+              "v": 2
+            }
+          },
+          {
+            "a": {
+              "t": "long",
+              "v": 3
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "select-compute",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "select"
+      ],
+      "source": "t:([] a:1 2 3; b:10 20 30)\nselect s:a+b from t",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "table",
+        "keys": [],
+        "cols": [
+          "s"
+        ],
+        "types": {
+          "s": "long"
+        },
+        "rows": [
+          {
+            "s": {
+              "t": "long",
+              "v": 11
+            }
+          },
+          {
+            "s": {
+              "t": "long",
+              "v": 22
+            }
+          },
+          {
+            "s": {
+              "t": "long",
+              "v": 33
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "select-agg",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "select",
+        "sum"
+      ],
+      "source": "t:([] a:1 2 3)\nselect sum a from t",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "table",
+        "keys": [],
+        "cols": [
+          "a"
+        ],
+        "types": {
+          "a": "long"
+        },
+        "rows": [
+          {
+            "a": {
+              "t": "long",
+              "v": 6
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "exec",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "exec"
+      ],
+      "source": "t:([] a:1 2 3; b:10 20 30)\nexec b from t where a<3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "list",
+        "etype": "long",
+        "v": [
+          {
+            "t": "long",
+            "v": 10
+          },
+          {
+            "t": "long",
+            "v": 20
+          }
+        ]
+      }
+    },
+    {
+      "id": "update",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "update"
+      ],
+      "source": "t:([] a:1 2; b:10 20)\nupdate c:a+b from t",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "table",
+        "keys": [],
+        "cols": [
+          "a",
+          "b",
+          "c"
+        ],
+        "types": {
+          "a": "long",
+          "b": "long",
+          "c": "long"
+        },
+        "rows": [
+          {
+            "a": {
+              "t": "long",
+              "v": 1
+            },
+            "b": {
+              "t": "long",
+              "v": 10
+            },
+            "c": {
+              "t": "long",
+              "v": 11
+            }
+          },
+          {
+            "a": {
+              "t": "long",
+              "v": 2
+            },
+            "b": {
+              "t": "long",
+              "v": 20
+            },
+            "c": {
+              "t": "long",
+              "v": 22
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "delete",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "delete"
+      ],
+      "source": "t:([] a:1 2 3)\ndelete from t where a=2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "table",
+        "keys": [],
+        "cols": [
+          "a"
+        ],
+        "types": {
+          "a": "long"
+        },
+        "rows": [
+          {
+            "a": {
+              "t": "long",
+              "v": 1
+            }
+          },
+          {
+            "a": {
+              "t": "long",
+              "v": 3
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "by",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "by",
+        "select"
+      ],
+      "source": "t:([] b:`x`y`x; a:1 2 3)\nselect sum a by b from t",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "keyed",
+        "keys": [
+          "b"
+        ],
+        "cols": [
+          "b",
+          "a"
+        ],
+        "types": {
+          "b": "symbol",
+          "a": "long"
+        },
+        "rows": [
+          {
+            "b": {
+              "t": "symbol",
+              "v": "x"
+            },
+            "a": {
+              "t": "long",
+              "v": 4
+            }
+          },
+          {
+            "b": {
+              "t": "symbol",
+              "v": "y"
+            },
+            "a": {
+              "t": "long",
+              "v": 2
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "table-extend",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "table"
+      ],
+      "source": "([] s:`a`b`c; p:10)",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "table",
+        "keys": [],
+        "cols": [
+          "s",
+          "p"
+        ],
+        "types": {
+          "s": "symbol",
+          "p": "long"
+        },
+        "rows": [
+          {
+            "s": {
+              "t": "symbol",
+              "v": "a"
+            },
+            "p": {
+              "t": "long",
+              "v": 10
+            }
+          },
+          {
+            "s": {
+              "t": "symbol",
+              "v": "b"
+            },
+            "p": {
+              "t": "long",
+              "v": 10
+            }
+          },
+          {
+            "s": {
+              "t": "symbol",
+              "v": "c"
+            },
+            "p": {
+              "t": "long",
+              "v": 10
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "count-table",
+      "split": "holdout",
+      "support": "supported",
+      "features": [
+        "count",
+        "table"
+      ],
+      "source": "t:([] a:1 2 3)\ncount t",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 3
+      }
+    },
+    {
+      "id": "dev-hello",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "infix-arith"
+      ],
+      "source": "1+2*3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "long",
+        "v": 7
+      }
+    },
+    {
+      "id": "dev-table",
+      "split": "dev",
+      "support": "supported",
+      "features": [
+        "select"
+      ],
+      "source": "t:([] a:1 2 3; b:4 5 6)\nselect a from t where a>1",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "",
+      "expected": {
+        "t": "table",
+        "keys": [],
+        "cols": [
+          "a"
+        ],
+        "types": {
+          "a": "long"
+        },
+        "rows": [
+          {
+            "a": {
+              "t": "long",
+              "v": 2
+            }
+          },
+          {
+            "a": {
+              "t": "long",
+              "v": 3
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "cov-or",
+      "split": "coverage",
+      "support": "unsupported",
+      "features": [
+        "or"
+      ],
+      "source": "1|2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "or/and are refused rather than guessed.",
+      "expect_support": "unsupported"
+    },
+    {
+      "id": "cov-div",
+      "split": "coverage",
+      "support": "partial",
+      "features": [
+        "div-int"
+      ],
+      "source": "5 div 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Nonnegative div is implemented. The construct is partial because negative div/mod are refused.",
+      "expected": {
+        "t": "long",
+        "v": 2
+      }
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+const sections = [
+  {
+    title: "What is translated",
+    body: "Long and float arithmetic, booleans, chars, symbols, dates, lists, dictionaries, simple tables, assignment, lambdas without nested closures, projections, conditionals, the each family, over and scan, and a small select/exec/update/delete subset. The full list is in docs/supported-constructs.md.",
+  },
+  {
+    title: "What is refused",
+    body: "Or and and, cast, peach, if/do/while, atom roll and deal, and any syntax the parser does not recognize. A refusal leaves the Python field empty.",
+  },
+  {
+    title: "Partial",
+    body: "Short, int, byte, real, month, and timestamp literals are represented. Integer div and mod are partial because negatives raise a domain error. Unary over without a do-count is a capped converge. Partial cases are excluded from headline accuracy.",
+  },
+  {
+    title: "Expected values",
+    body: "corpus/cases.json is hand-authored. The scoring code rejects a provenance that starts with generated-by-translator. Agreement with those values is not the same as a q process confirming them.",
+  },
+  {
+    title: "Execution",
+    body: "Studio runs use a Python subprocess with a stripped environment, CPU and address-space limits, and an AST allow-list. Generated code may only call q2py.runtime. Corpus scoring uses the same allow-list in-process so a full holdout measurement stays practical.",
+  },
+  {
+    title: "Oracle",
+    body: "If q is not on PATH and Q2PY_Q_BIN is unset, every status surface says Oracle: unavailable. Finding q does not turn on live oracle execution in this build.",
+  },
+];
+
+export default function DocsPage() {
+  return (
+    <div className="max-w-3xl space-y-8">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">Documentation</h1>
+        <p className="mt-1 text-sm text-muted">
+          Repository documents cover architecture, validation methodology, the type mapping, security, and deployment.
+        </p>
+      </div>
+      {sections.map((section) => (
+        <section key={section.title}>
+          <h2 className="text-lg font-medium">{section.title}</h2>
+          <p className="mt-2 text-sm leading-6 text-muted">{section.body}</p>
+        </section>
+      ))}
+    </div>
+  );
+}
