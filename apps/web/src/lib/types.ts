@@ -137,6 +137,9 @@ export type StatusPayload = {
   };
   sandbox: {
     user_runs: string;
+    provider: string;
+    boundary: string;
+    container: boolean;
     limits: { timeout_seconds: number; cpu_seconds: number; address_space_bytes: number };
   };
   support_levels: string[];

@@ -1,25 +1,24 @@
-"""Execute generated Python without giving it the host builtins.
+"""Execute generated Python behind a replaceable sandbox provider.
 
-This is the local sandbox: an AST allow-list plus a short-lived subprocess with
-a stripped environment, a CPU limit, an address-space limit, and a timeout.
-It is not a container. Network and filesystem calls are unavailable to generated
-code because the builtins exposed to it do not include them.
+The local providers are an AST allow-list plus either an in-process exec or a
+short-lived ``python -I`` subprocess. Neither one is a container, a VM, or a
+network namespace. Production isolation has to be a different
+``SandboxProvider``.
 """
 
 from __future__ import annotations
 
 import ast
-import inspect
 import json
-import os
+import re
 import subprocess
 import sys
-import textwrap
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
 
 from q2py.diagnostics import Diagnostic, error
+from q2py.sandbox_api import SAFE_RUNTIME_NAMES
 
 _ALLOWED_NODES = {
     ast.Module,
@@ -39,41 +38,94 @@ _ALLOWED_NODES = {
     ast.Constant,
     ast.List,
     ast.Tuple,
-    ast.keyword,
     ast.Lambda,
     ast.Subscript,
-    ast.BinOp,
-    ast.Add,
-    ast.Sub,
-    ast.Mult,
-    ast.Div,
-    ast.Mod,
-    ast.BitOr,
-    ast.BitAnd,
-    ast.Compare,
-    ast.Eq,
-    ast.NotEq,
-    ast.Lt,
-    ast.Gt,
-    ast.LtE,
-    ast.GtE,
     ast.UnaryOp,
     ast.USub,
-    ast.Not,
-    ast.BoolOp,
-    ast.And,
-    ast.Or,
-    ast.IfExp,
-    ast.Dict,
-    ast.FormattedValue,
-    ast.JoinedStr,
-    ast.Starred,
-    ast.Slice,
 }
 
+# Names that must never be resolved, called, or defined in generated code.
+_DENIED_NAMES = frozenset(
+    {
+        "open",
+        "eval",
+        "exec",
+        "compile",
+        "globals",
+        "locals",
+        "vars",
+        "getattr",
+        "setattr",
+        "delattr",
+        "hasattr",
+        "dir",
+        "type",
+        "object",
+        "super",
+        "breakpoint",
+        "input",
+        "help",
+        "memoryview",
+        "classmethod",
+        "staticmethod",
+        "property",
+        "isinstance",
+        "issubclass",
+        "callable",
+        "__import__",
+        "__builtins__",
+        "__loader__",
+        "__spec__",
+        "os",
+        "sys",
+        "subprocess",
+        "socket",
+        "importlib",
+        "pathlib",
+        "shutil",
+        "ctypes",
+        "builtins",
+        "pickle",
+        "marshal",
+        "resource",
+        "mmap",
+        "pty",
+    }
+)
 
-class Executor(Protocol):
+# Generator and frame internals that are not dunder names.
+_DENIED_ATTRS = frozenset(
+    {
+        "gi_frame",
+        "gi_code",
+        "gi_yieldfrom",
+        "cr_frame",
+        "cr_code",
+        "ag_frame",
+        "ag_code",
+        "f_globals",
+        "f_locals",
+        "f_back",
+        "f_code",
+        "f_builtins",
+        "tb_frame",
+        "tb_next",
+        "tb_lineno",
+    }
+)
+
+_ENV_ATTRS = frozenset({"get", "set", "set_global"})
+_GENERATED_FUNCTION = re.compile(r"_lam\d+\Z")
+
+
+class SandboxProvider(Protocol):
+    """Run generated Python. A container or VM runner can replace the local ones."""
+
     def run(self, source: str) -> ExecResult: ...
+
+
+# Pipeline code still imports this name.
+Executor = SandboxProvider
 
 
 @dataclass
@@ -84,6 +136,17 @@ class ExecResult:
     signal: str | None
     message: str
     diagnostics: list[Diagnostic]
+
+
+def child_environment() -> dict[str, str]:
+    """Environment for the subprocess runner. Parent secrets are not copied."""
+    return {
+        "PYTHONNOUSERSITE": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "HOME": "/tmp",
+    }
 
 
 def validate_generated(source: str) -> list[Diagnostic]:
@@ -103,81 +166,120 @@ def validate_generated(source: str) -> list[Diagnostic]:
                     "Q2PY501",
                 )
             )
-        if isinstance(node, ast.Import):
-            names = [alias.name for alias in node.names]
-            if names != ["q2py.runtime"]:
-                problems.append(error("compile", "sandbox rejected import", node.lineno, node.col_offset, "Q2PY502"))
-        if isinstance(node, ast.Name) and node.id.startswith("_") and node.id != "_":
-            # Generated locals are `_vN` and `_lamN`. Dunder names are not.
-            if node.id.startswith("__"):
-                problems.append(error("compile", f"sandbox rejected name {node.id}", node.lineno, node.col_offset, "Q2PY504"))
-        if isinstance(node, ast.Attribute):
-            reason = _attribute_reason(node)
-            if reason:
-                problems.append(error("compile", reason, node.lineno, node.col_offset, "Q2PY503"))
-        if isinstance(node, ast.Subscript) and not (isinstance(node.value, ast.Name) and node.value.id == "args"):
-            problems.append(error("compile", "sandbox rejected subscript", node.lineno, node.col_offset, "Q2PY505"))
+            continue
+        problems.extend(_check_node(node))
     return problems
 
 
-def _attribute_reason(node: ast.Attribute) -> str | None:
-    """Allow only the attribute shapes the code generator emits.
+def _check_node(node: ast.AST) -> list[Diagnostic]:
+    found: list[Diagnostic] = []
+    if isinstance(node, ast.Import):
+        names = [alias.name for alias in node.names]
+        if names != ["q2py.runtime"]:
+            found.append(error("compile", "sandbox rejected import", node.lineno, node.col_offset, "Q2PY502"))
+    elif isinstance(node, ast.Name) and _denied_name(node.id):
+        found.append(error("compile", f"sandbox rejected name {node.id}", node.lineno, node.col_offset, "Q2PY504"))
+    elif isinstance(node, ast.FunctionDef) and not _allowed_function(node.name):
+        found.append(error("compile", f"sandbox rejected function {node.name}", node.lineno, node.col_offset, "Q2PY506"))
+    elif isinstance(node, ast.Attribute):
+        reason = _attribute_reason(node)
+        if reason:
+            found.append(error("compile", reason, node.lineno, node.col_offset, "Q2PY503"))
+    elif isinstance(node, ast.Subscript):
+        reason = _subscript_reason(node)
+        if reason:
+            found.append(error("compile", reason, node.lineno, node.col_offset, "Q2PY505"))
+    elif isinstance(node, ast.Call) and not isinstance(node.func, (ast.Attribute, ast.Lambda)):
+        found.append(error("compile", "sandbox rejected call", node.lineno, node.col_offset, "Q2PY507"))
+    return found
 
-    Nested attributes and dunder names are how a program reaches
-    ``function.__globals__`` and the host builtins.
-    """
-    if node.attr.startswith("_"):
+
+def _denied_name(name: str) -> bool:
+    return name in _DENIED_NAMES or name.startswith("__")
+
+
+def _allowed_function(name: str) -> bool:
+    return name == "q2py_program" or _GENERATED_FUNCTION.fullmatch(name) is not None
+
+
+def _attribute_reason(node: ast.Attribute) -> str | None:
+    if node.attr.startswith("_") or node.attr in _DENIED_ATTRS or node.attr in _DENIED_NAMES:
         return f"sandbox rejected attribute {node.attr}"
     if not isinstance(node.value, ast.Name):
         return "sandbox rejected nested attribute access"
     base = node.value.id
     if base == "env":
-        return None if node.attr in {"get", "set", "set_global"} else "sandbox rejected attribute access on env"
+        return None if node.attr in _ENV_ATTRS else "sandbox rejected attribute access on env"
     if base == "scope":
         return None if node.attr == "get" else "sandbox rejected attribute access on scope"
     if base != "q":
         return f"sandbox rejected attribute access on {base}"
-    import q2py.runtime as runtime
-
-    value = getattr(runtime, node.attr, None)
-    if inspect.ismodule(value) or not callable(value):
+    if node.attr not in SAFE_RUNTIME_NAMES:
         return f"sandbox rejected runtime attribute {node.attr}"
     return None
 
 
-class InProcessExecutor:
-    """AST-gated execution in-process. Used to score the authored corpus quickly.
+def _subscript_reason(node: ast.Subscript) -> str | None:
+    if not isinstance(node.value, ast.Name) or node.value.id != "args":
+        return "sandbox rejected subscript"
+    if not isinstance(node.slice, ast.Constant) or not isinstance(node.slice.value, int):
+        return "sandbox rejected subscript"
+    return None
 
-    User-facing runs use SubprocessExecutor. This provider still refuses imports
-    and non-allowlisted syntax; it does not apply OS resource limits.
+
+def _blocked_import(*_args: object, **_kwargs: object) -> object:
+    raise PermissionError("generated code cannot import modules")
+
+
+def _sandbox_builtins() -> dict[str, object]:
+    return {"__import__": _blocked_import}
+
+
+def _execute(source: str, facade: object) -> ExecResult:
+    import q2py.runtime as runtime
+
+    problems = validate_generated(source)
+    if problems:
+        return ExecResult(False, None, "", "sandbox", "generated code rejected", problems)
+    namespace: dict[str, object] = {"q": facade, "__builtins__": _sandbox_builtins()}
+    cleaned = source.replace("import q2py.runtime as q\n", "", 1)
+    try:
+        exec(compile(cleaned, "<q2py>", "exec"), namespace)  # noqa: S102
+        program = namespace["q2py_program"]
+        if not callable(program):
+            raise TypeError("q2py_program is not callable")
+        value = program()
+    except runtime.QError as exc:
+        return ExecResult(False, None, "", exc.signal, str(exc), [error("exec", f"'{exc.signal}: {exc}", code="Q2PY600")])
+    except Exception as exc:  # noqa: BLE001
+        return ExecResult(False, None, "", "error", f"{type(exc).__name__}: {exc}", [error("exec", str(exc), code="Q2PY613")])
+    canon = runtime.canon_value(value)
+    if not isinstance(canon, dict):
+        return ExecResult(False, None, "", "error", "runtime result was not canonical JSON", [error("exec", "bad canon", code="Q2PY614")])
+    return ExecResult(True, canon, str(runtime.display(value)), None, "", [])
+
+
+class InProcessExecutor:
+    """AST-gated execution in the studio process.
+
+    Scoring uses this provider. It does not apply rlimits and it shares the
+    host process, so a bug below the AST gate would see the host. User-facing
+    runs use ``SubprocessExecutor``.
     """
 
     def run(self, source: str) -> ExecResult:
-        problems = validate_generated(source)
-        if problems:
-            return ExecResult(False, None, "", "sandbox", "generated code rejected", problems)
-        import q2py.runtime as runtime
+        from q2py.sandbox_api import build_facade
 
-        def blocked(*_args: object, **_kwargs: object) -> object:
-            raise PermissionError("generated code cannot import modules")
-
-        safe_builtins = {"True": True, "False": False, "None": None, "__import__": blocked}
-        namespace: dict[str, object] = {"q": runtime, "__builtins__": safe_builtins}
-        cleaned = source.replace("import q2py.runtime as q\n", "", 1)
-        try:
-            exec(compile(cleaned, "<q2py>", "exec"), namespace)  # noqa: S102
-            program = namespace["q2py_program"]
-            if not callable(program):
-                raise TypeError("q2py_program is not callable")
-            value = program()
-        except runtime.QError as exc:
-            return ExecResult(False, None, "", exc.signal, str(exc), [error("exec", f"'{exc.signal}: {exc}", code="Q2PY600")])
-        except Exception as exc:  # noqa: BLE001
-            return ExecResult(False, None, "", "error", f"{type(exc).__name__}: {exc}", [error("exec", str(exc), code="Q2PY613")])
-        return ExecResult(True, runtime.canon_value(value), runtime.display(value), None, "", [])
+        return _execute(source, build_facade())
 
 
 class SubprocessExecutor:
+    """``python -I`` with a stripped environment, CPU and address-space limits, and a timeout.
+
+    This is not a container. The child can still use the host network
+    namespace if it gets past the AST gate.
+    """
+
     def __init__(self, timeout: float = 5.0) -> None:
         self.timeout = timeout
 
@@ -186,15 +288,6 @@ class SubprocessExecutor:
         if problems:
             return ExecResult(False, None, "", "sandbox", "generated code rejected", problems)
         runner = Path(__file__).with_name("sandbox_main.py")
-        env = {
-            "PATH": os.environ.get("PATH", ""),
-            "PYTHONPATH": str(Path(__file__).resolve().parents[1]),
-            "PYTHONNOUSERSITE": "1",
-            "PYTHONDONTWRITEBYTECODE": "1",
-            "LANG": "C.UTF-8",
-            "LC_ALL": "C.UTF-8",
-            "HOME": "/tmp",
-        }
         try:
             completed = subprocess.run(
                 [sys.executable, "-I", str(runner)],
@@ -202,7 +295,7 @@ class SubprocessExecutor:
                 capture_output=True,
                 text=True,
                 timeout=self.timeout,
-                env=env,
+                env=child_environment(),
                 check=False,
             )
         except subprocess.TimeoutExpired:
@@ -235,11 +328,3 @@ class SubprocessExecutor:
             message,
             [error("exec", f"'{signal}: {message}", code="Q2PY600")],
         )
-
-
-def runner_source() -> str:
-    return textwrap.dedent(
-        """
-        # The subprocess entry point lives in sandbox_main.py.
-        """
-    )

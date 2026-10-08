@@ -48,7 +48,8 @@ export default function SettingsPage() {
             <dt className="text-muted">Sandbox</dt>
             <dd className="mt-1 font-medium">{status.sandbox.user_runs}</dd>
             <dd className="mt-1 text-muted">
-              timeout {status.sandbox.limits.timeout_seconds}s · cpu {status.sandbox.limits.cpu_seconds}s
+              {status.sandbox.boundary}. {status.sandbox.container ? "Container." : "Not a container."} Timeout{" "}
+              {status.sandbox.limits.timeout_seconds}s · cpu {status.sandbox.limits.cpu_seconds}s
             </dd>
           </div>
         </dl>

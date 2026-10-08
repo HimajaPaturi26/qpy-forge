@@ -55,6 +55,9 @@ def status() -> dict[str, Any]:
         "corpus": meta(),
         "sandbox": {
             "user_runs": "subprocess",
+            "provider": "SubprocessExecutor",
+            "boundary": "ast-allowlist-plus-subprocess",
+            "container": False,
             "limits": {"timeout_seconds": 5, "cpu_seconds": 3, "address_space_bytes": 2_500_000_000},
         },
         "support_levels": ["supported", "partial", "unsupported", "oracle-unavailable"],
