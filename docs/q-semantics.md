@@ -60,6 +60,7 @@ These are the rules the runtime implements. Expectations in the corpus were writ
 - `x xbar y` is `x * floor(y % x)` for a positive bar size. A nonpositive size is a domain error.
 - Positive `rotate` moves items left. Negative `rotate` moves them right.
 - `except` drops left items that occur on the right. `inter` keeps left items that occur on the right, including duplicates. `union` keeps first-seen items from the left, then new items from the right.
+- `1 2 cross 3 4` is the pairs `1 3`, `1 4`, `2 3`, `2 4`. An atom is one item, so `1 cross 2 3` is `1 2` then `1 3`. An empty argument makes an empty result. There is no precedence: `1 cross 2 cross 3` is `1 cross (2 cross 3)`. A table, dictionary, or function signals `type`. The prefix form is refused.
 - `group` maps each distinct item to the indices where it occurs, in first-seen order.
 
 ## Functions and iterators

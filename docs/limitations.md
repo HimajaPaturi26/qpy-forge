@@ -10,6 +10,7 @@
 - `if`, `do`, `while`, and `peach` are refused before code generation. Atom `?` on two literals is refused the same way. A dynamic atom `?` whose arguments are not literals still compiles to `q_find`, which raises at runtime instead of returning a value.
 - Greater and lesser accept numeric atoms and conforming lists. Symbols, chars, dates, months, and timestamps signal `type` rather than being ordered.
 - `$` cast covers the numeric targets `b x h i j e f` and the matching type codes. It does not parse a character vector as a number, and it does not cast symbols, chars, dates, months, or timestamps.
+- `cross` accepts atoms and lists. Tables, dictionaries, and functions signal `type`. `do` stays refused: a count of zero returns the generic null `::`, and this value model has no `::`.
 - The in-process corpus executor does not apply the subprocess resource limits.
 - Source maps record q line and column for generated statements. They do not map every Python expression back to a character range.
 - Polars is used for table filter and projection. Nested table cells and many temporal types are outside that path.

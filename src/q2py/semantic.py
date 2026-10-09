@@ -118,6 +118,7 @@ _SUPPORTED_VERBS = frozenset(
         "except",
         "inter",
         "union",
+        "cross",
         "div-int",
         "mod",
     }

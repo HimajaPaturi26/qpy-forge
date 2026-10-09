@@ -1292,6 +1292,11 @@ def q_inter(left: Value, right: Value) -> Vec:
     return vec_of(kept)
 
 
+def q_cross(left: Value, right: Value) -> Vec:
+    """Each left item paired with each right item. An atom is one item."""
+    return vec_of([vec_of([a, b]) for a in _as_items(left, "cross") for b in _as_items(right, "cross")])
+
+
 def q_union(left: Value, right: Value) -> Vec:
     out: list[Value] = []
     for item in _as_items(left, "union") + _as_items(right, "union"):
@@ -1901,6 +1906,7 @@ _BIN = {
     "except": q_except,
     "inter": q_inter,
     "union": q_union,
+    "cross": q_cross,
 }
 
 _UNARY = {

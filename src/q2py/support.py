@@ -7,7 +7,7 @@ Semantic accuracy is computed only on holdout cases whose declared support is
 from __future__ import annotations
 
 TARGET = 0.90
-CORPUS_VERSION = "1.6.0"
+CORPUS_VERSION = "1.7.0"
 
 # Constructs the engine claims to translate with q-equivalent results.
 SUPPORTED_FEATURES: frozenset[str] = frozenset(
@@ -98,6 +98,7 @@ SUPPORTED_FEATURES: frozenset[str] = frozenset(
         "or",
         "and",
         "cast",
+        "cross",
         "each",
         "each-left",
         "each-right",

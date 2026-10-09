@@ -1,5 +1,5 @@
 {
-  "version": "1.6.0",
+  "version": "1.7.0",
   "target": 0.9,
   "cases": [
     {
@@ -5762,6 +5762,79 @@
       "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
       "note": "Byte has no infinity. Casting float infinity to byte is domain.",
       "expected_signal": "domain"
+    },
+    {
+      "id": "dev-cross",
+      "split": "dev",
+      "support": "supported",
+      "features": ["cross"],
+      "source": "1 2 cross 3 4",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "Each left item pairs with each right item. Order is 1 3, 1 4, 2 3, 2 4.",
+      "expected": {
+        "t": "list",
+        "etype": "general",
+        "v": [
+          {"t": "list", "etype": "long", "v": [{"t": "long", "v": 1}, {"t": "long", "v": 3}]},
+          {"t": "list", "etype": "long", "v": [{"t": "long", "v": 1}, {"t": "long", "v": 4}]},
+          {"t": "list", "etype": "long", "v": [{"t": "long", "v": 2}, {"t": "long", "v": 3}]},
+          {"t": "list", "etype": "long", "v": [{"t": "long", "v": 2}, {"t": "long", "v": 4}]}
+        ]
+      }
+    },
+    {
+      "id": "dev-cross-atom",
+      "split": "dev",
+      "support": "supported",
+      "features": ["cross"],
+      "source": "1 cross 2 3",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "An atom is one item. 1 pairs with 2 and then with 3.",
+      "expected": {
+        "t": "list",
+        "etype": "general",
+        "v": [
+          {"t": "list", "etype": "long", "v": [{"t": "long", "v": 1}, {"t": "long", "v": 2}]},
+          {"t": "list", "etype": "long", "v": [{"t": "long", "v": 1}, {"t": "long", "v": 3}]}
+        ]
+      }
+    },
+    {
+      "id": "dev-cross-symbol",
+      "split": "dev",
+      "support": "supported",
+      "features": ["cross"],
+      "source": "1 2 cross `a",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A symbol atom is one right item. Each pair is a long then that symbol.",
+      "expected": {
+        "t": "list",
+        "etype": "general",
+        "v": [
+          {"t": "list", "etype": "general", "v": [{"t": "long", "v": 1}, {"t": "symbol", "v": "a"}]},
+          {"t": "list", "etype": "general", "v": [{"t": "long", "v": 2}, {"t": "symbol", "v": "a"}]}
+        ]
+      }
+    },
+    {
+      "id": "cov-cross-empty",
+      "split": "coverage",
+      "support": "supported",
+      "features": ["cross"],
+      "source": "() cross 1 2",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "An empty left list has no items, so the cross is empty.",
+      "expected": {"t": "list", "etype": "general", "v": []}
+    },
+    {
+      "id": "cov-cross-type",
+      "split": "coverage",
+      "support": "supported",
+      "features": ["cross"],
+      "source": "1 cross ([] a:1 2)",
+      "provenance": "hand-authored from published q evaluation rules; not produced by the translator",
+      "note": "A table is not a list of items for cross.",
+      "expected_signal": "type"
     }
   ]
 }

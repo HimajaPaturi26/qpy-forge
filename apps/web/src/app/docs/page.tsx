@@ -1,7 +1,7 @@
 const sections = [
   {
     title: "What is translated",
-    body: "Long and float arithmetic, greater (|) and lesser (&), numeric $ cast, booleans including 01b vectors, chars, symbols, dates, nulls and infinities, lists, dictionaries, simple tables, assignment, lambdas without nested closures, projections, conditionals, the each family, over and scan (including a parenthesized lambda), reductions such as prd, med, and var, and a small select/exec/update/delete subset. The full list is in docs/supported-constructs.md.",
+    body: "Long and float arithmetic, greater (|) and lesser (&), numeric $ cast, cross, booleans including 01b vectors, chars, symbols, dates, nulls and infinities, lists, dictionaries, simple tables, assignment, lambdas without nested closures, projections, conditionals, the each family, over and scan (including a parenthesized lambda), reductions such as prd, med, and var, and a small select/exec/update/delete subset. The full list is in docs/supported-constructs.md.",
   },
   {
     title: "What is refused",

@@ -51,6 +51,7 @@ _KEYWORDS = {
     "except",
     "inter",
     "union",
+    "cross",
 }
 
 

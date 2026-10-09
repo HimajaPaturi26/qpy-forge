@@ -48,6 +48,7 @@ SAFE_RUNTIME_NAMES: frozenset[str] = frozenset(
         "q_cols",
         "q_cond",
         "q_count",
+        "q_cross",
         "q_delete",
         "q_desc",
         "q_dev",

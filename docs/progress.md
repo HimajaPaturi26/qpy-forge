@@ -1,5 +1,16 @@
 # Progress
 
+## Cross (corpus 1.7.0)
+
+`cross` is infix. Each left item is paired with each right item, and an atom counts as one item. `1 2 cross 3 4` is `1 3`, `1 4`, `2 3`, `2 4`. `1 cross 2 cross 3` is `1 cross (2 cross 3)`. An empty side produces an empty list. A table signals `type`. The prefix form stays refused. `do` was not implemented: `do[0;…]` returns the generic null `::`, which this value model does not have.
+
+`PYTHONPATH=src python -m q2py.score` after pytest (263 passed):
+
+- Corpus 1.7.0, hash `bc7d4165a39036a9`, 282 cases: 95 holdout, 148 dev, 39 coverage.
+- Holdout denominator 95. Successes 95. Semantic accuracy 1.0. Wilson 0.9611–1.0.
+- Parse / translation / compile 1.0. Value match 94/94. Signal match 1/1. Runtime returned a value 94/95. Oracle unavailable.
+- Dev 148/148. Coverage 39/39. No holdout case was edited.
+
 ## Numeric cast (corpus 1.6.0)
 
 `$` between two nouns was refused. It now casts numbers. A one-character type string or an integer type code selects boolean, byte, short, int, long, real, or float. Finite values truncate toward zero and wrap in the target width. A null casts to a null of the target type, except boolean: there is no null boolean, so null and zero become `0b`. Positive float infinity becomes the maximum signed short, int, or long; negative infinity becomes the minimum. Infinity cast to byte is `domain`. `$[cond;then;else]` is unchanged. `.` amend stays refused.
