@@ -23,7 +23,7 @@ export default function SettingsPage() {
       {!status && !error ? <p className="text-sm text-muted">Checking the API…</p> : null}
       {error ? (
         <p className="text-sm text-bad" role="alert">
-          {error}. Start the API on port 43118, or set Q2PY_API_ORIGIN for the Next.js rewrite.
+          {error}. Locally the API listens on port 43118. In production set Q2PY_API_ORIGIN to the public API URL.
         </p>
       ) : null}
       {status ? (
@@ -43,6 +43,11 @@ export default function SettingsPage() {
               {status.corpus.version} · {status.corpus.hash}
             </dd>
             <dd className="mt-1 text-muted">Target {status.corpus.target}</dd>
+          </div>
+          <div className="rounded-lg border border-line p-4 sm:col-span-2">
+            <dt className="text-muted">History storage</dt>
+            <dd className="mt-1 font-medium">SQLite in this API process. Not a durable volume.</dd>
+            <dd className="mt-1 text-muted">{status.persistence.note}</dd>
           </div>
           <div className="rounded-lg border border-line p-4">
             <dt className="text-muted">Sandbox</dt>

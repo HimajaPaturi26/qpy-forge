@@ -2,11 +2,16 @@
 
 from __future__ import annotations
 
+import os
+from collections.abc import Awaitable, Callable
 from typing import Any
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
+from starlette.responses import Response
 
 from q2py import __version__
 from q2py.corpus import load_cases, meta
@@ -16,14 +21,42 @@ from q2py.oracle import oracle_status
 from q2py.pipeline import translate, validate
 
 app = FastAPI(title="Q2Py Studio", version=__version__)
+
+
+def _cors_origins() -> list[str]:
+    raw = os.environ.get("Q2PY_CORS_ORIGINS", "*").strip()
+    if raw == "*":
+        return ["*"]
+    return [item.strip() for item in raw.split(",") if item.strip()]
+
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_cors_origins(),
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 _MAX_SOURCE = 100_000
+_MAX_BODY = 200_000
+
+
+@app.middleware("http")
+async def limit_request_body(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
+    declared = request.headers.get("content-length")
+    if declared is not None and declared.isdigit() and int(declared) > _MAX_BODY:
+        return JSONResponse(status_code=413, content={"detail": "request body is too large"})
+    return await call_next(request)
+
+
+@app.exception_handler(Exception)
+async def unhandled_error(_request: Request, exc: Exception) -> JSONResponse:
+    if isinstance(exc, HTTPException):
+        detail = exc.detail if isinstance(exc.detail, str) else "request failed"
+        return JSONResponse(status_code=exc.status_code, content={"detail": detail})
+    if isinstance(exc, RequestValidationError):
+        return JSONResponse(status_code=422, content={"detail": "invalid request"})
+    return JSONResponse(status_code=500, content={"detail": "internal error"})
 
 
 class SourceBody(BaseModel):
@@ -61,6 +94,11 @@ def status() -> dict[str, Any]:
             "limits": {"timeout_seconds": 5, "cpu_seconds": 3, "address_space_bytes": 2_500_000_000},
         },
         "support_levels": ["supported", "partial", "unsupported", "oracle-unavailable"],
+        "persistence": {
+            "engine": "sqlite",
+            "durable": False,
+            "note": "History and metric snapshots are SQLite rows in this process. A container without a mounted volume loses that file when it is replaced. This response does not claim the disk is durable.",
+        },
     }
 
 

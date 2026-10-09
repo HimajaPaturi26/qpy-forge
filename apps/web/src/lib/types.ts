@@ -173,4 +173,5 @@ export type StatusPayload = {
     limits: { timeout_seconds: number; cpu_seconds: number; address_space_bytes: number };
   };
   support_levels: string[];
+  persistence: { engine: string; durable: boolean; note: string };
 };

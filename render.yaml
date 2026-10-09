@@ -1,0 +1,15 @@
+# Render API service. The free instance disk is ephemeral: translation history
+# does not survive a restart or a new deploy. Health checks use the API itself.
+services:
+  - type: web
+    name: qpy-forge-api
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: Q2PY_CORPUS
+        value: /app/corpus/cases.json
+      - key: Q2PY_DB
+        value: /data/q2py.sqlite
+      - key: Q2PY_CORS_ORIGINS
+        value: "*"

@@ -1,6 +1,6 @@
 # Q2Py Studio web
 
-Next.js UI for the studio. The API is proxied from `/api` to `Q2PY_API_ORIGIN` (default `http://127.0.0.1:43118`).
+Next.js UI for the studio. The server route `/api` proxies to `Q2PY_API_ORIGIN`. When that variable is unset and `VERCEL` is unset, the target is `http://127.0.0.1:43118`. On Vercel the variable must be the public API origin; loopback is rejected.
 
 ```sh
 npm ci

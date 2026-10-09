@@ -1,6 +1,8 @@
 # Deployment
 
-The API is a long-running process with a SQLite file and a subprocess sandbox. It is not a serverless function.
+The studio is two processes. The Next.js app is a website. The FastAPI app is a long-running container: it scores the corpus, writes SQLite, and runs generated Python in a subprocess. It is not a Vercel function. The q binary is optional and is never executed.
+
+History is SQLite. `/api/v1/status` reports `persistence.durable: false`. A container without a mounted volume loses history when it is replaced. Do not describe that history as persistent.
 
 ## Local
 
@@ -15,9 +17,11 @@ sh scripts/dev.sh
 - Studio: http://127.0.0.1:43117
 - API: http://127.0.0.1:43118
 
-`Q2PY_DB` overrides the SQLite path. `Q2PY_Q_BIN` names a q binary if you want the status endpoint to notice it. The binary is not executed.
+The browser calls `/api` on the Next.js origin. The Next.js server proxies that to `Q2PY_API_ORIGIN`. When the variable is unset and `VERCEL` is unset, the proxy uses `http://127.0.0.1:43118`.
 
-`Q2PY_API_ORIGIN` tells Next.js where to proxy `/api`.
+`Q2PY_DB` overrides the SQLite path. `Q2PY_CORPUS` overrides `corpus/cases.json`. `Q2PY_Q_BIN` names a q binary for the status page only. `Q2PY_CORS_ORIGINS` is a comma-separated list, or `*`.
+
+Templates: `.env.example` and `apps/web/.env.example`.
 
 ## Tests
 
@@ -28,17 +32,37 @@ sh scripts/dev.sh
 cd apps/web && npm test && npm run lint && npm run build
 ```
 
-## Container
-
-The Dockerfile runs the API only:
+## API container
 
 ```sh
 docker build -t q2py-studio .
 docker run --rm -p 43118:43118 q2py-studio
 ```
 
-Serve `apps/web` separately with `npm run build && npm run start`, and set `Q2PY_API_ORIGIN` to the API. q is not installed in the image.
+The image sets `Q2PY_CORPUS=/app/corpus/cases.json` and `Q2PY_DB=/data/q2py.sqlite`. `/data` is a volume mount point. Without a mount, the file is ephemeral. Health check: `GET /api/v1/health`.
 
-## GitHub Actions
+q is not installed in the image. The sandbox is still `python -I` plus the AST allow-list. It is not a nested container.
 
-`.github/workflows/ci.yml` runs the Python gate and the Next.js test, lint, and build. It does not need a kdb+ license.
+### Fly.io
+
+`fly.toml` is the API service. From a logged-in Fly account:
+
+```sh
+fly launch --no-deploy --copy-config
+fly deploy
+curl -fsS "https://<your-app>.fly.dev/api/v1/health"
+```
+
+Attach a volume only if history must survive a restart, and keep `Q2PY_DB` on that volume. This repository has not been deployed to Fly from here.
+
+### Render
+
+`render.yaml` is a Docker web service on the free plan. The free disk is ephemeral. Connect the repo in the Render dashboard and use that blueprint, or create a web service with the Dockerfile, health check path `/api/v1/health`, and the env vars in the file. This repository has not been deployed to Render from here.
+
+## Website on Vercel
+
+The Next.js app lives in `apps/web`. In the Vercel project set Root Directory to `apps/web`. Set `Q2PY_API_ORIGIN` to the public API origin, for example `https://<your-app>.fly.dev`, with no trailing slash. A loopback value is ignored on Vercel and `/api` returns 503.
+
+After the API health URL responds, open the Vercel site and translate `2*3+4` in Studio. The browser should stay on the Vercel host; the Next.js server calls the API.
+
+This repository has not been published to a public URL from here. There is no authenticated Vercel or Fly session in this environment.

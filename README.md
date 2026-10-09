@@ -44,6 +44,8 @@ sh scripts/dev.sh
 - [Studio](http://127.0.0.1:43117)
 - API on port 43118, prefix `/api/v1`
 
+The website and the API deploy separately. The Next.js app proxies `/api` to `Q2PY_API_ORIGIN`. The API is a container, not a serverless function. SQLite history is not durable unless the host mounts a volume. Steps are in `docs/deployment.md`. Templates are `.env.example` and `apps/web/.env.example`.
+
 Pages: landing, translation studio, validation, accuracy dashboard, corpus, history, documentation, status, plus 404 and 500.
 
 ## Test

@@ -23,6 +23,39 @@ def test_health(client: TestClient) -> None:
     assert response.json()["status"] == "ok"
 
 
+def test_status_does_not_claim_durable_history(client: TestClient) -> None:
+    body = client.get("/api/v1/status").json()
+    assert body["persistence"]["engine"] == "sqlite"
+    assert body["persistence"]["durable"] is False
+    assert "volume" in body["persistence"]["note"]
+    assert body["oracle"]["status"] == "oracle-unavailable"
+
+
+def test_oversized_body_is_rejected(client: TestClient) -> None:
+    response = client.post(
+        "/api/v1/translate",
+        content=b"x" * 200_001,
+        headers={"content-type": "application/json"},
+    )
+    assert response.status_code == 413
+    assert response.json()["detail"] == "request body is too large"
+
+
+def test_invalid_json_stays_a_client_error(client: TestClient) -> None:
+    response = client.post("/api/v1/translate", content=b"not-json", headers={"content-type": "application/json"})
+    assert response.status_code == 422
+
+
+def test_corpus_path_honors_env(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    from q2py.corpus import corpus_path, load_cases
+
+    target = tmp_path / "cases.json"
+    target.write_text(Path("corpus/cases.json").read_text(encoding="utf-8"), encoding="utf-8")
+    monkeypatch.setenv("Q2PY_CORPUS", str(target))
+    assert corpus_path() == target
+    assert load_cases()[0]["id"]
+
+
 def test_translate_and_history(client: TestClient) -> None:
     response = client.post("/api/v1/translate", json={"source": "2*3+4"})
     assert response.status_code == 200

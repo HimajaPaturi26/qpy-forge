@@ -4,18 +4,36 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from pathlib import Path
 from typing import Any
 
 from q2py.pipeline import validate
 from q2py.support import CORPUS_VERSION, TARGET
 
-ROOT = Path(__file__).resolve().parents[2]
-CORPUS_PATH = ROOT / "corpus" / "cases.json"
+
+def corpus_path() -> Path:
+    """Locate the authored corpus.
+
+    A source checkout keeps it at ``corpus/cases.json``. An installed package
+    or container sets ``Q2PY_CORPUS``, or starts with that file on the working
+    directory. The path is resolved on each load so tests can point elsewhere.
+    """
+    override = os.environ.get("Q2PY_CORPUS")
+    if override:
+        return Path(override)
+    candidates = (
+        Path(__file__).resolve().parents[2] / "corpus" / "cases.json",
+        Path.cwd() / "corpus" / "cases.json",
+    )
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+    return candidates[0]
 
 
 def load_cases(path: Path | None = None) -> list[dict[str, Any]]:
-    payload = json.loads((path or CORPUS_PATH).read_text(encoding="utf-8"))
+    payload = json.loads((path or corpus_path()).read_text(encoding="utf-8"))
     cases = payload["cases"]
     if not isinstance(cases, list):
         raise ValueError("corpus cases must be a list")
