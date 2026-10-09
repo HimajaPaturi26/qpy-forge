@@ -5,7 +5,7 @@ const sections = [
   },
   {
     title: "Supported subset",
-    body: "Long and float arithmetic, greater (|) and lesser (&), numeric $ cast, cross, booleans including 01b, chars, symbols, dates and months, nulls and infinities, lists, dictionaries, simple tables, assignment, lambdas without nested closures, projections, conditionals, each, over, scan, reductions such as prd, med, and var, and a limited select, exec, update, and delete. The Accuracy registry is the list for this process.",
+    body: "Long and float arithmetic, greater (|) and lesser (&), numeric $ cast, cross, infix xexp as exp(y * log x), booleans including 01b, chars, symbols, dates and months, nulls and infinities, lists, dictionaries, simple tables, assignment, lambdas without nested closures, projections, conditionals, each, over, scan, reductions such as prd, med, and var, and a limited select, exec, update, and delete. The Accuracy registry is the list for this process. xexp is covered by regression tests and is outside the original holdout.",
   },
   {
     title: "Refused",

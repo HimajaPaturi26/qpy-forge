@@ -1,4 +1,4 @@
-"""Versioned HTTP API for Q2Py Studio."""
+"""Versioned HTTP API for Q2Py Forge."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ from q2py.metrics import measure
 from q2py.oracle import oracle_status
 from q2py.pipeline import translate, validate
 
-app = FastAPI(title="Q2Py Studio", version=__version__)
+app = FastAPI(title="Q2Py Forge", version=__version__)
 
 
 def _cors_origins() -> list[str]:

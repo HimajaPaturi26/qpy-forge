@@ -1,6 +1,6 @@
 # Deployment
 
-The studio is two processes. The Next.js app is a website. The FastAPI app is a long-running container: it scores the corpus, writes SQLite, and runs generated Python in a subprocess. It is not a Vercel function. The q binary is optional and is never executed.
+Q2Py Forge is two processes. The Next.js app is the website. The FastAPI app scores the corpus, writes SQLite, and runs generated Python in a subprocess. The public website and API are separate Vercel projects. The API on Vercel is a Python function with SQLite under `/tmp`, so history there is not durable. `Dockerfile`, `fly.toml`, and `render.yaml` describe alternative long-running hosts and have not been deployed from this repository. The q binary is optional and is never executed.
 
 History is SQLite. `/api/v1/status` reports `persistence.durable: false`. A container without a mounted volume loses history when it is replaced. Do not describe that history as persistent.
 
@@ -74,5 +74,7 @@ Checked on 2026-10-09 after `vercel deploy --prod`:
 - `GET /api/v1/health` on the API and through the website both returned `{"status":"ok","version":"0.1.0"}`.
 - `POST /api/v1/validate` with `2*3+4` through the website executed and returned long `14`.
 - Oracle status was `oracle-unavailable`. SQLite history is not durable on this host.
+
+A later API deploy, `dpl_GAWRUkwQVceGoQUCXr5YYb6qz2ML`, was checked through https://qpy-forge.vercel.app. `2 xexp 3` executed and returned float `7.999999999999998`. `2*3+4` still returned long `14`. The oracle remained unavailable.
 
 `himajapaturi.in` is attached to the `qpy-forge` project and is not serving the site until Hostinger DNS is changed. Vercel’s verify command recommended two A records for `@` (`216.198.79.1` and `64.29.17.1`) and a CNAME for `www` (`2f0659adc4688a4f.vercel-dns-017.com`). Nameservers were left on Hostinger.

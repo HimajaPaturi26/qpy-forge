@@ -1,6 +1,6 @@
 # Plan
 
-Q2Py Studio translates a documented subset of q into Python and checks the result against hand-authored expected values. A q/kdb+ process is optional and is not required to build, test, or run the studio.
+Q2Py Forge translates a documented subset of q into Python and checks the result against hand-authored expected values. A q/kdb+ process is optional and is not required to build, test, or run the project.
 
 ## Decisions
 

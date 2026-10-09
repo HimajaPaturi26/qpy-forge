@@ -32,4 +32,4 @@ Corpus scoring calls `InProcessExecutor`, which uses the same AST allow-list and
 
 SQLite (`Q2PY_DB`, default `data/q2py.sqlite`) stores translation events and metric snapshots. There is no account system.
 
-The Next.js app rewrites `/api/*` to the FastAPI process (`Q2PY_API_ORIGIN`, default `http://127.0.0.1:43118`).
+The Next.js route handler proxies `/api/*` to the FastAPI process (`Q2PY_API_ORIGIN`). When that variable and `VERCEL` are unset, the target is `http://127.0.0.1:43118`.

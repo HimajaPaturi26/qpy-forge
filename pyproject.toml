@@ -1,7 +1,7 @@
 [project]
 name = "q2py-studio"
 version = "0.1.0"
-description = "Translate an in-scope subset of q/kdb+ into Python, validate it, and measure semantic accuracy."
+description = "Q2Py Forge translates supported Q/kdb+ expressions into Python and validates them against authored expectations."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

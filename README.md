@@ -1,14 +1,18 @@
-# Q2Py Studio
+# Q2Py Forge
 
-Q2Py Studio translates a documented subset of q/kdb+ into Python, runs that Python in a local sandbox, and compares the result with expected values stored in the repository. If a construct is unsupported, the translator returns a diagnostic and does not invent Python.
+Q2Py Forge translates supported Q/kdb+ expressions into Python through an inspectable compiler pipeline. It shows the generated Python, runs that Python under a restricted local executor, and compares the result with expectations stored in this repository. Unsupported syntax returns a diagnostic and does not invent Python.
 
-A kdb+ license is not required to develop, test, run, or deploy this project. When the `q` binary is absent, the API and dashboard report **Oracle: unavailable**.
+This is an independent engineering project by [Himaja Paturi](https://www.linkedin.com/in/himajapaturi/).
+
+A kdb+ license is not required to develop, test, run, or deploy this project. When the `q` binary is absent, the API and the Accuracy page report the oracle as unavailable. That is not a completed oracle check.
+
+The public site is [https://qpy-forge.vercel.app](https://qpy-forge.vercel.app). The API is [https://qpy-forge-api.vercel.app](https://qpy-forge-api.vercel.app). `himajapaturi.in` is attached in the website project and is not serving this app.
 
 ## Measured holdout result
 
-This is agreement with hand-authored expectations in `corpus/cases.json`. It is not a live q audit. Re-run the scorer after you clone; the `commit` field is whatever `git rev-parse --short HEAD` was at measurement time.
+This is agreement with hand-authored expectations in `corpus/cases.json`. It is not a live q audit. Re-run the scorer after you clone. The `commit` field is whatever `git rev-parse --short HEAD` was at measurement time.
 
-On this tree, `PYTHONPATH=src python -m q2py.score` reported:
+On corpus 1.7.0, `PYTHONPATH=src python -m q2py.score` reported:
 
 | Metric | Value |
 | --- | --- |
@@ -28,9 +32,9 @@ On this tree, `PYTHONPATH=src python -m q2py.score` reported:
 | Oracle match | null |
 | Oracle | `oracle-unavailable` (`q` binary not found) |
 
-The protected holdout ratio is unchanged from corpus 1.0.0. Growing the corpus did not raise it. The runtime rate is 94/95 because `length-signal` is expected to raise `length`. That match is a semantic success and not a returned value. Partial cases and unsupported coverage cases are outside the accuracy denominator.
+The protected holdout ratio is unchanged from corpus 1.0.0. The runtime rate is 94/95 because `length-signal` is expected to raise `length`. That match is a semantic success and not a returned value. Partial cases and unsupported coverage cases are outside the accuracy denominator.
 
-This ratio is what `python -m q2py.score` computed. It is not a blind study and it is not a q process audit. Expected values were written in this repository. The each-right case note records that its expectation was checked against the published each-left rule after a mismatch. See `docs/limitations.md`.
+Expected values were written in this repository. The each-right case note records that its expectation was checked against the published each-left rule after a mismatch. See `docs/limitations.md`. Later constructs, including `xexp`, have regression tests and are not part of that 95-case holdout.
 
 ## Run
 
@@ -41,12 +45,14 @@ cd apps/web && npm ci && cd ../..
 sh scripts/dev.sh
 ```
 
-- [Studio](http://127.0.0.1:43117)
-- API on port 43118, prefix `/api/v1`
+- Studio: http://127.0.0.1:43117
+- API: http://127.0.0.1:43118, prefix `/api/v1`
 
-The website and the API deploy separately. The Next.js app proxies `/api` to `Q2PY_API_ORIGIN`. The API is a container, not a serverless function. SQLite history is not durable unless the host mounts a volume. Steps are in `docs/deployment.md`. Templates are `.env.example` and `apps/web/.env.example`.
+The website and the API are separate processes. The Next.js route handler proxies `/api` to `Q2PY_API_ORIGIN`. Locally, when that variable and `VERCEL` are unset, the target is `http://127.0.0.1:43118`.
 
-Pages: landing, translation studio, validation, accuracy dashboard, corpus, history, documentation, status, plus 404 and 500.
+The live API is a Vercel Python function. Its SQLite file is on ephemeral disk, and status reports that history is not durable. `Dockerfile`, `fly.toml`, and `render.yaml` are alternative hosts and are not the current public deployment. Details are in `docs/deployment.md`. Templates are `.env.example` and `apps/web/.env.example`.
+
+Pages: landing, translation studio, validation, accuracy, corpus, history, documentation, status, plus 404 and 500.
 
 ## Test
 
@@ -56,6 +62,8 @@ Pages: landing, translation studio, validation, accuracy dashboard, corpus, hist
 .venv/bin/pytest
 cd apps/web && npm test && npm run lint && npm run build
 ```
+
+GitHub Actions runs the same Python and web checks on push. The web job uses Node 22 and `npm ci`, so `apps/web/package-lock.json` has to match that npm.
 
 ## API
 
@@ -72,7 +80,7 @@ cd apps/web && npm test && npm run lint && npm run build
 
 ## Screenshots
 
-Taken from the running app in headless Chrome. The dashboard’s commit field is the git HEAD at capture time.
+Taken from the running app in headless Chrome. The dashboard image is from corpus 1.1.0, so its counts are older than the table above.
 
 ![Landing](docs/screenshots/landing.png)
 
@@ -88,7 +96,3 @@ Taken from the running app in headless Chrome. The dashboard’s commit field is
 - `corpus/cases.json` — independent expectations
 - `apps/web` — Next.js studio
 - `docs/` — architecture, methodology, constructs, limitations, types, security, deployment
-
-## Deployment
-
-See `docs/deployment.md`. The Docker image runs the API only. The product keeps a SQLite file and executes Python in a subprocess, so it is a long-running service rather than a serverless function.
