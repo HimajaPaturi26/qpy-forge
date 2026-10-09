@@ -2,67 +2,89 @@
 
 import { useEffect, useState } from "react";
 import { SupportBadge } from "@/components/support-badge";
+import { Notice, PageHeader } from "@/components/ui/notice";
 import { api } from "@/lib/api";
-import type { CorpusCase } from "@/lib/types";
+import type { CorpusCase, StatusPayload } from "@/lib/types";
+
+const splits = [
+  ["all", "All"],
+  ["holdout", "Holdout"],
+  ["dev", "Dev"],
+  ["coverage", "Coverage"],
+] as const;
 
 export default function CorpusPage() {
   const [cases, setCases] = useState<CorpusCase[] | null>(null);
+  const [meta, setMeta] = useState<StatusPayload["corpus"] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [split, setSplit] = useState("all");
 
   useEffect(() => {
     const query = split === "all" ? "" : `?split=${encodeURIComponent(split)}`;
-    api<{ cases: CorpusCase[] }>(`/api/v1/corpus${query}`)
-      .then((payload) => setCases(payload.cases))
-      .catch((err: unknown) => setError(err instanceof Error ? err.message : "Could not load the corpus"));
+    api<{ cases: CorpusCase[]; meta: StatusPayload["corpus"] }>(`/api/v1/corpus${query}`)
+      .then((payload) => {
+        setCases(payload.cases);
+        setMeta(payload.meta);
+        setError(null);
+      })
+      .catch((err: unknown) => {
+        setCases(null);
+        setError(err instanceof Error ? err.message : "Could not load the corpus");
+      });
   }, [split]);
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Corpus</h1>
-        <p className="mt-1 max-w-2xl text-sm text-muted">
-          Holdout cases with declared support “supported” are the accuracy denominator. Coverage cases document
-          refusals and partial behavior and are excluded from that rate.
+      <PageHeader
+        title="Corpus"
+        lede="Holdout cases declared supported are the agreement denominator. Dev cases exercise constructs and are scored separately. Coverage cases document refusals and partial behavior and are excluded from that rate. Counts below come from the corpus response."
+      />
+      {meta?.counts ? (
+        <p className="text-sm text-muted">
+          Corpus {meta.version} · {meta.hash} · {meta.counts.all} cases ({meta.counts.holdout} holdout, {meta.counts.dev}{" "}
+          dev, {meta.counts.coverage} coverage)
         </p>
-      </div>
+      ) : null}
       <label className="text-sm">
         <span className="mr-2 text-muted">Split</span>
         <select
-          className="h-9 rounded-md border border-line bg-ink px-2"
+          className="field"
           value={split}
           onChange={(event) => {
             setCases(null);
             setSplit(event.target.value);
           }}
         >
-          <option value="all">All</option>
-          <option value="holdout">Holdout</option>
-          <option value="dev">Dev</option>
-          <option value="coverage">Coverage</option>
+          {splits.map(([value, label]) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
         </select>
       </label>
-      {error ? (
-        <p className="text-sm text-bad" role="alert">
-          {error}
-        </p>
-      ) : null}
-      {!cases && !error ? <p className="text-sm text-muted">Loading cases…</p> : null}
-      {cases && cases.length === 0 ? <p className="text-sm text-muted">No cases in this split.</p> : null}
+      {error ? <Notice tone="error">{error}</Notice> : null}
+      {!cases && !error ? <p className="text-sm text-muted">Loading cases</p> : null}
+      {cases && cases.length === 0 ? <Notice>No cases in this split</Notice> : null}
       {cases && cases.length > 0 ? (
-        <ul className="divide-y divide-line rounded-lg border border-line">
-          {cases.map((item) => (
-            <li key={item.id} className="space-y-2 px-4 py-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="font-medium">{item.id}</span>
-                <SupportBadge support={item.support} />
-                <span className="text-xs text-muted">{item.split}</span>
-              </div>
-              <pre className="overflow-auto font-mono text-sm">{item.source}</pre>
-              {item.features?.length ? <p className="text-xs text-muted">{item.features.join(", ")}</p> : null}
-            </li>
-          ))}
-        </ul>
+        <>
+          <p className="text-sm text-muted">Showing {cases.length} {split === "all" ? "cases" : `${split} cases`}</p>
+          <ul className="divide-y divide-line rounded-md border border-line">
+            {cases.map((item) => (
+              <li key={item.id} className="space-y-2 px-4 py-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-medium">{item.id}</span>
+                  <SupportBadge support={item.support} />
+                  <span className="text-xs text-muted">{item.split}</span>
+                </div>
+                <pre className="overflow-auto text-sm">{item.source}</pre>
+                {item.features?.length ? (
+                  <p className="text-xs text-muted">Author tags: {item.features.join(", ")}</p>
+                ) : null}
+                {item.note ? <p className="text-xs text-muted">{item.note}</p> : null}
+              </li>
+            ))}
+          </ul>
+        </>
       ) : null}
     </div>
   );

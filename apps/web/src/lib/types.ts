@@ -163,7 +163,7 @@ export type StatusPayload = {
     version: string;
     target: number;
     hash: string;
-    counts: { all: number; holdout: number; dev: number; coverage: number };
+    counts?: { all: number; holdout: number; dev: number; coverage: number };
   };
   sandbox: {
     user_runs: string;

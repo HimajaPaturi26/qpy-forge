@@ -20,9 +20,9 @@ export function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-ink text-paper">
       <header className="border-b border-line">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3">
-          <Link href="/" className="font-semibold tracking-tight">
-            Q2Py Studio
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
+          <Link href="/" className="rounded-sm font-semibold tracking-tight">
+            Q2Py Forge
           </Link>
           <nav aria-label="Primary" className="flex flex-wrap gap-1 text-sm">
             {links.map((link) => {

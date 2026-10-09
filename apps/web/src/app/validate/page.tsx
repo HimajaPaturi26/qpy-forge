@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { JsonBlock } from "@/components/json-block";
 import { SupportBadge } from "@/components/support-badge";
+import { Notice, PageHeader } from "@/components/ui/notice";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
+import { comparisonLabel, stageLabel } from "@/lib/format";
 import type { CorpusCase, Validation } from "@/lib/types";
 
 export default function ValidatePage() {
@@ -50,26 +52,19 @@ export default function ValidatePage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Validation</h1>
-        <p className="mt-1 max-w-2xl text-sm text-muted">
-          Each case carries an expected value or signal written into the corpus. The translator does not author that
-          expectation.
-        </p>
-      </div>
-      {!cases && !error ? <p className="text-sm text-muted">Loading corpus cases…</p> : null}
-      {error ? (
-        <p className="rounded-md border border-bad/40 bg-bad/10 px-3 py-2 text-sm text-bad" role="alert">
-          {error}
-        </p>
-      ) : null}
-      {cases && cases.length === 0 ? <p className="text-sm text-muted">The corpus has no cases.</p> : null}
+      <PageHeader
+        title="Validate"
+        lede="A corpus case is translated and, when Python is emitted, executed in the sandbox. The expected value or signal comes from the corpus record for the selected case. The translator does not author that expectation, and this page does not ask a live q process to confirm it."
+      />
+      {!cases && !error ? <p className="text-sm text-muted">Loading corpus cases</p> : null}
+      {error ? <Notice tone="error">{error}</Notice> : null}
+      {cases && cases.length === 0 ? <Notice>The corpus has no cases</Notice> : null}
       {cases && cases.length > 0 ? (
         <div className="flex flex-wrap items-end gap-3">
           <label className="text-sm">
             <span className="mb-1 block text-muted">Corpus case</span>
             <select
-              className="h-9 min-w-64 rounded-md border border-line bg-ink px-2"
+              className="field min-w-64 max-w-full"
               value={caseId}
               onChange={(event) => {
                 setCaseId(event.target.value);
@@ -84,45 +79,66 @@ export default function ValidatePage() {
             </select>
           </label>
           <Button onClick={() => void run()} disabled={busy || !selected}>
-            {busy ? "Running…" : "Validate case"}
+            {busy ? "Running" : "Validate case"}
           </Button>
         </div>
       ) : null}
       {selected ? (
         <section className="space-y-2">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <SupportBadge support={selected.support} />
             <span className="text-xs text-muted">{selected.split}</span>
+            <span className="text-xs text-muted">
+              {selected.expected_signal
+                ? `Authored signal ${selected.expected_signal}`
+                : selected.expected
+                  ? "Authored value"
+                  : "No authored expectation on this record"}
+            </span>
           </div>
-          <pre className="overflow-auto rounded-md border border-line bg-black/30 p-3 font-mono text-sm">{selected.source}</pre>
+          <pre className="overflow-auto rounded-md border border-line bg-panel p-3 text-sm">{selected.source}</pre>
         </section>
       ) : null}
       {result ? (
         <section className="space-y-3 text-sm">
+          <p>{comparisonLabel(result.comparison)}</p>
           <p>
-            Comparison <span className="font-medium">{result.comparison}</span>
-            {result.matched === null ? "" : result.matched ? " · matched the authored expectation" : " · did not match"}
+            Execution {result.executed ? "returned a value" : "did not return a value"}. Compile{" "}
+            {stageLabel(result.stages.compile)}.
           </p>
-          <p className="font-mono">{result.display || "No display value."}</p>
+          {result.executed ? (
+            <p className="font-mono">{result.display || "No display value"}</p>
+          ) : (
+            <p className="text-muted">Execution has not produced a value.</p>
+          )}
           {result.signal ? <p>Runtime signal: {result.signal}</p> : null}
+          <p className="text-muted">
+            {result.oracle.available ? result.oracle.reason : `The q oracle is unavailable. ${result.oracle.reason}`}
+          </p>
           <JsonBlock
             value={{
               expected: result.expected,
               expected_signal: result.expected_signal,
               canon: result.canon,
-              oracle: result.oracle,
             }}
           />
           {result.diagnostics.length ? (
             <ul className="space-y-2">
               {result.diagnostics.map((item, index) => (
-                <li key={`${item.code}-${index}`} className="rounded-md border border-line px-3 py-2">
-                  {item.code}: {item.message}
+                <li key={`${item.code}-${index}`} className="surface px-3 py-2">
+                  <span className="font-mono text-xs text-muted">
+                    {item.code} · {item.stage} · {item.line}:{item.col}
+                  </span>
+                  <p className="mt-1">{item.message}</p>
                 </li>
               ))}
             </ul>
-          ) : null}
+          ) : (
+            <p className="text-muted">No diagnostics were returned.</p>
+          )}
         </section>
+      ) : selected ? (
+        <p className="text-sm text-muted">Validation has not been run for this case.</p>
       ) : null}
     </div>
   );

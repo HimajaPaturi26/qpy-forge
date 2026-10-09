@@ -1,17 +1,36 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { QEditor, PythonEditor } from "@/components/editors";
+import { EditorPlaceholder, PythonEditor, QEditor } from "@/components/editors";
 import { JsonBlock } from "@/components/json-block";
 import { SupportBadge } from "@/components/support-badge";
+import { Notice, PageHeader } from "@/components/ui/notice";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
+import { comparisonLabel, stageLabel, stageTone } from "@/lib/format";
+import { cn } from "@/lib/cn";
 import type { Translation, Validation } from "@/lib/types";
 
 type Example = { id: string; source: string; support: string };
 type Panel = "diagnostics" | "output" | "tokens" | "ast" | "ir";
 
-const stages = ["lex", "parse", "semantic", "ir", "codegen", "compile", "exec", "compare"] as const;
+const stages = [
+  ["lex", "Lex"],
+  ["parse", "Parse"],
+  ["semantic", "Semantic"],
+  ["ir", "IR"],
+  ["codegen", "Codegen"],
+  ["compile", "Compile"],
+  ["exec", "Execute"],
+  ["compare", "Compare"],
+] as const;
+
+const toneClass = {
+  ok: "text-ok",
+  bad: "text-bad",
+  warn: "text-warn",
+  muted: "text-muted",
+} as const;
 
 export function StudioApp() {
   const [source, setSource] = useState("");
@@ -23,14 +42,36 @@ export function StudioApp() {
   const [panel, setPanel] = useState<Panel>("diagnostics");
   const [copied, setCopied] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const sourceRef = useRef(source);
+  const runId = useRef(0);
+  sourceRef.current = source;
+
+  function replaceSource(next: string) {
+    runId.current += 1;
+    setSource(next);
+    setTranslation(null);
+    setValidation(null);
+    setError(null);
+    setCopied(false);
+  }
+
+  function editSource(next: string) {
+    setSource(next);
+    if (translation && next !== translation.source) {
+      runId.current += 1;
+      setTranslation(null);
+      setValidation(null);
+      setCopied(false);
+    }
+  }
 
   async function loadExamples() {
     setError(null);
     try {
       const payload = await api<{ examples: Example[] }>("/api/v1/examples");
       setExamples(payload.examples);
-      if (!source && payload.examples[0]) {
-        setSource(payload.examples[0].source);
+      if (!sourceRef.current.trim() && payload.examples[0]) {
+        replaceSource(payload.examples[0].source);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not load examples");
@@ -38,47 +79,69 @@ export function StudioApp() {
   }
 
   async function translate() {
-    if (!source.trim()) {
-      setError("Paste q source, load an example, or upload a .q file.");
+    const sent = sourceRef.current;
+    if (!sent.trim()) {
+      setError("Enter q source, load an example, or upload a .q file.");
       return;
     }
+    const id = ++runId.current;
     setBusy("translate");
     setError(null);
     setValidation(null);
     try {
       const result = await api<Translation>("/api/v1/translate", {
         method: "POST",
-        body: JSON.stringify({ source }),
+        body: JSON.stringify({ source: sent }),
       });
+      if (runId.current !== id || sourceRef.current !== sent) {
+        return;
+      }
       setTranslation(result);
-      setPanel("diagnostics");
+      setPanel(result.diagnostics.length ? "diagnostics" : "output");
     } catch (err) {
+      if (runId.current !== id) {
+        return;
+      }
       setTranslation(null);
+      setValidation(null);
       setError(err instanceof Error ? err.message : "Translation failed");
     } finally {
-      setBusy(null);
+      if (runId.current === id) {
+        setBusy(null);
+      }
     }
   }
 
   async function validate() {
-    if (!source.trim()) {
+    const sent = sourceRef.current;
+    if (!sent.trim()) {
       setError("There is no q source to validate.");
       return;
     }
+    const id = ++runId.current;
     setBusy("validate");
     setError(null);
     try {
       const result = await api<Validation>("/api/v1/validate", {
         method: "POST",
-        body: JSON.stringify({ source }),
+        body: JSON.stringify({ source: sent }),
       });
+      if (runId.current !== id || sourceRef.current !== sent) {
+        return;
+      }
       setTranslation(result);
       setValidation(result);
       setPanel("output");
     } catch (err) {
+      if (runId.current !== id) {
+        return;
+      }
+      setValidation(null);
       setError(err instanceof Error ? err.message : "Validation failed");
     } finally {
-      setBusy(null);
+      if (runId.current === id) {
+        setBusy(null);
+      }
     }
   }
 
@@ -87,12 +150,7 @@ export function StudioApp() {
       return;
     }
     const reader = new FileReader();
-    reader.onload = () => {
-      setSource(String(reader.result ?? ""));
-      setTranslation(null);
-      setValidation(null);
-      setError(null);
-    };
+    reader.onload = () => replaceSource(String(reader.result ?? ""));
     reader.onerror = () => setError("Could not read that file.");
     reader.readAsText(file);
   }
@@ -120,31 +178,36 @@ export function StudioApp() {
   }
 
   const python = translation?.python ?? "";
-  const empty = !source.trim() && !translation && !error;
+  const empty = !source.trim() && !translation && !error && !busy;
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Translation studio</h1>
-          <p className="mt-1 max-w-2xl text-sm text-muted">
-            Unsupported q is refused. The generated Python is left empty rather than guessed.
-          </p>
-        </div>
-        {translation ? <SupportBadge support={translation.support} /> : null}
-      </div>
+      <PageHeader
+        title="Studio"
+        lede="Enter q, translate it, and inspect the Python. Validate runs that Python in the sandbox. A studio validation has no authored expectation unless you use the Validate page."
+        actions={translation ? <SupportBadge support={translation.support} /> : null}
+      />
+
+      <ol className="grid gap-2 text-sm sm:grid-cols-5">
+        {["Enter q", "Translate", "Inspect Python", "Validate", "Read diagnostics"].map((step, index) => (
+          <li key={step} className="surface px-3 py-2">
+            <span className="text-muted">{index + 1}. </span>
+            {step}
+          </li>
+        ))}
+      </ol>
 
       <div className="flex flex-wrap gap-2">
-        <Button onClick={() => void translate()} disabled={busy !== null}>
-          {busy === "translate" ? "Translating…" : "Translate"}
+        <Button onClick={() => void translate()} disabled={busy !== null || !source.trim()}>
+          {busy === "translate" ? "Translating" : "Translate"}
         </Button>
-        <Button variant="secondary" onClick={() => void validate()} disabled={busy !== null}>
-          {busy === "validate" ? "Validating…" : "Validate"}
+        <Button variant="secondary" onClick={() => void validate()} disabled={busy !== null || !source.trim()}>
+          {busy === "validate" ? "Validating" : "Validate"}
         </Button>
-        <Button variant="outline" onClick={() => void loadExamples()}>
+        <Button variant="outline" onClick={() => void loadExamples()} disabled={busy !== null}>
           Load examples
         </Button>
-        <Button variant="outline" onClick={() => fileRef.current?.click()}>
+        <Button variant="outline" onClick={() => fileRef.current?.click()} disabled={busy !== null}>
           Upload .q
         </Button>
         <input
@@ -153,7 +216,10 @@ export function StudioApp() {
           accept=".q,text/plain"
           className="sr-only"
           aria-label="Upload a q file"
-          onChange={(event) => upload(event.target.files?.[0])}
+          onChange={(event) => {
+            upload(event.target.files?.[0]);
+            event.target.value = "";
+          }}
         />
         <Button variant="ghost" onClick={() => void copyPython()} disabled={!python}>
           {copied ? "Copied" : "Copy Python"}
@@ -169,14 +235,11 @@ export function StudioApp() {
             <button
               key={example.id}
               type="button"
-              className="rounded-full border border-line px-2.5 py-1 text-xs text-muted hover:text-paper"
-              onClick={() => {
-                setSource(example.source);
-                setTranslation(null);
-                setValidation(null);
-              }}
+              className="rounded-md border border-line px-2.5 py-1 text-xs text-muted hover:text-paper"
+              onClick={() => replaceSource(example.source)}
             >
               {example.id}
+              <span className="sr-only">, {example.support}</span>
             </button>
           ))}
         </div>
@@ -184,45 +247,40 @@ export function StudioApp() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <section>
-          <h2 className="mb-2 text-sm font-medium text-muted">Q source</h2>
-          <QEditor value={source} onChange={setSource} />
+          <h2 className="mb-2 text-sm font-medium">Q source</h2>
+          <QEditor value={source} onChange={editSource} />
         </section>
         <section>
-          <h2 className="mb-2 text-sm font-medium text-muted">Generated Python</h2>
+          <h2 className="mb-2 text-sm font-medium">Generated Python</h2>
           {python ? (
             <PythonEditor value={python} />
           ) : (
-            <div className="flex h-[320px] items-center justify-center rounded-md border border-dashed border-line px-6 text-center text-sm text-muted">
-              {translation?.support === "unsupported"
-                ? "No Python was generated. See the diagnostic."
-                : "Translate a supported program to see Python here."}
-            </div>
+            <EditorPlaceholder>
+              {translation?.support === "unsupported" || translation?.stages.compile === "error"
+                ? "No Python was generated. Read the diagnostics."
+                : "Python appears here after a translation that emits code."}
+            </EditorPlaceholder>
           )}
         </section>
       </div>
 
       <section aria-live="polite" className="space-y-3">
-        {busy ? <p className="text-sm text-muted">Running the pipeline…</p> : null}
-        {error ? (
-          <p className="rounded-md border border-bad/40 bg-bad/10 px-3 py-2 text-sm text-bad" role="alert">
-            {error}
-          </p>
-        ) : null}
+        {busy ? <p className="text-sm text-muted">{busy === "translate" ? "Translating" : "Validating"}</p> : null}
+        {error ? <Notice tone="error">{error}</Notice> : null}
         {empty ? (
-          <p className="rounded-md border border-line px-3 py-2 text-sm text-muted">
-            The editor is empty. Load an example or paste a q expression such as <code>2*3+4</code>.
-          </p>
+          <Notice>
+            The editor is empty. Load an example or paste an expression such as <code>2*3+4</code>.
+          </Notice>
         ) : null}
         {translation ? (
           <ol className="flex flex-wrap gap-2" aria-label="Pipeline status">
-            {stages.map((stage) => {
-              const state = translation.stages[stage] ?? "pending";
+            {stages.map(([stage, label]) => {
+              const state = translation.stages[stage];
+              const tone = stageTone(state);
               return (
                 <li key={stage} className="rounded-md border border-line px-2 py-1 text-xs">
-                  <span className="text-muted">{stage}</span>{" "}
-                  <span className={state === "ok" ? "text-ok" : state === "error" || state === "skipped" ? "text-warn" : "text-muted"}>
-                    {state}
-                  </span>
+                  <span className="text-muted">{label}</span>{" "}
+                  <span className={toneClass[tone]}>{stageLabel(state)}</span>
                 </li>
               );
             })}
@@ -236,7 +294,7 @@ export function StudioApp() {
             {(
               [
                 ["diagnostics", "Diagnostics"],
-                ["output", "Output"],
+                ["output", "Execution"],
                 ["tokens", "Tokens"],
                 ["ast", "AST"],
                 ["ir", "IR"],
@@ -247,10 +305,14 @@ export function StudioApp() {
                 type="button"
                 role="tab"
                 aria-selected={panel === id}
-                className={`rounded-md px-2.5 py-1 text-sm ${panel === id ? "bg-white/10 text-paper" : "text-muted"}`}
+                className={cn(
+                  "rounded-md px-2.5 py-1 text-sm",
+                  panel === id ? "bg-white/10 text-paper" : "text-muted",
+                )}
                 onClick={() => setPanel(id)}
               >
                 {label}
+                {id === "diagnostics" && translation.diagnostics.length ? ` (${translation.diagnostics.length})` : ""}
               </button>
             ))}
           </div>
@@ -258,11 +320,11 @@ export function StudioApp() {
             translation.diagnostics.length ? (
               <ul className="space-y-2">
                 {translation.diagnostics.map((item, index) => (
-                  <li key={`${item.code}-${index}`} className="rounded-md border border-line px-3 py-2 text-sm">
+                  <li key={`${item.code}-${index}`} className="surface px-3 py-2 text-sm">
                     <div className="flex flex-wrap items-center gap-2">
                       <SupportBadge support={item.support} />
                       <span className="font-mono text-xs text-muted">
-                        {item.code} · {item.stage} · {item.line}:{item.col}
+                        {item.code} · {item.stage} · {item.line}:{item.col} · {item.severity}
                       </span>
                     </div>
                     <p className="mt-1">{item.message}</p>
@@ -270,24 +332,30 @@ export function StudioApp() {
                 ))}
               </ul>
             ) : (
-              <p className="text-sm text-muted">No diagnostics. The pipeline accepted this program.</p>
+              <p className="text-sm text-muted">No diagnostics were returned for this translation.</p>
             )
           ) : null}
           {panel === "output" ? (
             validation ? (
               <div className="space-y-3 text-sm">
+                <p>{comparisonLabel(validation.comparison)}</p>
                 <p>
-                  Comparison: <span className="font-medium">{validation.comparison}</span>
-                  {validation.matched === null ? "" : validation.matched ? " · matched" : " · not matched"}
+                  Execution{" "}
+                  <span className="font-medium">{validation.executed ? "returned a value" : "did not return a value"}</span>
                 </p>
-                <p className="font-mono text-paper">{validation.display || "No display value."}</p>
+                {validation.executed ? (
+                  <p className="font-mono text-paper">{validation.display || "No display value"}</p>
+                ) : (
+                  <p className="text-muted">Execution has not produced a value.</p>
+                )}
                 {validation.signal ? <p>Signal: {validation.signal}</p> : null}
+                <p className="text-muted">{oracleSummaryText(validation)}</p>
                 <JsonBlock value={{ canon: validation.canon, expected: validation.expected }} />
               </div>
             ) : (
               <p className="text-sm text-muted">
-                Validate to execute the generated Python in the local sandbox. Without an authored expected value,
-                the comparison is execution only.
+                Execution has not been run. Validate runs the generated Python in the local sandbox. This page does not
+                compare against an authored expected value.
               </p>
             )
           ) : null}
@@ -295,13 +363,17 @@ export function StudioApp() {
           {panel === "ast" ? <JsonBlock value={translation.ast} /> : null}
           {panel === "ir" ? <JsonBlock value={translation.ir} /> : null}
           {translation.features.length ? (
-            <p className="mt-3 text-xs text-muted">Features: {translation.features.join(", ")}</p>
-          ) : null}
-          {translation.maps.length ? (
-            <p className="mt-1 text-xs text-muted">Source map entries: {translation.maps.length}</p>
+            <p className="mt-3 text-xs text-muted">Recorded features: {translation.features.join(", ")}</p>
           ) : null}
         </section>
       ) : null}
     </div>
   );
+}
+
+function oracleSummaryText(validation: Validation): string {
+  if (!validation.oracle.available) {
+    return `The q oracle is unavailable. ${validation.oracle.reason}`;
+  }
+  return validation.oracle.reason;
 }

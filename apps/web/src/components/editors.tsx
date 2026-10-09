@@ -5,9 +5,11 @@ import { python } from "@codemirror/lang-python";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { qLanguage } from "@/lib/q-language";
 
+const editorHeight = "min(28rem, 62vh)";
+
 const shared = {
   theme: oneDark,
-  height: "320px",
+  height: editorHeight,
   basicSetup: {
     lineNumbers: true,
     foldGutter: false,
@@ -23,7 +25,7 @@ export function QEditor({
   onChange: (value: string) => void;
 }) {
   return (
-    <div className="overflow-hidden rounded-md border border-line">
+    <div className="overflow-hidden rounded-md border border-line focus-within:border-amber">
       <CodeMirror
         value={value}
         height={shared.height}
@@ -50,6 +52,17 @@ export function PythonEditor({ value }: { value: string }) {
         readOnly
         aria-label="Generated Python"
       />
+    </div>
+  );
+}
+
+export function EditorPlaceholder({ children }: { children: string }) {
+  return (
+    <div
+      className="flex items-center justify-center rounded-md border border-dashed border-line px-6 text-center text-sm text-muted"
+      style={{ height: editorHeight }}
+    >
+      {children}
     </div>
   );
 }
