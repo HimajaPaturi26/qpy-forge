@@ -8,11 +8,15 @@ if the AST gate is bypassed.
 from __future__ import annotations
 
 import json
+import os
 import resource
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+runtime_site = os.environ.get("Q2PY_RUNTIME_SITE", "")
+if runtime_site:
+    sys.path.insert(0, runtime_site)
 
 _AS = 2_500_000_000
 try:

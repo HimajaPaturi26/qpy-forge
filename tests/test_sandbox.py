@@ -103,7 +103,14 @@ def test_environment_is_not_readable_and_not_forwarded(monkeypatch: pytest.Monke
     assert "top-secret-value" not in " ".join(child.values())
     parent_keys = set(os.environ)
     assert "Q2PY_AUDIT_SECRET" in parent_keys
-    assert set(child) <= {"PYTHONNOUSERSITE", "PYTHONDONTWRITEBYTECODE", "LANG", "LC_ALL", "HOME"}
+    assert set(child) <= {
+        "PYTHONNOUSERSITE",
+        "PYTHONDONTWRITEBYTECODE",
+        "LANG",
+        "LC_ALL",
+        "HOME",
+        "Q2PY_RUNTIME_SITE",
+    }
 
 
 @pytest.mark.parametrize(

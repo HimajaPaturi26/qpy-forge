@@ -138,15 +138,29 @@ class ExecResult:
     diagnostics: list[Diagnostic]
 
 
+def _runtime_site() -> str:
+    """Site-packages for the runtime, so python -I can import Polars on Vercel."""
+    import importlib.util
+
+    spec = importlib.util.find_spec("polars")
+    if spec is None or not spec.origin:
+        return ""
+    return str(Path(spec.origin).resolve().parents[1])
+
+
 def child_environment() -> dict[str, str]:
     """Environment for the subprocess runner. Parent secrets are not copied."""
-    return {
+    environment = {
         "PYTHONNOUSERSITE": "1",
         "PYTHONDONTWRITEBYTECODE": "1",
         "LANG": "C.UTF-8",
         "LC_ALL": "C.UTF-8",
         "HOME": "/tmp",
     }
+    site = _runtime_site()
+    if site:
+        environment["Q2PY_RUNTIME_SITE"] = site
+    return environment
 
 
 def validate_generated(source: str) -> list[Diagnostic]:

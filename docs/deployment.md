@@ -65,4 +65,14 @@ The Next.js app lives in `apps/web`. In the Vercel project set Root Directory to
 
 After the API health URL responds, open the Vercel site and translate `2*3+4` in Studio. The browser should stay on the Vercel host; the Next.js server calls the API.
 
-This repository has not been published to a public URL from here. There is no authenticated Vercel or Fly session in this environment.
+## Live Vercel deployment
+
+Checked on 2026-10-09 after `vercel deploy --prod`:
+
+- Website: https://qpy-forge.vercel.app
+- API: https://qpy-forge-api.vercel.app
+- `GET /api/v1/health` on the API and through the website both returned `{"status":"ok","version":"0.1.0"}`.
+- `POST /api/v1/validate` with `2*3+4` through the website executed and returned long `14`.
+- Oracle status was `oracle-unavailable`. SQLite history is not durable on this host.
+
+`himajapaturi.in` is attached to the `qpy-forge` project and is not serving the site until Hostinger DNS is changed. Vercel’s verify command recommended two A records for `@` (`216.198.79.1` and `64.29.17.1`) and a CNAME for `www` (`2f0659adc4688a4f.vercel-dns-017.com`). Nameservers were left on Hostinger.
