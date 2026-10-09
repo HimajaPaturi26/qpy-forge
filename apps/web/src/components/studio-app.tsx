@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { EditorPlaceholder, PythonEditor, QEditor } from "@/components/editors";
 import { JsonBlock } from "@/components/json-block";
 import { SupportBadge } from "@/components/support-badge";
@@ -41,7 +42,10 @@ export function StudioApp() {
   const [validation, setValidation] = useState<Validation | null>(null);
   const [panel, setPanel] = useState<Panel>("diagnostics");
   const [copied, setCopied] = useState(false);
+  const [pane, setPane] = useState<"source" | "python">("source");
   const fileRef = useRef<HTMLInputElement>(null);
+  const params = useSearchParams();
+  const loadedQuery = useRef(false);
   const sourceRef = useRef(source);
   const runId = useRef(0);
   sourceRef.current = source;
@@ -54,6 +58,17 @@ export function StudioApp() {
     setError(null);
     setCopied(false);
   }
+
+  useEffect(() => {
+    if (loadedQuery.current) {
+      return;
+    }
+    loadedQuery.current = true;
+    const incoming = params.get("source");
+    if (incoming) {
+      replaceSource(incoming);
+    }
+  }, [params]);
 
   function editSource(next: string) {
     setSource(next);
@@ -188,17 +203,27 @@ export function StudioApp() {
         actions={translation ? <SupportBadge support={translation.support} /> : null}
       />
 
+      <details className="text-sm text-muted">
+        <summary className="cursor-pointer text-paper">How to use Studio</summary>
+        <ol className="mt-2 max-w-3xl list-decimal space-y-1 pl-5">
+          <li>Load an example or upload a .q file, or type in Q source.</li>
+          <li>Translate to generate Python. Compilation can pass while execution has not run.</li>
+          <li>Validate to execute. Comparison says not run until an authored expectation is attached.</li>
+          <li>Diagnostics lists refusals. Tokens, AST, and IR show the compiler stages.</li>
+        </ol>
+      </details>
+
       <div className="flex flex-wrap items-center gap-2">
-        <Button onClick={() => void translate()} disabled={busy !== null || !source.trim()}>
+        <Button className="min-h-11" onClick={() => void translate()} disabled={busy !== null || !source.trim()}>
           {busy === "translate" ? "Translating" : "Translate"}
         </Button>
-        <Button variant="secondary" onClick={() => void validate()} disabled={busy !== null || !source.trim()}>
+        <Button className="min-h-11" variant="secondary" onClick={() => void validate()} disabled={busy !== null || !source.trim()}>
           {busy === "validate" ? "Validating" : "Validate"}
         </Button>
-        <Button variant="outline" onClick={() => fileRef.current?.click()} disabled={busy !== null}>
+        <Button className="min-h-11" variant="outline" onClick={() => fileRef.current?.click()} disabled={busy !== null}>
           Upload .q
         </Button>
-        <Button variant="outline" onClick={() => void loadExamples()} disabled={busy !== null}>
+        <Button className="min-h-11" variant="outline" onClick={() => void loadExamples()} disabled={busy !== null}>
           Examples
         </Button>
         <input
@@ -236,12 +261,35 @@ export function StudioApp() {
         </div>
       ) : null}
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <section>
+      <div className="flex gap-2 lg:hidden" role="tablist" aria-label="Editor">
+        {(
+          [
+            ["source", "Q source"],
+            ["python", "Generated Python"],
+          ] as const
+        ).map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            aria-selected={pane === id}
+            className={cn(
+              "min-h-11 flex-1 rounded-md border px-3 text-sm",
+              pane === id ? "border-amber text-paper" : "border-line text-muted",
+            )}
+            onClick={() => setPane(id)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <div className="grid min-w-0 gap-4 lg:grid-cols-2">
+        <section className={cn("min-w-0", pane !== "source" && "hidden lg:block")}>
           <h2 className="mb-2 text-sm font-medium">Q source</h2>
           <QEditor value={source} onChange={editSource} />
         </section>
-        <section>
+        <section className={cn("min-w-0", pane !== "python" && "hidden lg:block")}>
           <h2 className="mb-2 text-sm font-medium">Generated Python</h2>
           {python ? (
             <PythonEditor value={python} />
@@ -255,13 +303,14 @@ export function StudioApp() {
         {busy ? <p className="text-sm text-muted">{busy === "translate" ? "Translating" : "Validating"}</p> : null}
         {error ? <Notice tone="error">{error}</Notice> : null}
         {translation ? (
-          <ol className="flex flex-wrap gap-x-4 gap-y-1 text-xs" aria-label="Pipeline status">
+          <ol className="flex flex-wrap gap-2 text-xs" aria-label="Pipeline status">
             {stages.map(([stage, label]) => {
               const state = translation.stages[stage];
+              const tone = stageTone(state);
               return (
-                <li key={stage}>
+                <li key={stage} className="rounded-md border border-line px-2 py-1">
                   <span className="text-muted">{label}</span>{" "}
-                  <span className={toneClass[stageTone(state)]}>{stageLabel(state)}</span>
+                  <span className={toneClass[tone]}>{stageLabel(state)}</span>
                 </li>
               );
             })}
@@ -287,7 +336,7 @@ export function StudioApp() {
                 role="tab"
                 aria-selected={panel === id}
                 className={cn(
-                  "rounded-md px-2.5 py-1 text-sm",
+                  "min-h-11 rounded-md px-3 text-sm",
                   panel === id ? "bg-white/10 text-paper" : "text-muted",
                 )}
                 onClick={() => setPanel(id)}

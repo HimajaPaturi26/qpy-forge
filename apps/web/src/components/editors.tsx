@@ -25,7 +25,7 @@ export function QEditor({
   onChange: (value: string) => void;
 }) {
   return (
-    <div className="overflow-hidden rounded-md border border-line focus-within:border-amber">
+    <div className="min-w-0 overflow-hidden rounded-md border border-line focus-within:border-amber">
       <CodeMirror
         value={value}
         height={shared.height}
@@ -41,7 +41,7 @@ export function QEditor({
 
 export function PythonEditor({ value }: { value: string }) {
   return (
-    <div className="overflow-hidden rounded-md border border-line">
+    <div className="min-w-0 overflow-hidden rounded-md border border-line">
       <CodeMirror
         value={value}
         height={shared.height}

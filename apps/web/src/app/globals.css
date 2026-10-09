@@ -14,10 +14,26 @@
   --color-warn: #e2c36a;
 }
 
+html {
+  overflow-x: clip;
+}
+
 body {
   background: var(--color-ink);
   color: var(--color-paper);
   font-family: var(--font-sans);
+  overflow-x: clip;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 code,
