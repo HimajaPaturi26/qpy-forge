@@ -57,6 +57,7 @@ _BIN = {
     "inter": "q_inter",
     "union": "q_union",
     "cross": "q_cross",
+    "xexp": "q_xexp",
 }
 
 _UNARY = {

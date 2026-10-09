@@ -99,6 +99,7 @@ SUPPORTED_FEATURES: frozenset[str] = frozenset(
         "and",
         "cast",
         "cross",
+        "xexp",
         "each",
         "each-left",
         "each-right",

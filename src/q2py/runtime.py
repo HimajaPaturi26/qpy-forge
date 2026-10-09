@@ -485,6 +485,46 @@ def q_abs(value: Value) -> Value:
     raise QError("type", "abs")
 
 
+def q_xexp(left: Value, right: Value) -> Value:
+    """Raise a non-negative number to a power.
+
+    The published calculation is ``exp(y * log x)``, returned as a float.
+    A null or negative base is a null float, including a negative base with
+    an integer exponent. ``2 xexp 3`` is that product, not the long ``8``.
+    """
+    return atomic_like(_xexp_pair, left, right)
+
+
+def _xexp_pair(left: Value, right: Value) -> Atom:
+    if not isinstance(left, Atom) or not isinstance(right, Atom):
+        raise QError("type", "xexp")
+    if left.typ not in _NUMERIC or right.typ not in _NUMERIC:
+        raise QError("type", "xexp")
+    if left.null or _as_float(left) < 0.0:
+        return null("float")
+    if right.null:
+        return null("float")
+    return float_(_exp_y_log_x(_as_float(left), _as_float(right)))
+
+
+def _exp_y_log_x(base: float, exponent: float) -> float:
+    if base == 0.0:
+        log_base = float("-inf")
+    elif math.isinf(base):
+        log_base = float("inf")
+    else:
+        log_base = math.log(base)
+    if exponent == 0.0 and math.isinf(log_base):
+        product = float("nan")
+    else:
+        product = exponent * log_base
+    if math.isnan(product):
+        return float("nan")
+    if math.isinf(product):
+        return float("inf") if product > 0.0 else 0.0
+    return math.exp(product)
+
+
 def q_sqrt(value: Value) -> Value:
     if isinstance(value, Vec):
         return vec_of([q_sqrt(item) for item in value.items])
@@ -1907,6 +1947,7 @@ _BIN = {
     "inter": q_inter,
     "union": q_union,
     "cross": q_cross,
+    "xexp": q_xexp,
 }
 
 _UNARY = {

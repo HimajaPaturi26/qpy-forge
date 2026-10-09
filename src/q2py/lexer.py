@@ -52,6 +52,7 @@ _KEYWORDS = {
     "inter",
     "union",
     "cross",
+    "xexp",
 }
 
 

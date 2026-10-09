@@ -81,7 +81,7 @@ _PREFIX = {
     "group",
 }
 
-_INFIX_WORDS = {"div", "mod", "in", "xbar", "rotate", "except", "inter", "union", "cross"}
+_INFIX_WORDS = {"div", "mod", "in", "xbar", "rotate", "except", "inter", "union", "cross", "xexp"}
 
 _OP_KIND = {
     "PLUS": "add",

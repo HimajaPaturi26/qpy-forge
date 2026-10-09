@@ -121,6 +121,7 @@ _SUPPORTED_VERBS = frozenset(
         "cross",
         "div-int",
         "mod",
+        "xexp",
     }
 )
 

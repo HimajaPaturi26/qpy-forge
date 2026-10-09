@@ -106,6 +106,7 @@ SAFE_RUNTIME_NAMES: frozenset[str] = frozenset(
         "q_var",
         "q_where",
         "q_xbar",
+        "q_xexp",
         "short",
         "sub",
         "symbol",
