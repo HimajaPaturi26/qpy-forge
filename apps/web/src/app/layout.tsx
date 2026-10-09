@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Q2Py Forge",
-  description: "Translate a documented subset of q into Python and compare results with authored expected values.",
+  description: "Translate supported Q/kdb+ expressions into Python and validate results against authored expectations.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

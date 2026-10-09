@@ -1,7 +1,7 @@
 const sections = [
   {
     title: "Pipeline",
-    body: "q is lexed, parsed, checked, lowered to IR, and emitted as Python when the construct is in scope. A refusal returns a diagnostic and an empty Python program.",
+    body: "q is lexed, parsed, checked, lowered to an intermediate representation, and emitted as Python when the construct is in scope. Unsupported syntax produces a diagnostic instead of generated Python.",
   },
   {
     title: "Supported subset",

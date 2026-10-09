@@ -46,7 +46,7 @@ export default function SettingsPage() {
           <Section title="Translation and validation">
             <dl>
               <MetaRow term="q oracle">
-                {oracle.title} — {oracle.detail}
+                {oracle.title}: {oracle.detail}
               </MetaRow>
               {authored ? <MetaRow term="Authored-value validation">Available</MetaRow> : null}
             </dl>

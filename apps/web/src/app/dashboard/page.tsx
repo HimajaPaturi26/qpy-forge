@@ -60,7 +60,7 @@ export default function DashboardPage() {
       {error ? <Notice tone="error">{error}</Notice> : null}
       {report && oracle ? (
         <Notice tone="warn">
-          q oracle {oracle.title.toLowerCase()} — {oracle.detail} Oracle agreement {formatRate(report.oracle_match_rate)}.
+          q oracle {oracle.title.toLowerCase()}: {oracle.detail} Oracle agreement {formatRate(report.oracle_match_rate)}.
         </Notice>
       ) : null}
       {report && report.sample_size === 0 ? (
@@ -85,7 +85,7 @@ export default function DashboardPage() {
             />
             <Metric
               label="Wilson 95% interval"
-              value={`${formatRate(report.wilson_low)} – ${formatRate(report.wilson_high)}`}
+              value={`${formatRate(report.wilson_low)} to ${formatRate(report.wilson_high)}`}
               hint="Interval for the supported holdout agreement above"
             />
             <Metric
@@ -127,7 +127,7 @@ export default function DashboardPage() {
             <h2 className="text-lg font-medium">Development split</h2>
             <p className="mt-2 text-sm leading-6 text-muted">
               Dev agreement {formatRate(report.dev_measurement.semantic_accuracy)} on {report.dev_measurement.successes} of{" "}
-              {report.dev_measurement.sample_size} supported dev cases. Wilson {formatRate(report.dev_measurement.wilson_low)}–
+              {report.dev_measurement.sample_size} supported dev cases. Wilson {formatRate(report.dev_measurement.wilson_low)} to{" "}
               {formatRate(report.dev_measurement.wilson_high)}. Runtime returned a value{" "}
               {formatRate(report.dev_measurement.runtime_success_rate)}. Value match{" "}
               {formatRate(report.dev_measurement.value_match_rate)} ({report.dev_measurement.value_successes} of{" "}

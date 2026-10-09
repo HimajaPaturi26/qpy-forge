@@ -344,5 +344,5 @@ export function StudioApp() {
 
 function oracleSummaryText(validation: Validation): string {
   const summary = validation.oracle.available ? "q oracle not enabled" : "q oracle unavailable";
-  return `${summary} — ${validation.oracle.reason}`;
+  return `${summary}: ${validation.oracle.reason}`;
 }

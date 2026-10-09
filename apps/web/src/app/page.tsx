@@ -1,74 +1,87 @@
 import Link from "next/link";
-import { HomeStatus } from "@/components/home-status";
 
 const translationStages = [
   "Q source",
-  "Lexer",
-  "Parser",
+  "Lexing",
+  "Parsing",
   "Semantic analysis",
-  "IR",
+  "Intermediate representation",
   "Python generation",
   "Compilation",
 ];
 
-const optionalStages = ["Execution", "Validation"];
-
 const capabilities = [
   {
-    title: "Translation",
-    body: "Translate the supported q subset into inspectable Python. Unsupported syntax is rejected rather than guessed.",
+    title: "Compiler pipeline",
+    body: "Trace q source through lexing, parsing, semantic analysis, intermediate representation, and Python code generation.",
   },
   {
-    title: "Validation",
-    body: "Compare execution results against independently authored expected values. Live q-oracle comparison is a separate capability.",
+    title: "Code generation",
+    body: "Inspect the Python produced by each supported translation.",
   },
   {
-    title: "Diagnostics",
-    body: "Inspect stage-level failures and identify where translation stops.",
+    title: "Result validation",
+    body: "Compare execution results against independently authored expectations and investigate mismatches.",
   },
-];
-
-const snapshot = [
-  { href: "/studio", label: "Compiler pipeline", detail: "Lex through compile, then optional execution" },
-  { href: "/docs", label: "Supported syntax and refusal", detail: "In-scope subset and constructs that return no Python" },
-  { href: "/validate", label: "Authored-value validation", detail: "Corpus expectations, not a live q process" },
-  { href: "/dashboard", label: "Corpus and holdout reporting", detail: "Supported holdout agreement and the construct registry" },
-  { href: "/settings", label: "Execution constraints", detail: "Sandbox boundary, resource limits, and durability" },
+  {
+    title: "Diagnostics and control",
+    body: "Identify unsupported syntax, inspect stage-level failures, and understand where translation stops.",
+  },
 ];
 
 export default function HomePage() {
   return (
-    <div className="space-y-16">
-      <section className="max-w-3xl space-y-6 pt-4">
-        <p className="text-sm text-amber">Q2Py Forge</p>
-        <h1 className="max-w-2xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
-          Translate q. Validate the result. Understand the limits.
+    <div className="space-y-20">
+      <section className="max-w-3xl space-y-6 pt-6">
+        <p className="text-sm font-medium text-amber">Q2Py Forge</p>
+        <h1 className="text-4xl font-semibold leading-[1.12] tracking-tight sm:text-5xl">
+          From q to Python, with confidence at every stage
         </h1>
         <p className="max-w-2xl text-base leading-7 text-muted">
-          An engineering workbench for translating supported Q/kdb+ expressions into Python, inspecting the compiler
-          pipeline, and validating results against authored expectations.
+          Translate supported Q/kdb+ expressions into Python through an inspectable compiler pipeline. Examine generated
+          code, validate results against authored expectations, and trace failures through clear diagnostics.
         </p>
-        <div className="flex flex-wrap gap-3">
-          <Link href="/studio" className="rounded-md bg-amber px-4 py-2 text-sm font-medium text-ink">
+        <div className="flex flex-wrap gap-3 pt-1">
+          <Link
+            href="/studio"
+            className="rounded-md bg-amber px-4 py-2.5 text-sm font-medium text-ink hover:bg-amber/90"
+          >
             Open translation studio
           </Link>
-          <Link href="/validate" className="rounded-md border border-line px-4 py-2 text-sm font-medium">
+          <Link
+            href="/validate"
+            className="rounded-md border border-line px-4 py-2.5 text-sm font-medium hover:bg-white/5"
+          >
             Explore validation
           </Link>
         </div>
       </section>
 
-      <section aria-labelledby="pipeline-heading">
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 id="pipeline-heading" className="text-sm font-medium">
-            Pipeline
-          </h2>
-          <p className="text-xs text-muted">Stages are reported per translation. Later stages do not run after a refusal.</p>
+      <section aria-labelledby="capabilities-heading">
+        <h2 id="capabilities-heading" className="text-lg font-medium">
+          Engineering, made inspectable
+        </h2>
+        <div className="mt-6 grid gap-x-10 gap-y-8 border-t border-line pt-6 sm:grid-cols-2">
+          {capabilities.map((item) => (
+            <article key={item.title}>
+              <h3 className="text-sm font-medium">{item.title}</h3>
+              <p className="mt-2 max-w-md text-sm leading-6 text-muted">{item.body}</p>
+            </article>
+          ))}
         </div>
-        <ol className="mt-4 flex flex-wrap items-center gap-2">
+      </section>
+
+      <section aria-labelledby="pipeline-heading">
+        <h2 id="pipeline-heading" className="text-lg font-medium">
+          From source to verified results
+        </h2>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
+          Each stage reports its actual outcome. Execution and validation run separately from translation.
+        </p>
+        <ol className="mt-6 flex flex-wrap items-center gap-x-2 gap-y-3">
           {translationStages.map((stage, index) => (
             <li key={stage} className="flex items-center gap-2">
-              <span className="border border-line px-2.5 py-1.5 text-sm">{stage}</span>
+              <span className="border border-line bg-panel px-2.5 py-1.5 text-sm">{stage}</span>
               {index < translationStages.length - 1 ? (
                 <span aria-hidden="true" className="text-muted">
                   →
@@ -76,79 +89,48 @@ export default function HomePage() {
               ) : null}
             </li>
           ))}
-          <li className="flex items-center gap-2">
-            <span aria-hidden="true" className="text-muted">
-              →
-            </span>
-            <span className="border border-dashed border-line px-2.5 py-1.5 text-sm text-muted">
-              Optional execution and validation
-            </span>
-          </li>
         </ol>
-        <p className="sr-only">
-          Translation stages are {translationStages.join(", ")}. Optional stages are {optionalStages.join(" and ")}.
-        </p>
-      </section>
-
-      <section aria-labelledby="capabilities-heading">
-        <h2 id="capabilities-heading" className="text-sm font-medium">
-          Capabilities
-        </h2>
-        <div className="mt-4 grid gap-8 border-t border-line pt-4 md:grid-cols-3">
-          {capabilities.map((item) => (
-            <article key={item.title}>
-              <h3 className="text-base font-medium">{item.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-muted">{item.body}</p>
-            </article>
-          ))}
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <span className="text-xs text-muted">Separate from translation</span>
+          <span className="border border-dashed border-line px-2.5 py-1.5 text-sm">Execution and validation</span>
         </div>
       </section>
 
-      <section aria-labelledby="inspect-heading">
-        <h2 id="inspect-heading" className="text-sm font-medium">
-          What you can inspect
+      <section aria-labelledby="transparency-heading" className="max-w-2xl border-t border-line pt-10">
+        <h2 id="transparency-heading" className="text-lg font-medium">
+          Technical transparency
         </h2>
-        <ul className="mt-4 divide-y divide-line border-y border-line">
-          {snapshot.map((item) => (
-            <li key={item.href}>
-              <Link href={item.href} className="grid gap-1 py-3 sm:grid-cols-[16rem_1fr] sm:gap-6">
-                <span className="text-sm font-medium">{item.label}</span>
-                <span className="text-sm text-muted">{item.detail}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section aria-labelledby="limits-heading">
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 id="limits-heading" className="text-sm font-medium">
-            Limits
-          </h2>
-          <Link href="/settings" className="text-sm text-muted underline decoration-line underline-offset-4">
+        <p className="mt-2 text-sm leading-6 text-muted">
+          Explore the supported syntax, validation methodology, runtime availability, persistence model, and execution
+          constraints in the project documentation and Status page.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-4 text-sm">
+          <Link href="/docs" className="text-amber underline decoration-amber/40 underline-offset-4">
+            Explore documentation
+          </Link>
+          <Link href="/settings" className="text-muted underline decoration-line underline-offset-4">
             Open status
           </Link>
         </div>
-        <div className="mt-4">
-          <HomeStatus />
-        </div>
       </section>
 
-      <section aria-labelledby="creator-heading" className="max-w-2xl border-t border-line pt-8">
-        <h2 id="creator-heading" className="text-lg font-medium">
-          Built by Himaja Paturi
-        </h2>
-        <p className="mt-2 text-sm leading-6 text-muted">
-          An independent engineering project exploring Q/kdb+ to Python translation, compiler architecture, and
-          validation of generated code.
-        </p>
+      <section aria-labelledby="creator-heading" className="flex max-w-3xl flex-wrap items-end justify-between gap-4 border-t border-line pt-8">
+        <div className="max-w-xl">
+          <h2 id="creator-heading" className="text-lg font-medium">
+            Built by Himaja Paturi
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-muted">
+            An independent engineering project focused on Q/kdb+ to Python translation, compiler architecture, and
+            systematic validation of generated code.
+          </p>
+        </div>
         <a
           href="https://www.linkedin.com/in/himajapaturi/"
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 inline-block text-sm text-amber underline decoration-amber/40 underline-offset-4"
+          className="text-sm text-amber underline decoration-amber/40 underline-offset-4"
         >
-          View professional profile
+          Connect on LinkedIn
         </a>
       </section>
     </div>
