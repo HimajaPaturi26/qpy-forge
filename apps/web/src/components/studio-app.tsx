@@ -178,37 +178,28 @@ export function StudioApp() {
   }
 
   const python = translation?.python ?? "";
-  const empty = !source.trim() && !translation && !error && !busy;
+  const rejected = translation?.support === "unsupported" || translation?.stages.compile === "error";
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <PageHeader
-        title="Studio"
-        lede="Enter q, translate it, and inspect the Python. Validate runs that Python in the sandbox. A studio validation has no authored expectation unless you use the Validate page."
+        title="Translation studio"
+        lede="Translate q source into Python and inspect compilation, execution, and validation results."
         actions={translation ? <SupportBadge support={translation.support} /> : null}
       />
 
-      <ol className="grid gap-2 text-sm sm:grid-cols-5">
-        {["Enter q", "Translate", "Inspect Python", "Validate", "Read diagnostics"].map((step, index) => (
-          <li key={step} className="surface px-3 py-2">
-            <span className="text-muted">{index + 1}. </span>
-            {step}
-          </li>
-        ))}
-      </ol>
-
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Button onClick={() => void translate()} disabled={busy !== null || !source.trim()}>
           {busy === "translate" ? "Translating" : "Translate"}
         </Button>
         <Button variant="secondary" onClick={() => void validate()} disabled={busy !== null || !source.trim()}>
           {busy === "validate" ? "Validating" : "Validate"}
         </Button>
-        <Button variant="outline" onClick={() => void loadExamples()} disabled={busy !== null}>
-          Load examples
-        </Button>
         <Button variant="outline" onClick={() => fileRef.current?.click()} disabled={busy !== null}>
           Upload .q
+        </Button>
+        <Button variant="outline" onClick={() => void loadExamples()} disabled={busy !== null}>
+          Examples
         </Button>
         <input
           ref={fileRef}
@@ -255,11 +246,7 @@ export function StudioApp() {
           {python ? (
             <PythonEditor value={python} />
           ) : (
-            <EditorPlaceholder>
-              {translation?.support === "unsupported" || translation?.stages.compile === "error"
-                ? "No Python was generated. Read the diagnostics."
-                : "Python appears here after a translation that emits code."}
-            </EditorPlaceholder>
+            <EditorPlaceholder>{rejected ? "Translation rejected" : "No generated output"}</EditorPlaceholder>
           )}
         </section>
       </div>
@@ -267,20 +254,14 @@ export function StudioApp() {
       <section aria-live="polite" className="space-y-3">
         {busy ? <p className="text-sm text-muted">{busy === "translate" ? "Translating" : "Validating"}</p> : null}
         {error ? <Notice tone="error">{error}</Notice> : null}
-        {empty ? (
-          <Notice>
-            The editor is empty. Load an example or paste an expression such as <code>2*3+4</code>.
-          </Notice>
-        ) : null}
         {translation ? (
-          <ol className="flex flex-wrap gap-2" aria-label="Pipeline status">
+          <ol className="flex flex-wrap gap-x-4 gap-y-1 text-xs" aria-label="Pipeline status">
             {stages.map(([stage, label]) => {
               const state = translation.stages[stage];
-              const tone = stageTone(state);
               return (
-                <li key={stage} className="rounded-md border border-line px-2 py-1 text-xs">
+                <li key={stage}>
                   <span className="text-muted">{label}</span>{" "}
-                  <span className={toneClass[tone]}>{stageLabel(state)}</span>
+                  <span className={toneClass[stageTone(state)]}>{stageLabel(state)}</span>
                 </li>
               );
             })}
@@ -320,7 +301,7 @@ export function StudioApp() {
             translation.diagnostics.length ? (
               <ul className="space-y-2">
                 {translation.diagnostics.map((item, index) => (
-                  <li key={`${item.code}-${index}`} className="surface px-3 py-2 text-sm">
+                  <li key={`${item.code}-${index}`} className="border-b border-line py-2 text-sm">
                     <div className="flex flex-wrap items-center gap-2">
                       <SupportBadge support={item.support} />
                       <span className="font-mono text-xs text-muted">
@@ -332,31 +313,21 @@ export function StudioApp() {
                 ))}
               </ul>
             ) : (
-              <p className="text-sm text-muted">No diagnostics were returned for this translation.</p>
+              <p className="text-sm text-muted">No diagnostics</p>
             )
           ) : null}
           {panel === "output" ? (
             validation ? (
-              <div className="space-y-3 text-sm">
+              <div className="space-y-2 text-sm">
                 <p>{comparisonLabel(validation.comparison)}</p>
-                <p>
-                  Execution{" "}
-                  <span className="font-medium">{validation.executed ? "returned a value" : "did not return a value"}</span>
-                </p>
-                {validation.executed ? (
-                  <p className="font-mono text-paper">{validation.display || "No display value"}</p>
-                ) : (
-                  <p className="text-muted">Execution has not produced a value.</p>
-                )}
-                {validation.signal ? <p>Signal: {validation.signal}</p> : null}
+                <p>{validation.executed ? "Returned a value" : "No returned value"}</p>
+                {validation.executed ? <p className="font-mono">{validation.display || "No display value"}</p> : null}
+                {validation.signal ? <p>Signal {validation.signal}</p> : null}
                 <p className="text-muted">{oracleSummaryText(validation)}</p>
                 <JsonBlock value={{ canon: validation.canon, expected: validation.expected }} />
               </div>
             ) : (
-              <p className="text-sm text-muted">
-                Execution has not been run. Validate runs the generated Python in the local sandbox. This page does not
-                compare against an authored expected value.
-              </p>
+              <p className="text-sm text-muted">Not run</p>
             )
           ) : null}
           {panel === "tokens" ? <JsonBlock value={translation.tokens} /> : null}
@@ -372,8 +343,6 @@ export function StudioApp() {
 }
 
 function oracleSummaryText(validation: Validation): string {
-  if (!validation.oracle.available) {
-    return `The q oracle is unavailable. ${validation.oracle.reason}`;
-  }
-  return validation.oracle.reason;
+  const summary = validation.oracle.available ? "q oracle not enabled" : "q oracle unavailable";
+  return `${summary} — ${validation.oracle.reason}`;
 }

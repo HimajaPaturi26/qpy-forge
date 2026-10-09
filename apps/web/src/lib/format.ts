@@ -61,19 +61,19 @@ export function stageTone(state: string | undefined): "ok" | "bad" | "warn" | "m
 export function comparisonLabel(comparison: string): string {
   switch (comparison) {
     case "value-match":
-      return "Matched the authored value";
+      return "Matched authored value";
     case "value-mismatch":
-      return "Did not match the authored value";
+      return "Authored value mismatch";
     case "signal-match":
-      return "Matched the authored signal";
+      return "Matched authored signal";
     case "signal-mismatch":
-      return "Did not match the authored signal";
+      return "Authored signal mismatch";
     case "executed":
-      return "Execution finished. No authored expectation was supplied";
+      return "Executed, no authored expectation";
     case "runtime-error":
       return "Execution failed";
     case "refused":
-      return "Execution did not run because translation was refused or did not compile";
+      return "Not executed";
     default:
       return comparison;
   }
@@ -81,15 +81,9 @@ export function comparisonLabel(comparison: string): string {
 
 export function oracleSummary(oracle: OracleStatus): { title: string; detail: string } {
   if (!oracle.available) {
-    return {
-      title: "The q oracle is unavailable",
-      detail: oracle.reason,
-    };
+    return { title: "Unavailable", detail: oracle.reason };
   }
-  return {
-    title: "Live q comparison is not enabled",
-    detail: oracle.reason,
-  };
+  return { title: "Not enabled", detail: oracle.reason };
 }
 
 export function historyStatusLabel(status: string): string {

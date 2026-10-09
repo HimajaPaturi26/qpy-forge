@@ -40,16 +40,14 @@ export default function HistoryPage() {
         title="History"
         lede={
           status
-            ? status.persistence.durable
-              ? status.persistence.note
-              : `Translations and validations are stored in SQLite for this API process. ${status.persistence.note}`
-            : "History storage has not been confirmed. The list below is the current history response."
+            ? `${status.persistence.durable ? "Durable" : "Non-durable"} ${status.persistence.engine}. ${status.persistence.note}`
+            : "Storage status has not loaded."
         }
       />
       {error ? <Notice tone="error">{error}</Notice> : null}
       {!events && !error ? <p className="text-sm text-muted">Loading history</p> : null}
       {events && events.length === 0 ? (
-        <Notice>No events are stored in this API process. Translate or validate from Studio</Notice>
+        <Notice>No events stored in this API process</Notice>
       ) : null}
       {events && events.length > 0 ? (
         <ul className="divide-y divide-line rounded-md border border-line">

@@ -5,7 +5,7 @@ import { python } from "@codemirror/lang-python";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { qLanguage } from "@/lib/q-language";
 
-const editorHeight = "min(28rem, 62vh)";
+const editorHeight = "min(26rem, 54vh)";
 
 const shared = {
   theme: oneDark,

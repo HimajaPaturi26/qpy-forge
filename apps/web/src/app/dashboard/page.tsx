@@ -9,11 +9,11 @@ import type { MetricsReport, StatusPayload } from "@/lib/types";
 
 function Metric({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <article className="surface p-4">
-      <h2 className="text-xs font-medium text-muted">{label}</h2>
-      <p className="mt-2 text-2xl font-semibold tabular-nums">{value}</p>
-      {hint ? <p className="mt-1 text-xs leading-5 text-muted">{hint}</p> : null}
-    </article>
+    <tr className="border-t border-line">
+      <th className="py-2 pr-4 text-left font-normal text-muted">{label}</th>
+      <td className="py-2 pr-4 font-medium tabular-nums">{value}</td>
+      <td className="py-2 text-muted">{hint}</td>
+    </tr>
   );
 }
 
@@ -49,7 +49,7 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <PageHeader
         title="Accuracy"
-        lede="Supported holdout agreement is the share of holdout cases declared supported whose result matches a hand-authored expectation, including an authored runtime signal. It is not a live kdb+ audit and it does not measure arbitrary q programs. Partial and unsupported cases are outside this denominator. A case that is expected to raise a signal counts here and in signal match. It does not count as a returned value."
+        lede="Supported holdout agreement with hand-authored expectations, including authored signals. Partial and unsupported cases are excluded. This is not a live q-oracle result and does not measure arbitrary q."
         actions={
           <Button variant="outline" onClick={load} disabled={loading}>
             {loading ? "Measuring" : "Re-measure"}
@@ -60,8 +60,7 @@ export default function DashboardPage() {
       {error ? <Notice tone="error">{error}</Notice> : null}
       {report && oracle ? (
         <Notice tone="warn">
-          <span className="font-medium text-paper">{oracle.title}. </span>
-          {oracle.detail} Oracle agreement on this page is {formatRate(report.oracle_match_rate)}.
+          q oracle {oracle.title.toLowerCase()} — {oracle.detail} Oracle agreement {formatRate(report.oracle_match_rate)}.
         </Notice>
       ) : null}
       {report && report.sample_size === 0 ? (
@@ -69,7 +68,16 @@ export default function DashboardPage() {
       ) : null}
       {report ? (
         <>
-          <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <section className="overflow-x-auto">
+            <table className="w-full min-w-[36rem] text-left text-sm">
+              <thead className="text-xs text-muted">
+                <tr>
+                  <th className="py-2 pr-4 font-medium">Measure</th>
+                  <th className="py-2 pr-4 font-medium">Result</th>
+                  <th className="py-2 font-medium">Basis</th>
+                </tr>
+              </thead>
+              <tbody>
             <Metric
               label="Supported holdout agreement"
               value={formatRate(report.semantic_accuracy)}
@@ -107,16 +115,14 @@ export default function DashboardPage() {
               value={formatRate(report.signal_match_rate)}
               hint={`${report.signal_successes} of ${report.signal_sample_size} authored signal comparisons`}
             />
+              </tbody>
+            </table>
           </section>
-          <section className="surface p-4 text-sm">
-            <p>
-              Corpus {report.corpus_version} · {report.corpus_hash}
-            </p>
-            <p className="mt-2 text-muted">
-              Split {report.split} · commit {report.commit} · {report.corpus_counts.all} cases ({report.corpus_counts.holdout}{" "}
-              holdout, {report.corpus_counts.dev} dev, {report.corpus_counts.coverage} coverage)
-            </p>
-          </section>
+          <p className="font-mono text-xs text-muted">
+            {report.corpus_version} · {report.corpus_hash} · {report.split} · {report.commit} · {report.corpus_counts.all}{" "}
+            cases ({report.corpus_counts.holdout} holdout, {report.corpus_counts.dev} dev, {report.corpus_counts.coverage}{" "}
+            coverage)
+          </p>
           <section>
             <h2 className="text-lg font-medium">Development split</h2>
             <p className="mt-2 text-sm leading-6 text-muted">

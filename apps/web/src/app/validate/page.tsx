@@ -54,7 +54,7 @@ export default function ValidatePage() {
     <div className="space-y-6">
       <PageHeader
         title="Validate"
-        lede="A corpus case is translated and, when Python is emitted, executed in the sandbox. The expected value or signal comes from the corpus record for the selected case. The translator does not author that expectation, and this page does not ask a live q process to confirm it."
+        lede="Compare a corpus case with the authored value or signal on that record. Not a live q-oracle check."
       />
       {!cases && !error ? <p className="text-sm text-muted">Loading corpus cases</p> : null}
       {error ? <Notice tone="error">{error}</Notice> : null}
@@ -138,7 +138,7 @@ export default function ValidatePage() {
           )}
         </section>
       ) : selected ? (
-        <p className="text-sm text-muted">Validation has not been run for this case.</p>
+        <p className="text-sm text-muted">Not run</p>
       ) : null}
     </div>
   );

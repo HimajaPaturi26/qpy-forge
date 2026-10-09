@@ -37,7 +37,7 @@ export default function CorpusPage() {
     <div className="space-y-5">
       <PageHeader
         title="Corpus"
-        lede="Holdout cases declared supported are the agreement denominator. Dev cases exercise constructs and are scored separately. Coverage cases document refusals and partial behavior and are excluded from that rate. Counts below come from the corpus response."
+        lede="Holdout cases declared supported form the agreement denominator. Dev is scored separately. Coverage is excluded from that rate."
       />
       {meta?.counts ? (
         <p className="text-sm text-muted">

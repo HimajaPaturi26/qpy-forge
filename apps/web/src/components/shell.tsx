@@ -20,11 +20,11 @@ export function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-ink text-paper">
       <header className="border-b border-line">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
-          <Link href="/" className="rounded-sm font-semibold tracking-tight">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-5 gap-y-1 px-4">
+          <Link href="/" className="rounded-sm py-2.5 text-sm font-semibold tracking-tight">
             Q2Py Forge
           </Link>
-          <nav aria-label="Primary" className="flex flex-wrap gap-1 text-sm">
+          <nav aria-label="Primary" className="flex flex-wrap text-sm">
             {links.map((link) => {
               const active = pathname === link.href;
               return (
@@ -33,8 +33,8 @@ export function Shell({ children }: { children: ReactNode }) {
                   href={link.href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "rounded-md px-2.5 py-1.5 text-muted hover:bg-white/5 hover:text-paper",
-                    active && "bg-white/10 text-paper",
+                    "border-b-2 border-transparent px-2.5 py-2.5 text-muted hover:text-paper",
+                    active && "border-amber text-paper",
                   )}
                 >
                   {link.label}
@@ -44,7 +44,7 @@ export function Shell({ children }: { children: ReactNode }) {
           </nav>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>
+      <main className="mx-auto max-w-7xl px-4 py-6">{children}</main>
     </div>
   );
 }

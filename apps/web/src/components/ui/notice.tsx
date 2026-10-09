@@ -34,11 +34,29 @@ export function PageHeader({
 }) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-3">
-      <div className="max-w-3xl">
-        <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
-        {lede ? <div className="mt-2 text-sm leading-6 text-muted">{lede}</div> : null}
+      <div className="min-w-0">
+        <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
+        {lede ? <p className="mt-1 max-w-3xl text-sm text-muted">{lede}</p> : null}
       </div>
       {actions}
+    </div>
+  );
+}
+
+export function Section({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="border-t border-line pt-4">
+      <h2 className="text-sm font-medium">{title}</h2>
+      <div className="mt-2">{children}</div>
+    </section>
+  );
+}
+
+export function MetaRow({ term, children }: { term: string; children: ReactNode }) {
+  return (
+    <div className="grid gap-0.5 border-b border-line py-2 text-sm last:border-b-0 sm:grid-cols-[11rem_1fr] sm:gap-6">
+      <dt className="text-muted">{term}</dt>
+      <dd className="min-w-0">{children}</dd>
     </div>
   );
 }

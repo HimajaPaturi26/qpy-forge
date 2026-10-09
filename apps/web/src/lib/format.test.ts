@@ -36,9 +36,9 @@ describe("formatRate", () => {
   });
 
   it("keeps a refusal distinct from a failed comparison", () => {
-    expect(comparisonLabel("refused")).toMatch(/did not run/i);
-    expect(comparisonLabel("value-match")).toBe("Matched the authored value");
-    expect(comparisonLabel("executed")).toMatch(/No authored expectation/);
+    expect(comparisonLabel("refused")).toBe("Not executed");
+    expect(comparisonLabel("value-match")).toBe("Matched authored value");
+    expect(comparisonLabel("executed")).toBe("Executed, no authored expectation");
     expect(historyStatusLabel("skipped")).toBe("Skipped");
   });
 
@@ -49,13 +49,13 @@ describe("formatRate", () => {
         status: "available",
         reason: "q was found. Oracle execution is not enabled in this build.",
       }).title,
-    ).toBe("Live q comparison is not enabled");
+    ).toBe("Not enabled");
     expect(
       oracleSummary({
         available: false,
         status: "oracle-unavailable",
         reason: "q binary not found. Authored-value validation still runs.",
       }).title,
-    ).toBe("The q oracle is unavailable");
+    ).toBe("Unavailable");
   });
 });
