@@ -25,7 +25,7 @@ export function QEditor({
   onChange: (value: string) => void;
 }) {
   return (
-    <div className="min-w-0 overflow-hidden rounded-md border border-line focus-within:border-amber">
+    <div className="min-w-0 overflow-hidden rounded-md border border-line bg-ink focus-within:border-accent">
       <CodeMirror
         value={value}
         height={shared.height}
@@ -41,7 +41,7 @@ export function QEditor({
 
 export function PythonEditor({ value }: { value: string }) {
   return (
-    <div className="min-w-0 overflow-hidden rounded-md border border-line">
+    <div className="min-w-0 overflow-hidden rounded-md border border-line bg-ink">
       <CodeMirror
         value={value}
         height={shared.height}
@@ -59,7 +59,7 @@ export function PythonEditor({ value }: { value: string }) {
 export function EditorPlaceholder({ children }: { children: string }) {
   return (
     <div
-      className="flex items-center justify-center rounded-md border border-dashed border-line px-6 text-center text-sm text-muted"
+      className="flex items-center justify-center rounded-md border border-dashed border-line px-6 text-center text-sm text-secondary"
       style={{ height: editorHeight }}
     >
       {children}

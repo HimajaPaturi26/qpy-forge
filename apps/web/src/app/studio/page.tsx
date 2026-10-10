@@ -3,7 +3,7 @@ import { StudioApp } from "@/components/studio-app";
 
 export default function StudioPage() {
   return (
-    <Suspense fallback={<p className="text-sm text-muted">Loading studio</p>}>
+    <Suspense fallback={<p className="text-sm text-secondary">Loading studio</p>}>
       <StudioApp />
     </Suspense>
   );

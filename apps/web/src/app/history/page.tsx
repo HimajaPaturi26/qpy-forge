@@ -45,12 +45,12 @@ export default function HistoryPage() {
         }
       />
       {error ? <Notice tone="error">{error}</Notice> : null}
-      {!events && !error ? <p className="text-sm text-muted">Loading history</p> : null}
+      {!events && !error ? <p className="text-sm text-secondary">Loading history</p> : null}
       {events && events.length === 0 ? (
         <Notice>No events stored in this API process</Notice>
       ) : null}
       {events && events.length > 0 ? (
-        <ul className="divide-y divide-line rounded-md border border-line">
+        <ul className="divide-y divide-line rounded-md border border-line bg-card">
           {events.map((event) => (
             <li key={event.id}>
               <button
@@ -62,12 +62,12 @@ export default function HistoryPage() {
                 <div className="flex flex-wrap items-center gap-2 text-sm">
                   <span className="font-medium">{event.kind}</span>
                   <SupportBadge support={event.support} />
-                  <span className="text-xs text-muted">
+                  <span className="text-xs text-secondary">
                     {event.kind === "translate" ? `Codegen ${stageLabel(event.status).toLowerCase()}` : historyStatusLabel(event.status)}
                   </span>
-                  <span className="text-xs text-muted">{event.created_at}</span>
+                  <span className="text-xs text-secondary">{event.created_at}</span>
                 </div>
-                <pre className="mt-2 max-w-full overflow-x-auto whitespace-pre text-xs text-muted">{event.source}</pre>
+                <pre className="mt-2 max-w-full overflow-x-auto whitespace-pre font-mono text-xs text-paper">{event.source}</pre>
               </button>
             </li>
           ))}

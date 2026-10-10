@@ -10,9 +10,9 @@ import type { MetricsReport, StatusPayload } from "@/lib/types";
 function Metric({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
     <li className="grid gap-1 border-t border-line py-3 sm:grid-cols-[minmax(12rem,16rem)_7rem_minmax(0,1fr)] sm:items-baseline sm:gap-4">
-      <span className="text-muted">{label}</span>
+      <span className="text-secondary">{label}</span>
       <span className="font-medium tabular-nums">{value}</span>
-      <span className="min-w-0 text-sm text-muted">{hint}</span>
+      <span className="min-w-0 text-sm text-secondary">{hint}</span>
     </li>
   );
 }
@@ -56,7 +56,7 @@ export default function DashboardPage() {
           </Button>
         }
       />
-      {loading && !report ? <p className="text-sm text-muted">Scoring the holdout corpus</p> : null}
+      {loading && !report ? <p className="text-sm text-secondary">Scoring the holdout corpus</p> : null}
       {error ? <Notice tone="error">{error}</Notice> : null}
       {report && oracle ? (
         <Notice tone="warn">
@@ -109,14 +109,14 @@ export default function DashboardPage() {
             />
             </ul>
           </section>
-          <p className="break-all font-mono text-xs text-muted">
+          <p className="break-all font-mono text-xs text-secondary">
             {report.corpus_version} · {report.corpus_hash} · {report.split} · {report.commit} · {report.corpus_counts.all}{" "}
             cases ({report.corpus_counts.holdout} holdout, {report.corpus_counts.dev} dev, {report.corpus_counts.coverage}{" "}
             coverage)
           </p>
           <section>
-            <h2 className="text-lg font-medium">Development split</h2>
-            <p className="mt-2 text-sm leading-6 text-muted">
+            <h2 className="text-lg font-semibold">Development split</h2>
+            <p className="mt-2 text-sm leading-6 text-secondary">
               Dev agreement {formatRate(report.dev_measurement.semantic_accuracy)} on {report.dev_measurement.successes} of{" "}
               {report.dev_measurement.sample_size} supported dev cases. Wilson {formatRate(report.dev_measurement.wilson_low)} to{" "}
               {formatRate(report.dev_measurement.wilson_high)}. Runtime returned a value{" "}
@@ -129,8 +129,8 @@ export default function DashboardPage() {
           </section>
           {report.expected_signals.length ? (
             <section>
-              <h2 className="text-lg font-medium">Authored signals</h2>
-              <p className="mt-2 text-sm text-muted">
+              <h2 className="text-lg font-semibold">Authored signals</h2>
+              <p className="mt-2 text-sm text-secondary">
                 These cases match when execution raises the authored signal. They count in holdout agreement and signal
                 match. They do not count as a returned value.
               </p>
@@ -147,8 +147,8 @@ export default function DashboardPage() {
             </section>
           ) : null}
           <section>
-            <h2 className="text-lg font-medium">Construct registry</h2>
-            <p className="mt-1 text-sm text-muted">
+            <h2 className="text-lg font-semibold">Construct registry</h2>
+            <p className="mt-1 text-sm text-secondary">
               These lists are the documented registry. Membership is not the holdout agreement.
             </p>
             <div className="mt-3 grid gap-4 lg:grid-cols-3">
@@ -166,7 +166,7 @@ export default function DashboardPage() {
                   {report.registry.partial.map((item) => (
                     <li key={item.feature}>
                       <span className="font-medium">{item.feature}</span>
-                      <span className="block text-muted">{item.note}</span>
+                      <span className="block text-secondary">{item.note}</span>
                     </li>
                   ))}
                 </ul>
@@ -177,7 +177,7 @@ export default function DashboardPage() {
                   {report.registry.unsupported.map((item) => (
                     <li key={item.feature}>
                       <span className="font-medium">{item.feature}</span>
-                      <span className="block text-muted">{item.note}</span>
+                      <span className="block text-secondary">{item.note}</span>
                     </li>
                   ))}
                 </ul>
@@ -185,13 +185,13 @@ export default function DashboardPage() {
             </div>
           </section>
           <section>
-            <h2 className="text-lg font-medium">Holdout construct coverage</h2>
-            <p className="mt-1 text-sm text-muted">
+            <h2 className="text-lg font-semibold">Holdout construct coverage</h2>
+            <p className="mt-1 text-sm text-secondary">
               Features are those the translator recorded on each supported holdout case, not the author tags in the
               corpus file.
             </p>
             <ul className="mt-3 text-sm">
-              <li className="hidden grid-cols-4 gap-3 border-b border-line py-2 text-xs text-muted sm:grid">
+              <li className="hidden grid-cols-4 gap-3 border-b border-line py-2 text-xs text-secondary sm:grid">
                 <span>Feature</span>
                 <span>Matched</span>
                 <span>Cases</span>
@@ -201,15 +201,15 @@ export default function DashboardPage() {
                 <li key={row.feature} className="grid grid-cols-2 gap-x-3 gap-y-1 border-t border-line py-2 sm:grid-cols-4">
                   <span className="col-span-2 break-words sm:col-span-1">{row.feature}</span>
                   <span className="tabular-nums">
-                    <span className="text-muted sm:hidden">Matched </span>
+                    <span className="text-secondary sm:hidden">Matched </span>
                     {row.matched}
                   </span>
                   <span className="tabular-nums">
-                    <span className="text-muted sm:hidden">Cases </span>
+                    <span className="text-secondary sm:hidden">Cases </span>
                     {row.n}
                   </span>
                   <span className="col-span-2 tabular-nums sm:col-span-1">
-                    <span className="text-muted sm:hidden">Rate </span>
+                    <span className="text-secondary sm:hidden">Rate </span>
                     {formatRate(row.rate)}
                   </span>
                 </li>
@@ -218,9 +218,9 @@ export default function DashboardPage() {
           </section>
           <section className="grid gap-6 lg:grid-cols-2">
             <div>
-              <h2 className="text-lg font-medium">Failure categories</h2>
+              <h2 className="text-lg font-semibold">Failure categories</h2>
               {report.failure_categories.length === 0 ? (
-                <p className="mt-2 text-sm text-muted">No failing supported holdout cases in this measurement</p>
+                <p className="mt-2 text-sm text-secondary">No failing supported holdout cases in this measurement</p>
               ) : (
                 <ul className="mt-2 space-y-1 text-sm">
                   {report.failure_categories.map((item) => (
@@ -232,15 +232,15 @@ export default function DashboardPage() {
               )}
             </div>
             <div>
-              <h2 className="text-lg font-medium">Failing cases</h2>
+              <h2 className="text-lg font-semibold">Failing cases</h2>
               {report.top_failures.length === 0 ? (
-                <p className="mt-2 text-sm text-muted">None in this measurement</p>
+                <p className="mt-2 text-sm text-secondary">None in this measurement</p>
               ) : (
                 <ul className="mt-2 space-y-2 text-sm">
                   {report.top_failures.map((item) => (
                     <li key={item.id} className="surface px-3 py-2">
                       <p className="font-medium">{item.id}</p>
-                      <p className="text-muted">{item.failure}</p>
+                      <p className="text-secondary">{item.failure}</p>
                       <pre className="mt-1 overflow-auto text-xs">{item.source}</pre>
                     </li>
                   ))}
@@ -249,8 +249,8 @@ export default function DashboardPage() {
             </div>
           </section>
           <section>
-            <h2 className="text-lg font-medium">Measurement history</h2>
-            <p className="mt-1 text-sm text-muted">
+            <h2 className="text-lg font-semibold">Measurement history</h2>
+            <p className="mt-1 text-sm text-secondary">
               {status
                 ? status.persistence.durable
                   ? status.persistence.note
@@ -258,16 +258,16 @@ export default function DashboardPage() {
                 : "Persistence was not loaded with this measurement"}
             </p>
             {report.history.length === 0 ? (
-              <p className="mt-2 text-sm text-muted">No snapshots are stored in this API process</p>
+              <p className="mt-2 text-sm text-secondary">No snapshots are stored in this API process</p>
             ) : (
               <ul className="mt-2 space-y-1 text-sm">
                 {report.history.map((item) => (
                   <li key={item.id} className="flex flex-wrap gap-x-4 gap-y-1 border-t border-line py-2">
                     <span>{item.created_at}</span>
                     <span className="tabular-nums">{formatRate(item.semantic_accuracy)}</span>
-                    <span className="text-muted">n={item.sample_size ?? "Not measured"}</span>
-                    <span className="text-muted">{item.commit}</span>
-                    <span className="text-muted">{item.corpus_version}</span>
+                    <span className="text-secondary">n={item.sample_size ?? "Not measured"}</span>
+                    <span className="text-secondary">{item.commit}</span>
+                    <span className="text-secondary">{item.corpus_version}</span>
                   </li>
                 ))}
               </ul>

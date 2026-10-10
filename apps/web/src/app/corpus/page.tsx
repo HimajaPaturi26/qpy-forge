@@ -40,13 +40,13 @@ export default function CorpusPage() {
         lede="Holdout cases declared supported form the agreement denominator. Dev is scored separately. Coverage is excluded from that rate."
       />
       {meta?.counts ? (
-        <p className="text-sm text-muted">
+        <p className="text-sm text-secondary">
           Corpus {meta.version} · {meta.hash} · {meta.counts.all} cases ({meta.counts.holdout} holdout, {meta.counts.dev}{" "}
           dev, {meta.counts.coverage} coverage)
         </p>
       ) : null}
       <label className="text-sm">
-        <span className="mr-2 text-muted">Split</span>
+        <span className="mr-2 text-secondary">Split</span>
         <select
           className="field"
           value={split}
@@ -63,24 +63,24 @@ export default function CorpusPage() {
         </select>
       </label>
       {error ? <Notice tone="error">{error}</Notice> : null}
-      {!cases && !error ? <p className="text-sm text-muted">Loading cases</p> : null}
+      {!cases && !error ? <p className="text-sm text-secondary">Loading cases</p> : null}
       {cases && cases.length === 0 ? <Notice>No cases in this split</Notice> : null}
       {cases && cases.length > 0 ? (
         <>
-          <p className="text-sm text-muted">Showing {cases.length} {split === "all" ? "cases" : `${split} cases`}</p>
-          <ul className="divide-y divide-line rounded-md border border-line">
+          <p className="text-sm text-secondary">Showing {cases.length} {split === "all" ? "cases" : `${split} cases`}</p>
+          <ul className="divide-y divide-line rounded-md border border-line bg-card">
             {cases.map((item) => (
               <li key={item.id} className="space-y-2 px-4 py-3">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-medium">{item.id}</span>
                   <SupportBadge support={item.support} />
-                  <span className="text-xs text-muted">{item.split}</span>
+                  <span className="text-xs text-secondary">{item.split}</span>
                 </div>
-                <pre className="max-w-full overflow-x-auto whitespace-pre text-sm">{item.source}</pre>
+                <pre className="max-w-full overflow-x-auto whitespace-pre font-mono text-sm text-paper">{item.source}</pre>
                 {item.features?.length ? (
-                  <p className="text-xs text-muted">Author tags: {item.features.join(", ")}</p>
+                  <p className="text-xs text-secondary">Author tags: {item.features.join(", ")}</p>
                 ) : null}
-                {item.note ? <p className="text-xs text-muted">{item.note}</p> : null}
+                {item.note ? <p className="text-xs text-secondary">{item.note}</p> : null}
               </li>
             ))}
           </ul>

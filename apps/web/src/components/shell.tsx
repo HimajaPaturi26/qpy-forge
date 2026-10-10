@@ -78,18 +78,18 @@ export function Shell({ children }: { children: ReactNode }) {
       >
         Skip to content
       </a>
-      <header className="sticky top-0 z-30 border-b border-line bg-ink/95 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-line bg-panel/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center gap-2 px-4">
           <Link href="/" className="rounded-sm py-3 text-sm font-semibold tracking-tight">
             Q2Py Forge
           </Link>
-          <nav aria-label="Primary" className="ml-3 hidden items-center text-sm md:flex">
+          <nav aria-label="Primary" className="ml-3 hidden items-center text-sm font-semibold md:flex">
             <Link
               href="/studio"
               aria-current={studioCurrent ? "page" : undefined}
               className={cn(
-                "mr-1 rounded-md px-3 py-1.5 font-medium",
-                studioCurrent ? "bg-amber text-ink" : "text-amber hover:bg-amber/10",
+                "mr-1 rounded-md px-3 py-1.5",
+                studioCurrent ? "bg-amber text-ink" : "text-amber hover:bg-amber/10 hover:text-amber-hover",
               )}
             >
               Studio
@@ -98,8 +98,8 @@ export function Shell({ children }: { children: ReactNode }) {
               <button
                 type="button"
                 className={cn(
-                  "rounded-sm border-b-2 border-transparent px-2.5 py-3 text-muted hover:text-paper",
-                  exploreActive && "border-amber text-paper",
+                  "rounded-sm border-b-2 border-transparent px-2.5 py-3 text-secondary hover:text-paper",
+                  exploreActive && "border-accent text-paper",
                 )}
                 aria-expanded={exploreOpen}
                 aria-haspopup="true"
@@ -109,15 +109,15 @@ export function Shell({ children }: { children: ReactNode }) {
                 Explore
               </button>
               {exploreOpen ? (
-                <div id={exploreId} className="absolute left-0 z-40 mt-1 min-w-40 rounded-md border border-line bg-panel p-1 shadow-lg">
+                <div id={exploreId} className="absolute left-0 z-40 mt-1 min-w-40 rounded-md border border-line bg-elevated p-1">
                   {explore.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
                       aria-current={active(pathname, link.href) ? "page" : undefined}
                       className={cn(
-                        "block rounded-sm px-3 py-2 text-muted hover:bg-white/5 hover:text-paper",
-                        active(pathname, link.href) && "text-paper",
+                        "block rounded-sm px-3 py-2 text-secondary hover:bg-white/5 hover:text-paper",
+                        active(pathname, link.href) && "bg-accent/10 text-paper",
                       )}
                     >
                       {link.label}
@@ -149,12 +149,12 @@ export function Shell({ children }: { children: ReactNode }) {
                 <Link
                   href="/studio"
                   aria-current={studioCurrent ? "page" : undefined}
-                  className="flex min-h-11 items-center rounded-md bg-amber px-3 text-base font-medium text-ink"
+                  className="flex min-h-11 items-center rounded-md bg-amber px-3 text-base font-semibold text-ink"
                 >
                   Studio
                 </Link>
               </li>
-              <li className="px-2 pt-3 text-xs text-muted">Explore</li>
+              <li className="px-2 pt-3 text-xs text-secondary">Explore</li>
               {explore.map((link) => (
                 <MobileLink key={link.href} href={link.href} current={active(pathname, link.href)}>
                   {link.label}
@@ -172,9 +172,9 @@ export function Shell({ children }: { children: ReactNode }) {
       <main id="content" className="mx-auto min-w-0 w-full max-w-7xl flex-1 px-4 py-6">
         {children}
       </main>
-      <footer className="border-t border-line">
+      <footer className="border-t border-line bg-panel">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-6 text-sm sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-muted">
+          <p className="text-secondary">
             Built by{" "}
             <a
               href="https://www.linkedin.com/in/himajapaturi/"
@@ -187,7 +187,7 @@ export function Shell({ children }: { children: ReactNode }) {
           </p>
           <nav aria-label="Footer" className="flex flex-wrap gap-x-4 gap-y-2">
             {footerLinks.map((link) => (
-              <Link key={link.href} href={link.href} className="text-muted hover:text-paper">
+              <Link key={link.href} href={link.href} className="text-secondary hover:text-paper">
                 {link.label}
               </Link>
             ))}
@@ -204,8 +204,8 @@ function NavLink({ href, current, children }: { href: string; current: boolean; 
       href={href}
       aria-current={current ? "page" : undefined}
       className={cn(
-        "border-b-2 border-transparent px-2.5 py-3 text-muted hover:text-paper",
-        current && "border-amber text-paper",
+        "border-b-2 border-transparent px-2.5 py-3 text-secondary hover:text-paper",
+        current && "border-accent text-paper",
       )}
     >
       {children}
@@ -221,7 +221,7 @@ function MobileLink({ href, current, children }: { href: string; current: boolea
         aria-current={current ? "page" : undefined}
         className={cn(
           "flex min-h-11 items-center rounded-md px-2 text-base",
-          current ? "bg-white/5 text-paper" : "text-muted",
+          current ? "bg-accent/15 text-paper" : "text-secondary",
         )}
       >
         {children}

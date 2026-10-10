@@ -29,7 +29,7 @@ export default function SettingsPage() {
   return (
     <div className="max-w-3xl space-y-6">
       <PageHeader title="Status" />
-      {!status && !error ? <p className="text-sm text-muted">Checking API</p> : null}
+      {!status && !error ? <p className="text-sm text-secondary">Checking API</p> : null}
       {error ? (
         <Notice tone="error">
           {error}. Set Q2PY_API_ORIGIN to the public API URL. Locally the API listens on port 43118.

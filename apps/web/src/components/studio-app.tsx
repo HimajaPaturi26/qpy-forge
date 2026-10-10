@@ -30,7 +30,7 @@ const toneClass = {
   ok: "text-ok",
   bad: "text-bad",
   warn: "text-warn",
-  muted: "text-muted",
+  muted: "text-secondary",
 } as const;
 
 export function StudioApp() {
@@ -204,7 +204,7 @@ export function StudioApp() {
         actions={translation ? <SupportBadge support={translation.support} /> : null}
       />
 
-      <details className="text-sm text-muted">
+      <details className="text-sm text-secondary">
         <summary className="min-h-11 cursor-pointer py-2 text-paper">How to use Studio</summary>
         <ol className="mt-1 max-w-3xl list-decimal space-y-1 pl-5">
           <li>Load an example, upload a .q file, or type in Q source.</li>
@@ -256,7 +256,7 @@ export function StudioApp() {
             <button
               key={example.id}
               type="button"
-              className="rounded-md border border-line px-2.5 py-1 text-xs text-muted hover:text-paper"
+              className="rounded-md border border-line px-2.5 py-1 text-xs text-secondary hover:text-paper"
               onClick={() => replaceSource(example.source)}
             >
               {example.id}
@@ -282,7 +282,7 @@ export function StudioApp() {
             aria-controls={`editor-panel-${id}`}
             className={cn(
               "min-h-11 flex-1 rounded-md border px-3 text-sm",
-              pane === id ? "border-amber bg-amber/10 text-paper" : "border-line text-muted",
+              pane === id ? "border-accent bg-accent/10 text-paper" : "border-line text-secondary",
             )}
             onClick={() => setPane(id)}
           >
@@ -319,22 +319,22 @@ export function StudioApp() {
       </div>
 
       <section aria-live="polite" className="space-y-3">
-        {busy ? <p className="text-sm text-muted">{busy === "translate" ? "Translating" : "Validating"}</p> : null}
+        {busy ? <p className="text-sm text-secondary">{busy === "translate" ? "Translating" : "Validating"}</p> : null}
         {error ? <Notice tone="error">{error}</Notice> : null}
-        {hint ? <p className="text-sm text-muted">{hint}</p> : null}
+        {hint ? <p className="text-sm text-secondary">{hint}</p> : null}
         <ol className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4 lg:grid-cols-8" aria-label="Pipeline status">
           {stages.map(([stage, label]) => {
             const state = translation?.stages[stage];
             const tone = stageTone(state);
             return (
-              <li key={stage} className="min-w-0 rounded-md border border-line px-2 py-2">
-                <span className="block text-muted">{label}</span>
+              <li key={stage} className="min-w-0 rounded-md border border-accent/30 bg-elevated px-2 py-2">
+                <span className="block font-medium text-accent">{label}</span>
                 <span className={cn("mt-0.5 block break-words", toneClass[tone])}>{stageLabel(state)}</span>
               </li>
             );
           })}
         </ol>
-        <p className="text-xs leading-5 text-muted">
+        <p className="text-xs leading-5 text-secondary">
           Translate reports Lex through Compile. Validate runs Execute. Compare stays not run without an authored
           expectation.
         </p>
@@ -359,7 +359,7 @@ export function StudioApp() {
                 aria-selected={panel === id}
                 className={cn(
                   "min-h-11 rounded-md px-3 text-sm",
-                  panel === id ? "bg-white/10 text-paper" : "text-muted",
+                  panel === id ? "bg-accent/15 text-paper" : "text-secondary",
                 )}
                 onClick={() => setPanel(id)}
               >
@@ -375,7 +375,7 @@ export function StudioApp() {
                   <li key={`${item.code}-${index}`} className="border-b border-line py-2 text-sm">
                     <div className="flex flex-wrap items-center gap-2">
                       <SupportBadge support={item.support} />
-                      <span className="font-mono text-xs text-muted">
+                      <span className="font-mono text-xs text-secondary">
                         {item.code} · {item.stage} · {item.line}:{item.col} · {item.severity}
                       </span>
                     </div>
@@ -384,7 +384,7 @@ export function StudioApp() {
                 ))}
               </ul>
             ) : (
-              <p className="text-sm text-muted">No diagnostics</p>
+              <p className="text-sm text-secondary">No diagnostics</p>
             )
           ) : null}
           {panel === "output" ? (
@@ -392,34 +392,34 @@ export function StudioApp() {
               <div className="space-y-3 text-sm">
                 <dl className="grid gap-3 sm:grid-cols-2">
                   <div>
-                    <dt className="text-xs text-muted">Comparison</dt>
+                    <dt className="text-xs text-secondary">Comparison</dt>
                     <dd className="mt-1 break-words">{comparisonLabel(validation.comparison)}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-muted">Execution</dt>
+                    <dt className="text-xs text-secondary">Execution</dt>
                     <dd className="mt-1">{validation.executed ? "Returned a value" : "No returned value"}</dd>
                   </div>
                   {validation.executed ? (
                     <div className="sm:col-span-2">
-                      <dt className="text-xs text-muted">Display</dt>
+                      <dt className="text-xs text-secondary">Display</dt>
                       <dd className="mt-1 break-all font-mono">{validation.display || "No display value"}</dd>
                     </div>
                   ) : null}
                   {validation.signal ? (
                     <div>
-                      <dt className="text-xs text-muted">Signal</dt>
+                      <dt className="text-xs text-secondary">Signal</dt>
                       <dd className="mt-1 break-words">{validation.signal}</dd>
                     </div>
                   ) : null}
                   <div className="sm:col-span-2">
-                    <dt className="text-xs text-muted">q oracle</dt>
-                    <dd className="mt-1 break-words text-muted">{oracleSummaryText(validation)}</dd>
+                    <dt className="text-xs text-secondary">q oracle</dt>
+                    <dd className="mt-1 break-words text-secondary">{oracleSummaryText(validation)}</dd>
                   </div>
                 </dl>
                 <JsonBlock value={{ canon: validation.canon, expected: validation.expected }} />
               </div>
             ) : (
-              <p className="text-sm text-muted">
+              <p className="text-sm text-secondary">
                 Not run. Translate does not execute the program. Use Validate to run it.
               </p>
             )
@@ -428,7 +428,7 @@ export function StudioApp() {
           {panel === "ast" ? <JsonBlock value={translation.ast} /> : null}
           {panel === "ir" ? <JsonBlock value={translation.ir} /> : null}
           {translation.features.length ? (
-            <p className="mt-3 text-xs text-muted">Recorded features: {translation.features.join(", ")}</p>
+            <p className="mt-3 text-xs text-secondary">Recorded features: {translation.features.join(", ")}</p>
           ) : null}
         </section>
       ) : null}

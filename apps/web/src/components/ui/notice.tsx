@@ -15,7 +15,7 @@ export function Notice({
         "rounded-md border px-3 py-2 text-sm",
         tone === "error" && "border-bad/50 bg-bad/10 text-bad",
         tone === "warn" && "border-warn/40 bg-warn/10 text-paper",
-        tone === "info" && "border-line bg-panel text-muted",
+        tone === "info" && "border-line bg-elevated text-secondary",
       )}
     >
       {children}
@@ -35,8 +35,8 @@ export function PageHeader({
   return (
     <div className="flex flex-wrap items-end justify-between gap-3">
       <div className="min-w-0">
-        <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
-        {lede ? <p className="mt-1 max-w-3xl text-sm text-muted">{lede}</p> : null}
+        <h1 className="text-xl font-bold tracking-tight sm:text-2xl">{title}</h1>
+        {lede ? <p className="mt-1 max-w-3xl text-sm text-secondary">{lede}</p> : null}
       </div>
       {actions}
     </div>
@@ -55,7 +55,7 @@ export function Section({ title, children }: { title: string; children: ReactNod
 export function MetaRow({ term, children }: { term: string; children: ReactNode }) {
   return (
     <div className="grid gap-0.5 border-b border-line py-2 text-sm last:border-b-0 sm:grid-cols-[11rem_1fr] sm:gap-6">
-      <dt className="text-muted">{term}</dt>
+      <dt className="text-secondary">{term}</dt>
       <dd className="min-w-0">{children}</dd>
     </div>
   );

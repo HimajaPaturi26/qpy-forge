@@ -36,13 +36,13 @@ const sections = [
 export default function DocsPage() {
   return (
     <div className="max-w-3xl">
-      <h1 className="text-xl font-semibold tracking-tight">Docs</h1>
-      <p className="mt-1 text-sm text-muted">Behavior of this build. Not complete q coverage and not kdb+ equivalence.</p>
+      <h1 className="text-xl font-bold tracking-tight sm:text-2xl">Docs</h1>
+      <p className="mt-1 text-sm text-secondary">Behavior of this build. Not complete q coverage and not kdb+ equivalence.</p>
       <div className="mt-6 divide-y divide-line border-y border-line">
         {sections.map((section) => (
           <section key={section.title} className="grid gap-1 py-4 sm:grid-cols-[9rem_1fr] sm:gap-6">
-            <h2 className="text-sm font-medium">{section.title}</h2>
-            <p className="text-sm leading-6 text-muted">{section.body}</p>
+            <h2 className="text-sm font-semibold text-accent">{section.title}</h2>
+            <p className="text-sm leading-6 text-secondary">{section.body}</p>
           </section>
         ))}
       </div>

@@ -56,13 +56,13 @@ export default function ValidatePage() {
         title="Validate"
         lede="Compare a corpus case with the authored value or signal on that record. Not a live q-oracle check."
       />
-      {!cases && !error ? <p className="text-sm text-muted">Loading corpus cases</p> : null}
+      {!cases && !error ? <p className="text-sm text-secondary">Loading corpus cases</p> : null}
       {error ? <Notice tone="error">{error}</Notice> : null}
       {cases && cases.length === 0 ? <Notice>The corpus has no cases</Notice> : null}
       {cases && cases.length > 0 ? (
         <div className="flex flex-wrap items-end gap-3">
           <label className="block min-w-0 w-full text-sm sm:w-auto">
-            <span className="mb-1 block text-muted">Corpus case</span>
+            <span className="mb-1 block text-secondary">Corpus case</span>
             <select
               className="field w-full max-w-full sm:w-auto sm:min-w-64"
               value={caseId}
@@ -87,8 +87,8 @@ export default function ValidatePage() {
         <section className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             <SupportBadge support={selected.support} />
-            <span className="text-xs text-muted">{selected.split}</span>
-            <span className="text-xs text-muted">
+            <span className="text-xs text-secondary">{selected.split}</span>
+            <span className="text-xs text-secondary">
               {selected.expected_signal
                 ? `Authored signal ${selected.expected_signal}`
                 : selected.expected
@@ -96,7 +96,7 @@ export default function ValidatePage() {
                   : "No authored expectation on this record"}
             </span>
           </div>
-          <pre className="overflow-auto rounded-md border border-line bg-panel p-3 text-sm">{selected.source}</pre>
+          <pre className="overflow-auto rounded-md border border-line bg-ink p-3 font-mono text-sm">{selected.source}</pre>
         </section>
       ) : null}
       {result ? (
@@ -109,10 +109,10 @@ export default function ValidatePage() {
           {result.executed ? (
             <p className="font-mono">{result.display || "No display value"}</p>
           ) : (
-            <p className="text-muted">Execution has not produced a value.</p>
+            <p className="text-secondary">Execution has not produced a value.</p>
           )}
           {result.signal ? <p>Runtime signal: {result.signal}</p> : null}
-          <p className="text-muted">
+          <p className="text-secondary">
             {result.oracle.available ? result.oracle.reason : `The q oracle is unavailable. ${result.oracle.reason}`}
           </p>
           <JsonBlock
@@ -126,7 +126,7 @@ export default function ValidatePage() {
             <ul className="space-y-2">
               {result.diagnostics.map((item, index) => (
                 <li key={`${item.code}-${index}`} className="surface px-3 py-2">
-                  <span className="font-mono text-xs text-muted">
+                  <span className="font-mono text-xs text-secondary">
                     {item.code} · {item.stage} · {item.line}:{item.col}
                   </span>
                   <p className="mt-1">{item.message}</p>
@@ -134,11 +134,11 @@ export default function ValidatePage() {
               ))}
             </ul>
           ) : (
-            <p className="text-muted">No diagnostics were returned.</p>
+            <p className="text-secondary">No diagnostics were returned.</p>
           )}
         </section>
       ) : selected ? (
-        <p className="text-sm text-muted">Not run</p>
+        <p className="text-sm text-secondary">Not run</p>
       ) : null}
     </div>
   );
