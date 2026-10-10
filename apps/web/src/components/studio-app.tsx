@@ -194,38 +194,49 @@ export function StudioApp() {
 
   const python = translation?.python ?? "";
   const rejected = translation?.support === "unsupported" || translation?.stages.compile === "error";
+  const hint = recoveryHint(error);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <PageHeader
         title="Translation studio"
-        lede="Translate q source into Python and inspect compilation, execution, and validation results."
+        lede="Translate q source into Python, then validate when you want the program to run."
         actions={translation ? <SupportBadge support={translation.support} /> : null}
       />
 
       <details className="text-sm text-muted">
-        <summary className="cursor-pointer text-paper">How to use Studio</summary>
-        <ol className="mt-2 max-w-3xl list-decimal space-y-1 pl-5">
-          <li>Load an example or upload a .q file, or type in Q source.</li>
-          <li>Translate to generate Python. Compilation can pass while execution has not run.</li>
-          <li>Validate to execute. Comparison says not run until an authored expectation is attached.</li>
+        <summary className="min-h-11 cursor-pointer py-2 text-paper">How to use Studio</summary>
+        <ol className="mt-1 max-w-3xl list-decimal space-y-1 pl-5">
+          <li>Load an example, upload a .q file, or type in Q source.</li>
+          <li>Translate generates Python. Compile can pass while Execute stays not run.</li>
+          <li>Validate executes the program. Compare stays not run without an authored expectation.</li>
           <li>Diagnostics lists refusals. Tokens, AST, and IR show the compiler stages.</li>
         </ol>
       </details>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <Button className="min-h-11" onClick={() => void translate()} disabled={busy !== null || !source.trim()}>
-          {busy === "translate" ? "Translating" : "Translate"}
-        </Button>
-        <Button className="min-h-11" variant="secondary" onClick={() => void validate()} disabled={busy !== null || !source.trim()}>
-          {busy === "validate" ? "Validating" : "Validate"}
-        </Button>
-        <Button className="min-h-11" variant="outline" onClick={() => fileRef.current?.click()} disabled={busy !== null}>
-          Upload .q
-        </Button>
-        <Button className="min-h-11" variant="outline" onClick={() => void loadExamples()} disabled={busy !== null}>
-          Examples
-        </Button>
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+        <div className="flex flex-wrap gap-2">
+          <Button className="min-h-11 min-w-28" onClick={() => void translate()} disabled={busy !== null || !source.trim()}>
+            {busy === "translate" ? "Translating" : "Translate"}
+          </Button>
+          <Button className="min-h-11 min-w-28" variant="secondary" onClick={() => void validate()} disabled={busy !== null || !source.trim()}>
+            {busy === "validate" ? "Validating" : "Validate"}
+          </Button>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button className="min-h-11" variant="outline" onClick={() => fileRef.current?.click()} disabled={busy !== null}>
+            Upload .q
+          </Button>
+          <Button className="min-h-11" variant="outline" onClick={() => void loadExamples()} disabled={busy !== null}>
+            Examples
+          </Button>
+          <Button className="min-h-11" variant="ghost" onClick={() => void copyPython()} disabled={!python}>
+            {copied ? "Copied" : "Copy Python"}
+          </Button>
+          <Button className="min-h-11" variant="ghost" onClick={downloadPython} disabled={!python}>
+            Download .py
+          </Button>
+        </div>
         <input
           ref={fileRef}
           type="file"
@@ -237,12 +248,6 @@ export function StudioApp() {
             event.target.value = "";
           }}
         />
-        <Button variant="ghost" onClick={() => void copyPython()} disabled={!python}>
-          {copied ? "Copied" : "Copy Python"}
-        </Button>
-        <Button variant="ghost" onClick={downloadPython} disabled={!python}>
-          Download .py
-        </Button>
       </div>
 
       {examples ? (
@@ -270,12 +275,14 @@ export function StudioApp() {
         ).map(([id, label]) => (
           <button
             key={id}
+            id={`editor-tab-${id}`}
             type="button"
             role="tab"
             aria-selected={pane === id}
+            aria-controls={`editor-panel-${id}`}
             className={cn(
               "min-h-11 flex-1 rounded-md border px-3 text-sm",
-              pane === id ? "border-amber text-paper" : "border-line text-muted",
+              pane === id ? "border-amber bg-amber/10 text-paper" : "border-line text-muted",
             )}
             onClick={() => setPane(id)}
           >
@@ -284,17 +291,29 @@ export function StudioApp() {
         ))}
       </div>
 
-      <div className="grid min-w-0 gap-4 lg:grid-cols-2">
-        <section className={cn("min-w-0", pane !== "source" && "hidden lg:block")}>
+      <div className="grid min-w-0 items-start gap-4 lg:grid-cols-2">
+        <section
+          id="editor-panel-source"
+          role="tabpanel"
+          aria-labelledby="editor-tab-source"
+          className={cn("min-w-0", pane !== "source" && "hidden lg:block")}
+        >
           <h2 className="mb-2 text-sm font-medium">Q source</h2>
           <QEditor value={source} onChange={editSource} />
         </section>
-        <section className={cn("min-w-0", pane !== "python" && "hidden lg:block")}>
+        <section
+          id="editor-panel-python"
+          role="tabpanel"
+          aria-labelledby="editor-tab-python"
+          className={cn("min-w-0", pane !== "python" && "hidden lg:block")}
+        >
           <h2 className="mb-2 text-sm font-medium">Generated Python</h2>
           {python ? (
             <PythonEditor value={python} />
           ) : (
-            <EditorPlaceholder>{rejected ? "Translation rejected" : "No generated output"}</EditorPlaceholder>
+            <EditorPlaceholder>
+              {rejected ? "Translation stopped before Python was emitted" : "Translate to generate Python"}
+            </EditorPlaceholder>
           )}
         </section>
       </div>
@@ -302,20 +321,23 @@ export function StudioApp() {
       <section aria-live="polite" className="space-y-3">
         {busy ? <p className="text-sm text-muted">{busy === "translate" ? "Translating" : "Validating"}</p> : null}
         {error ? <Notice tone="error">{error}</Notice> : null}
-        {translation ? (
-          <ol className="flex flex-wrap gap-2 text-xs" aria-label="Pipeline status">
-            {stages.map(([stage, label]) => {
-              const state = translation.stages[stage];
-              const tone = stageTone(state);
-              return (
-                <li key={stage} className="rounded-md border border-line px-2 py-1">
-                  <span className="text-muted">{label}</span>{" "}
-                  <span className={toneClass[tone]}>{stageLabel(state)}</span>
-                </li>
-              );
-            })}
-          </ol>
-        ) : null}
+        {hint ? <p className="text-sm text-muted">{hint}</p> : null}
+        <ol className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4 lg:grid-cols-8" aria-label="Pipeline status">
+          {stages.map(([stage, label]) => {
+            const state = translation?.stages[stage];
+            const tone = stageTone(state);
+            return (
+              <li key={stage} className="min-w-0 rounded-md border border-line px-2 py-2">
+                <span className="block text-muted">{label}</span>
+                <span className={cn("mt-0.5 block break-words", toneClass[tone])}>{stageLabel(state)}</span>
+              </li>
+            );
+          })}
+        </ol>
+        <p className="text-xs leading-5 text-muted">
+          Translate reports Lex through Compile. Validate runs Execute. Compare stays not run without an authored
+          expectation.
+        </p>
       </section>
 
       {translation ? (
@@ -357,7 +379,7 @@ export function StudioApp() {
                         {item.code} · {item.stage} · {item.line}:{item.col} · {item.severity}
                       </span>
                     </div>
-                    <p className="mt-1">{item.message}</p>
+                    <p className="mt-1 break-words">{item.message}</p>
                   </li>
                 ))}
               </ul>
@@ -367,16 +389,39 @@ export function StudioApp() {
           ) : null}
           {panel === "output" ? (
             validation ? (
-              <div className="space-y-2 text-sm">
-                <p>{comparisonLabel(validation.comparison)}</p>
-                <p>{validation.executed ? "Returned a value" : "No returned value"}</p>
-                {validation.executed ? <p className="font-mono">{validation.display || "No display value"}</p> : null}
-                {validation.signal ? <p>Signal {validation.signal}</p> : null}
-                <p className="text-muted">{oracleSummaryText(validation)}</p>
+              <div className="space-y-3 text-sm">
+                <dl className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <dt className="text-xs text-muted">Comparison</dt>
+                    <dd className="mt-1 break-words">{comparisonLabel(validation.comparison)}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs text-muted">Execution</dt>
+                    <dd className="mt-1">{validation.executed ? "Returned a value" : "No returned value"}</dd>
+                  </div>
+                  {validation.executed ? (
+                    <div className="sm:col-span-2">
+                      <dt className="text-xs text-muted">Display</dt>
+                      <dd className="mt-1 break-all font-mono">{validation.display || "No display value"}</dd>
+                    </div>
+                  ) : null}
+                  {validation.signal ? (
+                    <div>
+                      <dt className="text-xs text-muted">Signal</dt>
+                      <dd className="mt-1 break-words">{validation.signal}</dd>
+                    </div>
+                  ) : null}
+                  <div className="sm:col-span-2">
+                    <dt className="text-xs text-muted">q oracle</dt>
+                    <dd className="mt-1 break-words text-muted">{oracleSummaryText(validation)}</dd>
+                  </div>
+                </dl>
                 <JsonBlock value={{ canon: validation.canon, expected: validation.expected }} />
               </div>
             ) : (
-              <p className="text-sm text-muted">Not run</p>
+              <p className="text-sm text-muted">
+                Not run. Translate does not execute the program. Use Validate to run it.
+              </p>
             )
           ) : null}
           {panel === "tokens" ? <JsonBlock value={translation.tokens} /> : null}
@@ -389,6 +434,16 @@ export function StudioApp() {
       ) : null}
     </div>
   );
+}
+
+function recoveryHint(error: string | null): string | null {
+  if (!error) {
+    return null;
+  }
+  if (error.startsWith("Enter") || error.startsWith("There is no") || error.startsWith("Could not read")) {
+    return null;
+  }
+  return "Correct the source and translate again. If the service did not respond, open Status and confirm the API is reachable.";
 }
 
 function oracleSummaryText(validation: Validation): string {

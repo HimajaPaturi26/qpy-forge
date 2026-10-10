@@ -9,11 +9,11 @@ import type { MetricsReport, StatusPayload } from "@/lib/types";
 
 function Metric({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <tr className="border-t border-line">
-      <th className="py-2 pr-4 text-left font-normal text-muted">{label}</th>
-      <td className="py-2 pr-4 font-medium tabular-nums">{value}</td>
-      <td className="py-2 text-muted">{hint}</td>
-    </tr>
+    <li className="grid gap-1 border-t border-line py-3 sm:grid-cols-[minmax(12rem,16rem)_7rem_minmax(0,1fr)] sm:items-baseline sm:gap-4">
+      <span className="text-muted">{label}</span>
+      <span className="font-medium tabular-nums">{value}</span>
+      <span className="min-w-0 text-sm text-muted">{hint}</span>
+    </li>
   );
 }
 
@@ -68,16 +68,8 @@ export default function DashboardPage() {
       ) : null}
       {report ? (
         <>
-          <section className="overflow-x-auto">
-            <table className="w-full min-w-[36rem] text-left text-sm">
-              <thead className="text-xs text-muted">
-                <tr>
-                  <th className="py-2 pr-4 font-medium">Measure</th>
-                  <th className="py-2 pr-4 font-medium">Result</th>
-                  <th className="py-2 font-medium">Basis</th>
-                </tr>
-              </thead>
-              <tbody>
+          <section aria-label="Holdout measures">
+            <ul className="text-sm">
             <Metric
               label="Supported holdout agreement"
               value={formatRate(report.semantic_accuracy)}
@@ -115,10 +107,9 @@ export default function DashboardPage() {
               value={formatRate(report.signal_match_rate)}
               hint={`${report.signal_successes} of ${report.signal_sample_size} authored signal comparisons`}
             />
-              </tbody>
-            </table>
+            </ul>
           </section>
-          <p className="font-mono text-xs text-muted">
+          <p className="break-all font-mono text-xs text-muted">
             {report.corpus_version} · {report.corpus_hash} · {report.split} · {report.commit} · {report.corpus_counts.all}{" "}
             cases ({report.corpus_counts.holdout} holdout, {report.corpus_counts.dev} dev, {report.corpus_counts.coverage}{" "}
             coverage)
@@ -199,28 +190,31 @@ export default function DashboardPage() {
               Features are those the translator recorded on each supported holdout case, not the author tags in the
               corpus file.
             </p>
-            <div className="mt-3 overflow-x-auto">
-              <table className="w-full min-w-[32rem] text-left text-sm">
-                <thead className="text-muted">
-                  <tr>
-                    <th className="py-2 pr-3 font-medium">Feature</th>
-                    <th className="py-2 pr-3 font-medium">Matched</th>
-                    <th className="py-2 pr-3 font-medium">Cases</th>
-                    <th className="py-2 font-medium">Rate</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {report.constructs.map((row) => (
-                    <tr key={row.feature} className="border-t border-line">
-                      <td className="py-2 pr-3">{row.feature}</td>
-                      <td className="py-2 pr-3 tabular-nums">{row.matched}</td>
-                      <td className="py-2 pr-3 tabular-nums">{row.n}</td>
-                      <td className="py-2 tabular-nums">{formatRate(row.rate)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <ul className="mt-3 text-sm">
+              <li className="hidden grid-cols-4 gap-3 border-b border-line py-2 text-xs text-muted sm:grid">
+                <span>Feature</span>
+                <span>Matched</span>
+                <span>Cases</span>
+                <span>Rate</span>
+              </li>
+              {report.constructs.map((row) => (
+                <li key={row.feature} className="grid grid-cols-2 gap-x-3 gap-y-1 border-t border-line py-2 sm:grid-cols-4">
+                  <span className="col-span-2 break-words sm:col-span-1">{row.feature}</span>
+                  <span className="tabular-nums">
+                    <span className="text-muted sm:hidden">Matched </span>
+                    {row.matched}
+                  </span>
+                  <span className="tabular-nums">
+                    <span className="text-muted sm:hidden">Cases </span>
+                    {row.n}
+                  </span>
+                  <span className="col-span-2 tabular-nums sm:col-span-1">
+                    <span className="text-muted sm:hidden">Rate </span>
+                    {formatRate(row.rate)}
+                  </span>
+                </li>
+              ))}
+            </ul>
           </section>
           <section className="grid gap-6 lg:grid-cols-2">
             <div>

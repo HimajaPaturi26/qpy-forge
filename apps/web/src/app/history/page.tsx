@@ -67,7 +67,7 @@ export default function HistoryPage() {
                   </span>
                   <span className="text-xs text-muted">{event.created_at}</span>
                 </div>
-                <pre className="mt-2 overflow-auto text-xs text-muted">{event.source}</pre>
+                <pre className="mt-2 max-w-full overflow-x-auto whitespace-pre text-xs text-muted">{event.source}</pre>
               </button>
             </li>
           ))}

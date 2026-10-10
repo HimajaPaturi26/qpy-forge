@@ -61,10 +61,10 @@ export default function ValidatePage() {
       {cases && cases.length === 0 ? <Notice>The corpus has no cases</Notice> : null}
       {cases && cases.length > 0 ? (
         <div className="flex flex-wrap items-end gap-3">
-          <label className="text-sm">
+          <label className="block min-w-0 w-full text-sm sm:w-auto">
             <span className="mb-1 block text-muted">Corpus case</span>
             <select
-              className="field min-w-64 max-w-full"
+              className="field w-full max-w-full sm:w-auto sm:min-w-64"
               value={caseId}
               onChange={(event) => {
                 setCaseId(event.target.value);

@@ -76,7 +76,7 @@ export default function CorpusPage() {
                   <SupportBadge support={item.support} />
                   <span className="text-xs text-muted">{item.split}</span>
                 </div>
-                <pre className="overflow-auto text-sm">{item.source}</pre>
+                <pre className="max-w-full overflow-x-auto whitespace-pre text-sm">{item.source}</pre>
                 {item.features?.length ? (
                   <p className="text-xs text-muted">Author tags: {item.features.join(", ")}</p>
                 ) : null}
